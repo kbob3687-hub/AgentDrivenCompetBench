@@ -66,6 +66,7 @@ class BaseAgent(ABC):
         if self.config.provider == "anthropic":
             self.anthropic_client = anthropic.AsyncAnthropic(
                 base_url=os.getenv("ANTHROPIC_BASE_URL") or None,
+                timeout=httpx.Timeout(connect=30, read=300, write=30, pool=30),
             )
             self.openai_client = None
         else:
@@ -125,27 +126,32 @@ class BaseAgent(ABC):
             try:
                 result = await self.run(message)
 
-                span.update(
-                    output=result.model_dump(mode="json"),
-                    level="DEFAULT",
-                    status_message=f"completed on attempt {attempt}",
-                ).end()
-                self.langfuse.flush()
+                try:
+                    span.update(
+                        output=result.model_dump(mode="json"),
+                        level="DEFAULT",
+                        status_message=f"completed on attempt {attempt}",
+                    ).end()
+                    self.langfuse.flush()
+                except Exception:
+                    pass  # Langfuse failure should not block agent result
                 return result
 
             except Exception as e:
                 last_error = e
-                error_msg = f"[{self.role}] attempt {attempt}/{self.config.max_retries} failed: {type(e).__name__}: {e}"
 
                 if attempt < self.config.max_retries:
                     await asyncio.sleep(self.config.retry_delay * attempt)
                 else:
-                    span.update(
-                        output={"error": str(e), "attempts": attempt},
-                        level="ERROR",
-                        status_message=f"failed after {attempt} attempts: {e}",
-                    ).end()
-                    self.langfuse.flush()
+                    try:
+                        span.update(
+                            output={"error": str(e), "attempts": attempt},
+                            level="ERROR",
+                            status_message=f"failed after {attempt} attempts: {e}",
+                        ).end()
+                        self.langfuse.flush()
+                    except Exception:
+                        pass
 
         return self._build_error_response(message, last_error)
 
@@ -200,13 +206,24 @@ class BaseAgent(ABC):
         response_format: Any = None,
     ) -> LLMResponse:
         """调用Anthropic Claude API"""
+        is_thinking = "thinking" in self.config.model
+
         kwargs: dict[str, Any] = {
             "model": self.config.model,
             "max_tokens": self.config.max_tokens,
-            "temperature": self.config.temperature,
             "system": self.system_prompt,
             "messages": messages,
         }
+
+        if is_thinking:
+            # thinking模型不支持temperature，需要设置thinking budget
+            kwargs["thinking"] = {
+                "type": "enabled",
+                "budget_tokens": min(4096, self.config.max_tokens // 2),
+            }
+        else:
+            kwargs["temperature"] = self.config.temperature
+
         if tools:
             kwargs["tools"] = tools
         if response_format:
