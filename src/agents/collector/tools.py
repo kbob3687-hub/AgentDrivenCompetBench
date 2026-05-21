@@ -21,7 +21,7 @@ class FetchResult(BaseModel):
     error: str | None = None
 
 
-async def jina_reader(url: str, timeout: float = 30.0) -> FetchResult:
+async def jina_reader(url: str, timeout: float = 60.0, max_retries: int = 3) -> FetchResult:
     """通过Jina Reader获取网页的干净文本
 
     Jina Reader会自动：
@@ -32,10 +32,13 @@ async def jina_reader(url: str, timeout: float = 30.0) -> FetchResult:
     Args:
         url: 目标网页URL
         timeout: 请求超时时间（秒）
+        max_retries: 最大重试次数
 
     Returns:
         FetchResult包含干净文本内容
     """
+    import asyncio
+
     jina_url = f"https://r.jina.ai/{url}"
 
     headers = {
@@ -43,42 +46,41 @@ async def jina_reader(url: str, timeout: float = 30.0) -> FetchResult:
         "X-Return-Format": "markdown",
     }
 
-    try:
-        async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
-            response = await client.get(jina_url, headers=headers)
-            response.raise_for_status()
+    last_error = ""
+    for attempt in range(max_retries):
+        try:
+            async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
+                response = await client.get(jina_url, headers=headers)
+                response.raise_for_status()
 
-            content = response.text
-            title = _extract_title(content)
-            snapshot_hash = hashlib.sha256(content.encode()).hexdigest()[:16]
+                content = response.text
+                title = _extract_title(content)
+                snapshot_hash = hashlib.sha256(content.encode()).hexdigest()[:16]
 
-            return FetchResult(
-                url=url,
-                title=title,
-                content=content,
-                accessed_at=datetime.now(),
-                snapshot_hash=snapshot_hash,
-                success=True,
-            )
+                return FetchResult(
+                    url=url,
+                    title=title,
+                    content=content,
+                    accessed_at=datetime.now(),
+                    snapshot_hash=snapshot_hash,
+                    success=True,
+                )
 
-    except httpx.TimeoutException:
-        return FetchResult(
-            url=url,
-            success=False,
-            error=f"Timeout after {timeout}s",
-        )
-    except httpx.HTTPStatusError as e:
-        return FetchResult(
-            url=url,
-            success=False,
-            error=f"HTTP {e.response.status_code}: {e.response.reason_phrase}",
-        )
-    except Exception as e:
-        return FetchResult(
-            url=url,
-            success=False,
-            error=f"{type(e).__name__}: {str(e)}",
-        )
+        except httpx.TimeoutException:
+            last_error = f"Timeout after {timeout}s"
+        except httpx.HTTPStatusError as e:
+            last_error = f"HTTP {e.response.status_code}: {e.response.reason_phrase}"
+        except Exception as e:
+            last_error = f"{type(e).__name__}: {str(e)}"
+
+        if attempt < max_retries - 1:
+            await asyncio.sleep(2 * (attempt + 1))
+
+    return FetchResult(
+        url=url,
+        success=False,
+        error=f"Failed after {max_retries} attempts: {last_error}",
+    )
 
 
 async def playwright_fetch(url: str, timeout: float = 30000) -> FetchResult:
