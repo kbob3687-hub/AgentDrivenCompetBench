@@ -1,0 +1,39 @@
+# 竞品分析多Agent系统 - 基础设施
+# Langfuse已切换为Cloud版本（https://cloud.langfuse.com），无需本地部署
+# Redis复用本地已有容器（6379端口）
+
+services:
+  postgres:
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/postgres:16-alpine
+    container_name: ca_postgres
+    environment:
+      POSTGRES_USER: ca_user
+      POSTGRES_PASSWORD: ca_password
+      POSTGRES_DB: competitive_analysis
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ca_user -d competitive_analysis"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  qdrant:
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/qdrant/qdrant:latest
+    container_name: ca_qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/6333"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  qdrant_data:
