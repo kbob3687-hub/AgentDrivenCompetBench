@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import time
 import uuid
 from datetime import datetime
@@ -56,7 +57,7 @@ async def _publish(task_id: str, event_type: EventType, data: dict[str, Any]) ->
 
 
 async def collector_node(state: GraphState) -> dict[str, Any]:
-    """Collector节点 - 采集竞品数据，带SSE事件发布"""
+    """Collector节点 - 并行采集竞品数据（fan-out sub-agents），带SSE事件发布"""
     task_id = state.get("trace_id", "")
     iteration = state.get("iteration", 1)
     scope = state.get("collect_scope", ["pricing"])
@@ -71,37 +72,79 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     start = time.time()
 
     agent = CollectorAgent()
-    message = _make_message(
-        to_agent="collector",
-        function_name="collect_competitor_data",
-        arguments={
-            "target": state["competitor_name"],
-            "collect_type": "web_scrape",
-            "scope": scope,
-            "depth": "standard",
-            "max_sources": 10,
-            "target_urls": state.get("target_urls", []),
-            "language": "zh",
-        },
-        state=state,
-    )
 
-    result = await agent.execute(message)
-    args = result.arguments
+    # 确定 URL 列表
+    target = state["competitor_name"]
+    target_urls = state.get("target_urls", [])
+    urls = target_urls if target_urls else agent._get_default_urls(target, scope)
+    urls = urls[:10]
+
+    await _publish(task_id, EventType.LOG, {
+        "message": f"Fan-out: 并行采集 {len(urls)} 个数据源", "agent": "collector",
+    })
+
+    # Fan-out: 并行 fetch + extract
+    semaphore = asyncio.Semaphore(4)
+    all_claims: list[dict] = []
+    fetch_errors: list[str] = []
+
+    async def process_url(url: str, sub_id: str) -> list[dict]:
+        await _publish(task_id, EventType.SUB_AGENT_START, {
+            "parent": "collector", "sub_id": sub_id, "url": url, "iteration": iteration,
+        })
+        sub_start = time.time()
+
+        async with semaphore:
+            fetch_result = await agent._fetch_url(url)
+
+            if not fetch_result.success:
+                fetch_errors.append(f"{url}: {fetch_result.error}")
+                await _publish(task_id, EventType.SUB_AGENT_END, {
+                    "parent": "collector", "sub_id": sub_id, "url": url,
+                    "iteration": iteration, "success": False,
+                    "duration_ms": round((time.time() - sub_start) * 1000),
+                    "claims_count": 0,
+                })
+                return []
+
+            content = agent._truncate_content(fetch_result.content, max_chars=12000)
+            extracted = await agent._extract_info(
+                competitor_name=target,
+                dimensions=scope,
+                url=url,
+                title=fetch_result.title,
+                content=content,
+                snapshot_hash=fetch_result.snapshot_hash,
+            )
+
+            await _publish(task_id, EventType.SUB_AGENT_END, {
+                "parent": "collector", "sub_id": sub_id, "url": url,
+                "iteration": iteration, "success": True,
+                "claims_count": len(extracted),
+                "duration_ms": round((time.time() - sub_start) * 1000),
+            })
+            return extracted
+
+    tasks = [process_url(url, f"fetch-{i}") for i, url in enumerate(urls)]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    for r in results:
+        if isinstance(r, list):
+            all_claims.extend(r)
+        elif isinstance(r, Exception):
+            fetch_errors.append(str(r))
+
     duration = time.time() - start
 
     await _publish(task_id, EventType.AGENT_END, {
         "agent": "collector", "iteration": iteration, "duration_ms": round(duration * 1000),
     })
 
-    if args.get("error"):
-        return {"error": args["error"], "claims": []}
-
     return {
-        "claims": args.get("claims", []),
-        "sources_fetched": args.get("sources_fetched", 0),
-        "sources_failed": args.get("sources_failed", 0),
-        "collect_errors": args.get("errors", []),
+        "claims": all_claims,
+        "sources_fetched": len(urls) - len(fetch_errors),
+        "sources_failed": len(fetch_errors),
+        "collect_errors": fetch_errors,
         "collect_scope": scope,
         "missing_dimensions": [],
     }
@@ -228,6 +271,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             feedback_summary="no profile to check",
         )
         history.append(record.model_dump(mode="json"))
+        await _publish(task_id, EventType.ITERATION_SUMMARY, record.model_dump(mode="json"))
 
         duration = time.time() - start
         await _publish(task_id, EventType.AGENT_END, {
@@ -307,6 +351,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
 
     history = list(state.get("feedback_history", []))
     history.append(record.model_dump(mode="json"))
+    await _publish(task_id, EventType.ITERATION_SUMMARY, record.model_dump(mode="json"))
 
     update: dict[str, Any] = {
         "qa_verdict": verdict,
@@ -374,14 +419,20 @@ async def run_analysis(
     """
     dims = dimensions or ["pricing", "features"]
 
+    # expected_dimensions 比初始 collect_scope 更宽，确保 QA 能发现缺失维度触发 revise
+    all_dimensions = ["pricing", "features", "integrations"]
+    expected = list(set(all_dimensions) | set(dims))
+    # 第一轮只采集用户指定的维度（窄范围），QA 会发现缺失并打回
+    initial_scope = dims[:2] if len(dims) > 2 else dims[:1]
+
     try:
         app = build_sse_graph()
 
         initial_state: GraphState = {
             "competitor_name": competitor_name,
-            "collect_scope": dims,
+            "collect_scope": initial_scope,
             "target_urls": [],
-            "expected_dimensions": dims,
+            "expected_dimensions": expected,
             "iteration": 1,
             "max_iterations": max_iterations,
             "feedback_history": [],

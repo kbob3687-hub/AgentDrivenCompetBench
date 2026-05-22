@@ -1,11 +1,14 @@
 import { ref, onUnmounted } from 'vue'
-import type { AgentName, SSEAgentStart, SSEAgentEnd, SSELog, SSEQaVerdict, SSEComplete } from '../types'
+import type { SSEAgentStart, SSEAgentEnd, SSELog, SSEQaVerdict, SSEComplete, SSESubAgentStart, SSESubAgentEnd, FeedbackRecord } from '../types'
 
 export type SSEEvent =
   | { type: 'agent_start'; data: SSEAgentStart }
   | { type: 'agent_end'; data: SSEAgentEnd }
   | { type: 'log'; data: SSELog }
   | { type: 'qa_verdict'; data: SSEQaVerdict }
+  | { type: 'iteration_summary'; data: FeedbackRecord }
+  | { type: 'sub_agent_start'; data: SSESubAgentStart }
+  | { type: 'sub_agent_end'; data: SSESubAgentEnd }
   | { type: 'complete'; data: SSEComplete }
   | { type: 'error'; data: { message: string } }
 
@@ -33,6 +36,18 @@ export function useSSE(onEvent: (event: SSEEvent) => void) {
 
     eventSource.addEventListener('qa_verdict', (e: MessageEvent) => {
       onEvent({ type: 'qa_verdict', data: JSON.parse(e.data) })
+    })
+
+    eventSource.addEventListener('iteration_summary', (e: MessageEvent) => {
+      onEvent({ type: 'iteration_summary', data: JSON.parse(e.data) })
+    })
+
+    eventSource.addEventListener('sub_agent_start', (e: MessageEvent) => {
+      onEvent({ type: 'sub_agent_start', data: JSON.parse(e.data) })
+    })
+
+    eventSource.addEventListener('sub_agent_end', (e: MessageEvent) => {
+      onEvent({ type: 'sub_agent_end', data: JSON.parse(e.data) })
     })
 
     eventSource.addEventListener('complete', (e: MessageEvent) => {

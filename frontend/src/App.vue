@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import AnalysisForm from './components/AnalysisForm.vue'
 import DagView from './components/DagView.vue'
 import LogStream from './components/LogStream.vue'
 import ResultPanel from './components/ResultPanel.vue'
+import IterationTimeline from './components/IterationTimeline.vue'
 import { useAnalysis } from './composables/useAnalysis'
 
-const { state, startAnalysis } = useAnalysis()
+const { state, startAnalysis, restoreFromHash } = useAnalysis()
 
 const isRunning = computed(() => state.status === 'running')
 const isCompleted = computed(() => state.status === 'completed')
@@ -14,6 +15,10 @@ const isCompleted = computed(() => state.status === 'completed')
 function handleSubmit(payload: { competitorName: string; dimensions: string[] }) {
   startAnalysis(payload.competitorName, payload.dimensions)
 }
+
+onMounted(() => {
+  restoreFromHash()
+})
 </script>
 
 <template>
@@ -49,12 +54,20 @@ function handleSubmit(payload: { competitorName: string; dimensions: string[] })
       <!-- DAG + Logs -->
       <div v-if="state.status !== 'idle'" class="grid grid-cols-5 gap-4 h-[350px]">
         <div class="col-span-3">
-          <DagView :node-states="state.nodeStates" />
+          <DagView :node-states="state.nodeStates" :sub-agents="state.subAgents" />
         </div>
         <div class="col-span-2">
           <LogStream :logs="state.logs" />
         </div>
       </div>
+
+      <!-- Iteration Timeline -->
+      <IterationTimeline
+        v-if="state.status !== 'idle' && (state.iterations.length > 0 || state.currentIteration > 0)"
+        :iterations="state.iterations"
+        :current-iteration="state.currentIteration"
+        :is-running="isRunning"
+      />
 
       <!-- Result Panel -->
       <ResultPanel v-if="isCompleted && state.result" :result="state.result" />

@@ -4,8 +4,33 @@ export type NodeStatus = 'idle' | 'running' | 'done' | 'error' | 'revise'
 export interface SSEAgentStart { agent: AgentName; iteration: number }
 export interface SSEAgentEnd { agent: AgentName; iteration: number; duration_ms: number }
 export interface SSELog { message: string; agent?: AgentName; iteration?: number }
-export interface SSEQaVerdict { verdict: string; score: number; missing_dims: string[]; iteration: number }
+export interface SSEQaVerdict { verdict: string; score: number; missing_dims: string[]; iteration: number; issues_count?: number; missing_dimensions?: string[] }
 export interface SSEComplete { final_status: string; qa_score: number; report_markdown: string; feedback_history: FeedbackRecord[] }
+
+export interface SSESubAgentStart {
+  parent: AgentName
+  sub_id: string
+  url: string
+  iteration: number
+}
+
+export interface SSESubAgentEnd {
+  parent: AgentName
+  sub_id: string
+  url: string
+  iteration: number
+  success: boolean
+  claims_count: number
+  duration_ms: number
+}
+
+export interface SubAgentState {
+  sub_id: string
+  url: string
+  status: 'running' | 'done' | 'error'
+  claims_count?: number
+  duration_ms?: number
+}
 
 export interface FeedbackRecord {
   iteration: number
@@ -24,6 +49,8 @@ export interface AnalysisState {
   logs: LogEntry[]
   result: SSEComplete | null
   currentIteration: number
+  iterations: FeedbackRecord[]
+  subAgents: SubAgentState[]
 }
 
 export interface LogEntry {

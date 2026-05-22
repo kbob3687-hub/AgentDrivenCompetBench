@@ -3,14 +3,20 @@ import { computed } from 'vue'
 import { VueFlow, Position } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
-import type { AgentName, NodeStatus } from '../types'
+import type { AgentName, NodeStatus, SubAgentState } from '../types'
 import DagNode from './DagNode.vue'
 
 const props = defineProps<{
   nodeStates: Record<AgentName, NodeStatus>
+  subAgents: SubAgentState[]
 }>()
 
-const nodes = computed(() => [
+function getHostname(url: string): string {
+  try { return new URL(url).hostname.replace('www.', '') }
+  catch { return url.slice(0, 20) }
+}
+
+const agentNodes = computed(() => [
   {
     id: 'collector',
     type: 'agent',
@@ -22,7 +28,7 @@ const nodes = computed(() => [
   {
     id: 'analyst',
     type: 'agent',
-    position: { x: 230, y: 100 },
+    position: { x: 250, y: 100 },
     data: { label: 'Analyst', status: props.nodeStates.analyst },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -30,7 +36,7 @@ const nodes = computed(() => [
   {
     id: 'writer',
     type: 'agent',
-    position: { x: 410, y: 100 },
+    position: { x: 450, y: 100 },
     data: { label: 'Writer', status: props.nodeStates.writer },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -38,14 +44,27 @@ const nodes = computed(() => [
   {
     id: 'qa',
     type: 'agent',
-    position: { x: 590, y: 100 },
+    position: { x: 650, y: 100 },
     data: { label: 'QA', status: props.nodeStates.qa },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
   }
 ])
 
-const edges = computed(() => [
+const subNodes = computed(() =>
+  props.subAgents.map((sa, i) => ({
+    id: `sub-${sa.sub_id}`,
+    type: 'sub-agent',
+    position: { x: 20 + i * 100, y: 220 },
+    data: { label: getHostname(sa.url), status: sa.status, claims: sa.claims_count },
+    sourcePosition: Position.Top,
+    targetPosition: Position.Top
+  }))
+)
+
+const nodes = computed(() => [...agentNodes.value, ...subNodes.value])
+
+const mainEdges = computed(() => [
   {
     id: 'e-collector-analyst',
     source: 'collector',
@@ -76,6 +95,19 @@ const edges = computed(() => [
     animated: props.nodeStates.qa === 'done' && props.nodeStates.collector === 'revise'
   }
 ])
+
+const subEdges = computed(() =>
+  props.subAgents.map(sa => ({
+    id: `e-collector-${sa.sub_id}`,
+    source: 'collector',
+    target: `sub-${sa.sub_id}`,
+    type: 'smoothstep',
+    style: { stroke: '#a855f7', strokeWidth: 1.5 },
+    animated: sa.status === 'running'
+  }))
+)
+
+const edges = computed(() => [...mainEdges.value, ...subEdges.value])
 </script>
 
 <template>
@@ -92,6 +124,21 @@ const edges = computed(() => [
     >
       <template #node-agent="nodeProps">
         <DagNode :data="nodeProps.data" />
+      </template>
+      <template #node-sub-agent="nodeProps">
+        <div
+          class="px-2 py-1.5 rounded border text-center text-[10px] min-w-[70px]"
+          :class="[
+            nodeProps.data.status === 'running' ? 'bg-purple-900/80 border-purple-500 animate-pulse text-purple-100' :
+            nodeProps.data.status === 'done' ? 'bg-green-900/80 border-green-600 text-green-100' :
+            'bg-red-900/80 border-red-600 text-red-100'
+          ]"
+        >
+          <div class="truncate font-medium">{{ nodeProps.data.label }}</div>
+          <div v-if="nodeProps.data.claims != null" class="text-[9px] opacity-70">
+            {{ nodeProps.data.claims }} claims
+          </div>
+        </div>
       </template>
       <Background />
       <Controls />

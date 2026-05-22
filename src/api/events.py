@@ -19,6 +19,9 @@ class EventType(str, Enum):
     AGENT_END = "agent_end"
     LOG = "log"
     QA_VERDICT = "qa_verdict"
+    ITERATION_SUMMARY = "iteration_summary"
+    SUB_AGENT_START = "sub_agent_start"
+    SUB_AGENT_END = "sub_agent_end"
     COMPLETE = "complete"
     ERROR = "error"
 
@@ -39,17 +42,26 @@ class EventBus:
 
     def __init__(self) -> None:
         self._queues: dict[str, asyncio.Queue[SSEEvent | None]] = {}
+        self._history: dict[str, list[SSEEvent]] = {}
 
     def create_task(self, task_id: str) -> None:
         self._queues[task_id] = asyncio.Queue()
+        self._history[task_id] = []
 
     def remove_task(self, task_id: str) -> None:
         self._queues.pop(task_id, None)
+        self._history.pop(task_id, None)
 
     async def publish(self, task_id: str, event: SSEEvent) -> None:
         queue = self._queues.get(task_id)
         if queue:
             await queue.put(event)
+        history = self._history.get(task_id)
+        if history is not None:
+            history.append(event)
+
+    def get_history(self, task_id: str) -> list[SSEEvent]:
+        return self._history.get(task_id, [])
 
     async def subscribe(self, task_id: str):
         """异步生成器 - SSE endpoint用此方法消费事件"""
