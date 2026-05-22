@@ -11,24 +11,34 @@ def check_dimension_coverage(
     claims: list[dict[str, Any]],
     expected_dimensions: list[str],
 ) -> tuple[list[QAIssue], list[str]]:
-    """检查5：维度覆盖完整性 - 是否所有期望维度都有数据
+    """检查5：维度覆盖完整性 + 单维度深度
 
-    这是真实业务逻辑：如果用户期望分析pricing+features+integrations，
-    但Collector只采了pricing，QA应该打回要求补采。
+    业务逻辑：
+    1. 期望维度必须有数据（缺失→critical，触发revise补采）
+    2. 已覆盖维度的claims数量必须≥3（深度不足→major，建议补采）
 
     Returns:
         (issues, missing_dimensions)
     """
     issues: list[QAIssue] = []
     missing: list[str] = []
+    MIN_CLAIMS_PER_DIM = 3
 
     if not expected_dimensions:
         return issues, missing
 
-    covered_dims = set(c.get("dimension", "") for c in claims if c.get("dimension"))
+    # 按维度分组统计 claims
+    dim_counts: dict[str, int] = {}
+    for c in claims:
+        dim = c.get("dimension", "")
+        if dim:
+            dim_counts[dim] = dim_counts.get(dim, 0) + 1
+
+    covered_dims = set(dim_counts.keys())
 
     for dim in expected_dimensions:
         if dim not in covered_dims:
+            # 完全缺失
             missing.append(dim)
             issues.append(QAIssue(
                 field_path=f"dimensions.{dim}",
@@ -37,6 +47,17 @@ def check_dimension_coverage(
                 description=f"期望维度'{dim}'完全缺失，profile数据不完整",
                 suggestion=f"需要补充采集'{dim}'维度的数据来源",
                 evidence=f"已覆盖: {sorted(covered_dims)}, 缺失: {dim}",
+            ))
+        elif dim_counts[dim] < MIN_CLAIMS_PER_DIM:
+            # 维度覆盖了但深度不足 → 加入 missing 触发补采
+            missing.append(dim)
+            issues.append(QAIssue(
+                field_path=f"dimensions.{dim}",
+                issue_type="missing_source",
+                severity="major",
+                description=f"维度'{dim}'数据不充分，仅{dim_counts[dim]}条claim（要求≥{MIN_CLAIMS_PER_DIM}）",
+                suggestion=f"补充采集'{dim}'维度更多数据来源以提高分析深度",
+                evidence=f"dim={dim}, count={dim_counts[dim]}, threshold={MIN_CLAIMS_PER_DIM}",
             ))
 
     return issues, missing

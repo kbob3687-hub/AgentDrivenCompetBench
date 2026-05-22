@@ -419,18 +419,16 @@ async def run_analysis(
     """
     dims = dimensions or ["pricing", "features"]
 
-    # expected_dimensions 比初始 collect_scope 更宽，确保 QA 能发现缺失维度触发 revise
+    # expected_dimensions 包含完整维度集，确保 QA 能检查覆盖度
     all_dimensions = ["pricing", "features", "integrations"]
     expected = list(set(all_dimensions) | set(dims))
-    # 第一轮只采集用户指定的维度（窄范围），QA 会发现缺失并打回
-    initial_scope = dims[:2] if len(dims) > 2 else dims[:1]
 
     try:
         app = build_sse_graph()
 
         initial_state: GraphState = {
             "competitor_name": competitor_name,
-            "collect_scope": initial_scope,
+            "collect_scope": dims,
             "target_urls": [],
             "expected_dimensions": expected,
             "iteration": 1,
