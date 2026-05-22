@@ -114,7 +114,9 @@ class BaseAgent(ABC):
         同一个trace_id下的所有agent span自动归入同一条trace。
         """
         iteration = message.context.iteration
-        trace_ctx = {"trace_id": message.trace_id, "session_id": None}
+        # Langfuse要求32位hex格式的trace_id，UUID需要去掉横杠
+        raw_trace_id = message.trace_id.replace("-", "")[:32]
+        trace_ctx = {"trace_id": raw_trace_id, "session_id": None}
         span = self.langfuse.start_observation(
             trace_context=trace_ctx,
             name=f"{self.role}",

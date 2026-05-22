@@ -30,6 +30,10 @@ snapshots/
 *.sqlite
 *.db
 
+# Node / Frontend
+node_modules/
+frontend/dist/
+
 # 系统
 .DS_Store
 Thumbs.db
