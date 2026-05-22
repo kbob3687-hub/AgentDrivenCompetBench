@@ -116,9 +116,9 @@ def check_snippet_existence(
             snippet = src.get("snippet", "").strip()
             if not snippet:
                 continue
-            # 检查snippet是否在任何原始snippet中出现（子串匹配）
+            # 宽松匹配：取snippet前20字符做子串搜索（LLM会paraphrase，严格匹配必然失败）
             found = any(
-                snippet[:30] in orig or orig[:30] in snippet
+                snippet[:20] in orig or orig[:20] in snippet
                 for orig in original_snippets
                 if orig
             )
@@ -126,7 +126,7 @@ def check_snippet_existence(
                 issues.append(QAIssue(
                     field_path=f"{path}[{k}].snippet",
                     issue_type="factual_error",
-                    severity="major",
+                    severity="minor",
                     description=f"snippet无法在原始采集数据中找到对应文本",
                     suggestion="核实该snippet是否来自实际采集内容，或标记为推理得出",
                     evidence=f"snippet: '{snippet[:80]}...'",

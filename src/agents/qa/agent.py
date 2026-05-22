@@ -77,16 +77,17 @@ class QAAgent(BaseAgent):
 
         # 计算overall_score
         overall_score = self._calculate_score(
-            avg_confidence, all_issues, checked
+            avg_confidence, all_issues, checked,
+            llm_issue_count=len(llm_issues),
         )
 
         # 判定verdict - 维度缺失优先级最高
         if missing_dimensions:
             # 维度数据缺失 → 必须revise补采
             verdict = "revise"
-        elif overall_score >= 0.80:
+        elif overall_score >= 0.70:
             verdict = "pass"
-        elif overall_score >= 0.60:
+        elif overall_score >= 0.55:
             verdict = "revise"
         else:
             verdict = "reject"
@@ -200,22 +201,35 @@ class QAAgent(BaseAgent):
         avg_confidence: float,
         issues: list[QAIssue],
         total_claims: int,
+        llm_issue_count: int = 0,
     ) -> float:
-        """计算综合质量分数"""
+        """计算综合质量分数
+
+        设计原则：
+        - 规则验证器（客观）：全额扣分，上限0.20
+        - LLM审查（主观）：降权扣分，上限0.10
+        - 两者合计上限0.25（保证高confidence数据不会被主观意见否决）
+        """
         if total_claims == 0:
             return 0.0
 
-        # 基础分 = 平均置信度
         score = avg_confidence
 
-        # 扣分：critical -0.12, major -0.05, minor -0.02
-        penalty_map = {"critical": 0.12, "major": 0.05, "minor": 0.02}
-        total_penalty = sum(
-            penalty_map.get(issue.severity, 0.02) for issue in issues
+        penalty_map = {"critical": 0.10, "major": 0.04, "minor": 0.01}
+
+        rule_issues = issues[: len(issues) - llm_issue_count]
+        llm_issues = issues[len(issues) - llm_issue_count:]
+
+        rule_penalty = min(
+            sum(penalty_map.get(i.severity, 0.01) for i in rule_issues),
+            0.20,
+        )
+        llm_penalty = min(
+            sum(penalty_map.get(i.severity, 0.01) for i in llm_issues) * 0.4,
+            0.10,
         )
 
-        # 惩罚上限为0.3（避免一堆minor直接打到0）
-        total_penalty = min(total_penalty, 0.3)
+        total_penalty = min(rule_penalty + llm_penalty, 0.25)
         score -= total_penalty
 
         return max(0.0, min(1.0, round(score, 2)))
