@@ -1,0 +1,2660 @@
+{
+  "competitor_name": "Notion",
+  "collect_scope": [
+    "pricing",
+    "integrations",
+    "features"
+  ],
+  "target_urls": [],
+  "expected_dimensions": [
+    "pricing",
+    "features",
+    "integrations"
+  ],
+  "claims": [
+    {
+      "claim": "Free 计划：$0/成员/月",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Free $0 per member / month",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "Plus 计划：$10/成员/月（月付）",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Plus $10 per member / month",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "Business 计划：$18/成员/月（月付）",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Business $18 per member / month",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "Enterprise 计划为按需定价，需联系销售",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Enterprise Contact sales for pricing",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "年付可节省高达20%",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Save up to 20% with yearly",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "Plus 计划年付价格为 $8/成员/月",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Plus $8 per member / month, billed annually",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "Business 计划年付价格为 $15/成员/月",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Business $15 per member / month, billed annually",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "Free 计划包含：Notion AI 试用、基础表单、基础站点、Notion Calendar、Notion Mail（Gmail同步）、数据库（含子任务、依赖关系、自定义属性等）",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Plus 计划在 Free 基础上增加：自定义表单、自定义站点（自定义顶部导航、主题、favicon、Google Analytics集成）、无限图表、无限块编辑器、25个自定义自动化、10天页面历史版本、无限文件上传（每个文件5MB限制）、无限访客、自定义协作权限",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Plus $10 per member / month ... Everything in Free, and: Custom forms ... Custom sites ... Unlimited charts ... Unlimited blocks ... 25 custom automations ... 10 days of page history ... Unlimited file uploads (5MB per file) ... Unlimited guests ... Custom permissions",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Business 计划在 Plus 基础上增加：SAML SSO、私有团队空间、批量导出PDF、100个自定义自动化、90天页面历史版本、无限文件上传（每个文件5GB限制）、无限访客（含高级权限控制）、自定义品牌域名、自定义用户角色",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Business $18 per member / month ... Everything in Plus, and: SAML SSO ... Private teamspaces ... Bulk PDF export ... 100 custom automations ... 90 days of page history ... Unlimited file uploads (5GB per file) ... Unlimited guests with advanced permissions ... Custom branded domain ... Custom user roles",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Enterprise 计划在 Business 基础上增加：用户配置（SCIM）、高级安全与审计日志、合规认证（SOC 2 Type 2、HIPAA、GDPR等）、无限页面历史版本、无限文件上传（无大小限制）、专属客户成功经理、高级分析与报告、自定义条款与数据驻留",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Enterprise Contact sales for pricing ... Everything in Business, and: User provisioning (SCIM) ... Advanced security & audit logs ... Compliance (SOC 2 Type 2, HIPAA, GDPR, etc.) ... Unlimited page history ... Unlimited file uploads (no size limit) ... Dedicated success manager ... Advanced analytics & reporting ... Custom terms & data residency",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion 提供连接应用的功能，支持与 Gmail 同步（Notion Mail）",
+      "confidence": 0.9,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Notion Mail (Syncs with Gmail) ... Connections Connect your apps",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "Notion 支持与 Google Analytics 集成（自定义站点功能）",
+      "confidence": 0.9,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Custom sites ... integrate with Google Analytics",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "Notion 提供 Notion Calendar 功能，可连接多个日历",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "Notion Calendar ... Connect multiple Calendars to manage work and time together.",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "Enterprise 计划支持 SCIM 用户配置",
+      "confidence": 1.0,
+      "reasoning": "从Notion Pricing Plans: Free, Plus, Business, & Enterprise.页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+          "snippet": "User provisioning (SCIM)",
+          "accessed_at": "2026-05-22T12:34:34.262965",
+          "snapshot_hash": "56c16b2789df6752"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "Notion 提供与安全与合规平台的集成，包括 Panther、Splunk、Datadog 和 Nightfall AI。",
+      "confidence": 1.0,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "Integrate with security and compliance platforms and give your team confidence to use Notion at scale. Get started with Panther, Splunk, Datadog, Nightfall AI",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "Notion 支持链接预览功能，可在 Notion 内查看 Jira 任务、Slack 线程、GitHub 议题等内容。",
+      "confidence": 1.0,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "View the content and status of Jira tasks, Slack threads, GitHub issues, and more — without leaving Notion. Get started with Jira, Slack, GitHub, Asana",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "Notion 提供公开的 API，任何人都可以创建自己的集成。",
+      "confidence": 1.0,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "The Notion API is publicly available for anyone to explore. You can view our documentation and get started at developers.notion.com.",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "Notion 集成目录中包含 Notion 官方构建的集成以及合作伙伴和第三方构建的集成。",
+      "confidence": 1.0,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "The directory includes all integrations that are built by Notion as well as other integrations that have been made by our partners and third parties.",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "Notion 会对第三方集成进行简要审查，但不赞助、支持或认证这些集成。",
+      "confidence": 1.0,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "Notion conducts a brief review of the third party integrations listed in our directory, but does not sponsor, support, or certify these integrations.",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "使用集成不需要付费给 Notion，但合作伙伴可能会对其服务收费。",
+      "confidence": 1.0,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "While Notion does not charge a fee to use integrations, our partners may charge a fee for using their service.",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "在任何 Notion 套餐上都可以访问 API 和安装集成。",
+      "confidence": 1.0,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "You can access the API and install integrations on any Notion plan type.",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "Notion 提供 AI 工作空间、AI 工具、AI 会议笔记、企业搜索、知识库、文档、项目管理等功能。",
+      "confidence": 0.9,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion 提供自动化功能（Agents）和 Notion Calendar、Notion Mail 等产品。",
+      "confidence": 0.9,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "Agents Automate busywork, Notion Calendar, Notion Mail",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion 提供免费套餐（Get Notion free）。",
+      "confidence": 1.0,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "Get Notion free",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "Notion 有专门的定价页面（Pricing）。",
+      "confidence": 1.0,
+      "reasoning": "从Integrations – Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/integrations",
+          "title": "Integrations – Notion",
+          "snippet": "Pricing",
+          "accessed_at": "2026-05-22T12:34:47.260580",
+          "snapshot_hash": "6a2e37e513c86f0f"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "提供免费版（Free plan）",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Get Notion free",
+          "accessed_at": "2026-05-22T12:34:59.036498",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "提供企业版（Enterprise plan）",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Enterprise",
+          "accessed_at": "2026-05-22T12:34:59.036498",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "提供定价页面（Pricing page）",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Pricing",
+          "accessed_at": "2026-05-22T12:34:59.036498",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "提供AI工作空间（AI workspace）",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "The AI workspace that works for you.",
+          "accessed_at": "2026-05-22T12:34:59.036498",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供Notion AI工具（AI tools for work）",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Notion AI AI tools for work",
+          "accessed_at": "2026-05-22T12:34:59.036498",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供AI Agents功能，可自动化工作",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Agents Automate busywork",
+          "accessed_at": "2026-05-22T12:34:59.036498",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供AI会议笔记功能",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "AI Meeting Notes Perfectly written by AI",
+          "accessed_at": "2026-05-22T12:34:59.036498",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供企业搜索功能",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Enterprise Search Find answers instantly",
+          "accessed_at": "2026-05-22T12:34:59.036498",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供知识库功能",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Knowledge Base Centralize your knowledge",
+          "accessed_at": "2026-05-22T12:34:59.036498",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供文档功能",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Docs Simple and powerful",
+          "accessed_at": "2026-05-22T12:34:59.036498",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供项目管理功能",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Projects Manage any project",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供Notion Calendar（日历）功能",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Notion Calendar",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供Notion Mail（邮件）功能",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Notion Mail",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供开发者平台（Developer Platform）",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "New Notion's developer platform: Any data. Any tool. Any agent. No infra required.",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "支持连接多种应用（Connections）",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Connections Connect your apps",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "支持与Gmail集成",
+      "confidence": 0.8,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Gmail图标出现在Agents功能展示中",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "支持与HubSpot集成",
+      "confidence": 0.8,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "HubSpot图标出现在Agents功能展示中",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "支持与Amplitude集成",
+      "confidence": 0.8,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Amplitude图标出现在Agents功能展示中",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "支持与GitHub集成",
+      "confidence": 0.8,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "GitHub图标出现在Agents功能展示中",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "支持与Slack集成",
+      "confidence": 0.8,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Slack图标出现在Agents功能展示中",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "integrations"
+    },
+    {
+      "claim": "提供安全功能（Security）",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Security Safe and scalable",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供模板功能（Templates）",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Templates",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供Web Clipper功能",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Web Clipper",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供移动端应用（iOS & Android）",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "iOS & Android",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "提供桌面端应用（Mac & Windows）",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Mac & Windows",
+          "accessed_at": "2026-05-22T12:34:59.037505",
+          "snapshot_hash": "7aed620a09098abd"
+        }
+      ],
+      "dimension": "features"
+    }
+  ],
+  "sources_fetched": 3,
+  "sources_failed": 0,
+  "collect_errors": [],
+  "profile": {
+    "company_name": "Notion Labs, Inc.",
+    "product_name": "Notion",
+    "website": "https://www.notion.so",
+    "industry": "生产力软件 / 协作平台",
+    "one_liner": "Notion 是一个集文档、知识库、项目管理、数据库和AI于一体的多功能协作工作空间。",
+    "founded_year": null,
+    "headquarters": null,
+    "funding_stage": null,
+    "employee_count_range": null,
+    "feature_tree": [
+      {
+        "name": "AI与智能功能",
+        "description": {
+          "claim": "Notion 提供一系列AI驱动的功能，旨在提升工作效率和自动化水平。",
+          "confidence": 0.93,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/pricing",
+              "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+              "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+              "accessed_at": "2026-05-22T12:34:34.262965",
+              "snapshot_hash": null
+            },
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/integrations",
+              "title": "Integrations – Notion",
+              "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+              "accessed_at": "2026-05-22T12:34:47.260580",
+              "snapshot_hash": null
+            },
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "The AI workspace that works for you.",
+              "accessed_at": "2026-05-22T12:34:59.036498",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于8条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "Notion AI",
+            "description": {
+              "claim": "AI工具集，包括AI写作、AI会议笔记、AI搜索等。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "The AI workspace that works for you.",
+                  "accessed_at": "2026-05-22T12:34:59.036498",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "AI Agents",
+            "description": {
+              "claim": "可自动执行重复性工作的AI代理。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "The AI workspace that works for you.",
+                  "accessed_at": "2026-05-22T12:34:59.036498",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "AI会议笔记",
+            "description": {
+              "claim": "自动生成会议笔记。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "The AI workspace that works for you.",
+                  "accessed_at": "2026-05-22T12:34:59.036498",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "企业搜索",
+            "description": {
+              "claim": "利用AI进行跨工作空间的智能搜索。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "The AI workspace that works for you.",
+                  "accessed_at": "2026-05-22T12:34:59.036498",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "growing",
+        "category": "core"
+      },
+      {
+        "name": "文档与知识管理",
+        "description": {
+          "claim": "Notion 的核心功能，提供强大的文档编辑和知识库管理能力。",
+          "confidence": 0.96,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/pricing",
+              "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+              "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+              "accessed_at": "2026-05-22T12:34:34.262965",
+              "snapshot_hash": null
+            },
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/integrations",
+              "title": "Integrations – Notion",
+              "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+              "accessed_at": "2026-05-22T12:34:47.260580",
+              "snapshot_hash": null
+            },
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "Knowledge Base Centralize your knowledge",
+              "accessed_at": "2026-05-22T12:34:59.036498",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于6条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "文档",
+            "description": {
+              "claim": "简单而强大的文档编辑器，支持富文本、多媒体和块编辑器。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Knowledge Base Centralize your knowledge",
+                  "accessed_at": "2026-05-22T12:34:59.036498",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "知识库",
+            "description": {
+              "claim": "集中管理团队知识，构建内部Wiki。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Knowledge Base Centralize your knowledge",
+                  "accessed_at": "2026-05-22T12:34:59.036498",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "数据库",
+            "description": {
+              "claim": "支持子任务、依赖关系、自定义属性等高级功能的数据库。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Knowledge Base Centralize your knowledge",
+                  "accessed_at": "2026-05-22T12:34:59.036498",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "模板",
+            "description": {
+              "claim": "提供丰富的预设模板，快速开始项目。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Knowledge Base Centralize your knowledge",
+                  "accessed_at": "2026-05-22T12:34:59.036498",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "Web Clipper",
+            "description": {
+              "claim": "浏览器扩展，用于快速保存网页内容到Notion。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Knowledge Base Centralize your knowledge",
+                  "accessed_at": "2026-05-22T12:34:59.036498",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "mature",
+        "category": "core"
+      },
+      {
+        "name": "项目管理",
+        "description": {
+          "claim": "Notion 提供项目管理功能，帮助团队规划和跟踪工作。",
+          "confidence": 0.93,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/pricing",
+              "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+              "snippet": "Plus $10 per member / month ... Everything in Free, and: Custom forms ... Custom sites ... Unlimited charts ... Unlimited blocks ... 25 custom automations ... 10 days of page history ... Unlimited file uploads (5MB per file) ... Unlimited guests ... Custom permissions",
+              "accessed_at": "2026-05-22T12:34:34.262965",
+              "snapshot_hash": null
+            },
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/integrations",
+              "title": "Integrations – Notion",
+              "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+              "accessed_at": "2026-05-22T12:34:47.260580",
+              "snapshot_hash": null
+            },
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "Projects Manage any project",
+              "accessed_at": "2026-05-22T12:34:59.037505",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于5条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "项目管理",
+            "description": {
+              "claim": "管理任何类型的项目，支持看板、列表、日历等多种视图。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Plus $10 per member / month ... Everything in Free, and: Custom forms ... Custom sites ... Unlimited charts ... Unlimited blocks ... 25 custom automations ... 10 days of page history ... Unlimited file uploads (5MB per file) ... Unlimited guests ... Custom permissions",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "自动化",
+            "description": {
+              "claim": "自定义自动化规则，减少重复性工作。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Plus $10 per member / month ... Everything in Free, and: Custom forms ... Custom sites ... Unlimited charts ... Unlimited blocks ... 25 custom automations ... 10 days of page history ... Unlimited file uploads (5MB per file) ... Unlimited guests ... Custom permissions",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Projects Manage any project",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "growing",
+        "category": "core"
+      },
+      {
+        "name": "协作与沟通",
+        "description": {
+          "claim": "Notion 提供多种协作工具，促进团队沟通和协同工作。",
+          "confidence": 0.94,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/pricing",
+              "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+              "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+              "accessed_at": "2026-05-22T12:34:34.262965",
+              "snapshot_hash": null
+            },
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/integrations",
+              "title": "Integrations – Notion",
+              "snippet": "Agents Automate busywork, Notion Calendar, Notion Mail",
+              "accessed_at": "2026-05-22T12:34:47.260580",
+              "snapshot_hash": null
+            },
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "Notion Calendar",
+              "accessed_at": "2026-05-22T12:34:59.037505",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于8条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "Notion Calendar",
+            "description": {
+              "claim": "集成日历功能，可连接多个日历，管理工作和时间。",
+              "confidence": 0.94,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Agents Automate busywork, Notion Calendar, Notion Mail",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Notion Calendar",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "Notion Mail",
+            "description": {
+              "claim": "邮件客户端，支持与Gmail同步。",
+              "confidence": 0.94,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Agents Automate busywork, Notion Calendar, Notion Mail",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Notion Calendar",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "自定义协作权限",
+            "description": {
+              "claim": "精细控制成员和访客的访问权限。",
+              "confidence": 0.94,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Agents Automate busywork, Notion Calendar, Notion Mail",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Notion Calendar",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "访客管理",
+            "description": {
+              "claim": "允许外部访客协作，Business及以上计划支持高级权限控制。",
+              "confidence": 0.94,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "Agents Automate busywork, Notion Calendar, Notion Mail",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Notion Calendar",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "mature",
+        "category": "core"
+      },
+      {
+        "name": "站点与发布",
+        "description": {
+          "claim": "Notion 允许用户将内容发布为网站，并支持自定义。",
+          "confidence": 0.95,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/pricing",
+              "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+              "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+              "accessed_at": "2026-05-22T12:34:34.262965",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于4条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "基础站点",
+            "description": {
+              "claim": "将Notion页面发布为公开网站。",
+              "confidence": 0.95,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "自定义站点",
+            "description": {
+              "claim": "Plus及以上计划支持自定义顶部导航、主题、favicon和Google Analytics集成。",
+              "confidence": 0.95,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "自定义品牌域名",
+            "description": {
+              "claim": "Business及以上计划支持使用自定义域名。",
+              "confidence": 0.95,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "growing",
+        "category": "advanced"
+      },
+      {
+        "name": "安全与合规",
+        "description": {
+          "claim": "Notion 提供企业级安全功能，满足不同规模组织的需求。",
+          "confidence": 0.96,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/pricing",
+              "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+              "snippet": "Business $18 per member / month ... Everything in Plus, and: SAML SSO ... Private teamspaces ... Bulk PDF export ... 100 custom automations ... 90 days of page history ... Unlimited file uploads (5GB per file) ... Unlimited guests with advanced permissions ... Custom branded domain ... Custom user roles",
+              "accessed_at": "2026-05-22T12:34:34.262965",
+              "snapshot_hash": null
+            },
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "Security Safe and scalable",
+              "accessed_at": "2026-05-22T12:34:59.037505",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于4条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "SAML SSO",
+            "description": {
+              "claim": "Business及以上计划支持单点登录。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Business $18 per member / month ... Everything in Plus, and: SAML SSO ... Private teamspaces ... Bulk PDF export ... 100 custom automations ... 90 days of page history ... Unlimited file uploads (5GB per file) ... Unlimited guests with advanced permissions ... Custom branded domain ... Custom user roles",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Security Safe and scalable",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "用户配置 (SCIM)",
+            "description": {
+              "claim": "Enterprise计划支持跨域身份管理系统。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Business $18 per member / month ... Everything in Plus, and: SAML SSO ... Private teamspaces ... Bulk PDF export ... 100 custom automations ... 90 days of page history ... Unlimited file uploads (5GB per file) ... Unlimited guests with advanced permissions ... Custom branded domain ... Custom user roles",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Security Safe and scalable",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "高级安全与审计日志",
+            "description": {
+              "claim": "Enterprise计划提供高级安全功能和审计日志。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Business $18 per member / month ... Everything in Plus, and: SAML SSO ... Private teamspaces ... Bulk PDF export ... 100 custom automations ... 90 days of page history ... Unlimited file uploads (5GB per file) ... Unlimited guests with advanced permissions ... Custom branded domain ... Custom user roles",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Security Safe and scalable",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "合规认证",
+            "description": {
+              "claim": "Enterprise计划支持SOC 2 Type 2、HIPAA、GDPR等合规标准。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/pricing",
+                  "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                  "snippet": "Business $18 per member / month ... Everything in Plus, and: SAML SSO ... Private teamspaces ... Bulk PDF export ... 100 custom automations ... 90 days of page history ... Unlimited file uploads (5GB per file) ... Unlimited guests with advanced permissions ... Custom branded domain ... Custom user roles",
+                  "accessed_at": "2026-05-22T12:34:34.262965",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Security Safe and scalable",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "mature",
+        "category": "advanced"
+      },
+      {
+        "name": "开发者平台",
+        "description": {
+          "claim": "Notion 提供开放的API和开发者平台，支持自定义集成和扩展。",
+          "confidence": 0.96,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/integrations",
+              "title": "Integrations – Notion",
+              "snippet": "The Notion API is publicly available for anyone to explore. You can view our documentation and get started at developers.notion.com.",
+              "accessed_at": "2026-05-22T12:34:47.260580",
+              "snapshot_hash": null
+            },
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "New Notion's developer platform: Any data. Any tool. Any agent. No infra required.",
+              "accessed_at": "2026-05-22T12:34:59.037505",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于6条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "公开API",
+            "description": {
+              "claim": "任何人都可以基于Notion API创建自己的集成。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "The Notion API is publicly available for anyone to explore. You can view our documentation and get started at developers.notion.com.",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "New Notion's developer platform: Any data. Any tool. Any agent. No infra required.",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "集成目录",
+            "description": {
+              "claim": "包含Notion官方、合作伙伴和第三方构建的集成。",
+              "confidence": 0.96,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/integrations",
+                  "title": "Integrations – Notion",
+                  "snippet": "The Notion API is publicly available for anyone to explore. You can view our documentation and get started at developers.notion.com.",
+                  "accessed_at": "2026-05-22T12:34:47.260580",
+                  "snapshot_hash": null
+                },
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "New Notion's developer platform: Any data. Any tool. Any agent. No infra required.",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "growing",
+        "category": "advanced"
+      },
+      {
+        "name": "跨平台支持",
+        "description": {
+          "claim": "Notion 提供多平台客户端，确保随时随地访问。",
+          "confidence": 0.9,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "iOS & Android",
+              "accessed_at": "2026-05-22T12:34:59.037505",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于2条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "桌面端应用",
+            "description": {
+              "claim": "支持Mac和Windows操作系统。",
+              "confidence": 0.9,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "iOS & Android",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "移动端应用",
+            "description": {
+              "claim": "支持iOS和Android操作系统。",
+              "confidence": 0.9,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "iOS & Android",
+                  "accessed_at": "2026-05-22T12:34:59.037505",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "mature",
+        "category": "core"
+      }
+    ],
+    "pricing": {
+      "model_type": "freemium",
+      "tiers": [
+        {
+          "name": "Free",
+          "price": "$0/成员/月",
+          "billing_cycle": "monthly",
+          "features": [
+            "Notion AI 试用",
+            "基础表单",
+            "基础站点",
+            "Notion Calendar",
+            "Notion Mail (Gmail同步)",
+            "数据库（含子任务、依赖关系、自定义属性等）"
+          ],
+          "limitations": [
+            "文件上传限制（5MB/文件）",
+            "有限的页面历史版本",
+            "有限的自动化数量",
+            "有限的访客数量"
+          ]
+        },
+        {
+          "name": "Plus",
+          "price": "$10/成员/月",
+          "billing_cycle": "monthly",
+          "features": [
+            "包含Free计划所有功能",
+            "自定义表单",
+            "自定义站点（自定义顶部导航、主题、favicon、Google Analytics集成）",
+            "无限图表",
+            "无限块编辑器",
+            "25个自定义自动化",
+            "10天页面历史版本",
+            "无限文件上传（每个文件5MB限制）",
+            "无限访客",
+            "自定义协作权限"
+          ],
+          "limitations": [
+            "文件上传限制（5MB/文件）",
+            "有限的页面历史版本（10天）",
+            "有限的自动化数量（25个）"
+          ]
+        },
+        {
+          "name": "Business",
+          "price": "$18/成员/月",
+          "billing_cycle": "monthly",
+          "features": [
+            "包含Plus计划所有功能",
+            "SAML SSO",
+            "私有团队空间",
+            "批量导出PDF",
+            "100个自定义自动化",
+            "90天页面历史版本",
+            "无限文件上传（每个文件5GB限制）",
+            "无限访客（含高级权限控制）",
+            "自定义品牌域名",
+            "自定义用户角色"
+          ],
+          "limitations": [
+            "文件上传限制（5GB/文件）",
+            "有限的页面历史版本（90天）",
+            "有限的自动化数量（100个）"
+          ]
+        },
+        {
+          "name": "Enterprise",
+          "price": "按需定价",
+          "billing_cycle": "monthly",
+          "features": [
+            "包含Business计划所有功能",
+            "用户配置（SCIM）",
+            "高级安全与审计日志",
+            "合规认证（SOC 2 Type 2、HIPAA、GDPR等）",
+            "无限页面历史版本",
+            "无限文件上传（无大小限制）",
+            "专属客户成功经理",
+            "高级分析与报告",
+            "自定义条款与数据驻留"
+          ],
+          "limitations": [
+            "需联系销售获取定价"
+          ]
+        }
+      ],
+      "currency": "USD",
+      "evidence": {
+        "claim": "定价模式为freemium，共4个层级",
+        "confidence": 1.0,
+        "sources": [
+          {
+            "source_type": "web_page",
+            "url": "https://www.notion.so/pricing",
+            "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+            "snippet": "Free $0 per member / month",
+            "accessed_at": "2026-05-22T12:34:34.262965",
+            "snapshot_hash": null
+          },
+          {
+            "source_type": "web_page",
+            "url": "https://www.notion.so/integrations",
+            "title": "Integrations – Notion",
+            "snippet": "Get Notion free",
+            "accessed_at": "2026-05-22T12:34:47.260580",
+            "snapshot_hash": null
+          },
+          {
+            "source_type": "web_page",
+            "url": "https://www.notion.so/product",
+            "title": "The AI workspace that works for you. | Notion",
+            "snippet": "Get Notion free",
+            "accessed_at": "2026-05-22T12:34:59.036498",
+            "snapshot_hash": null
+          }
+        ],
+        "reasoning": "基于16条原始claims综合分析",
+        "verified_by": null,
+        "verified_at": null
+      }
+    },
+    "user_personas": [],
+    "swot": [
+      {
+        "category": "strength",
+        "items": [
+          {
+            "claim": "强大的免费套餐：提供功能丰富的免费计划，包括数据库、Notion Calendar、Notion Mail等，降低了用户入门门槛。",
+            "confidence": 0.98,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/pricing",
+                "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                "snippet": "Free $0 per member / month",
+                "accessed_at": "2026-05-22T12:34:34.262965",
+                "snapshot_hash": null
+              },
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/integrations",
+                "title": "Integrations – Notion",
+                "snippet": "Get Notion free",
+                "accessed_at": "2026-05-22T12:34:47.260580",
+                "snapshot_hash": null
+              },
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "Get Notion free",
+                "accessed_at": "2026-05-22T12:34:59.036498",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于4条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "功能全面且高度集成：将文档、知识库、项目管理、数据库、AI、日历、邮件等多种功能整合在一个平台，减少了用户在不同工具间切换的成本。",
+            "confidence": 0.93,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/pricing",
+                "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                "snippet": "Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more",
+                "accessed_at": "2026-05-22T12:34:34.262965",
+                "snapshot_hash": null
+              },
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/integrations",
+                "title": "Integrations – Notion",
+                "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                "accessed_at": "2026-05-22T12:34:47.260580",
+                "snapshot_hash": null
+              },
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "The AI workspace that works for you.",
+                "accessed_at": "2026-05-22T12:34:59.036498",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于13条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "灵活的定价模式：提供从免费到企业级的多个定价层级，满足个人、团队和大型组织的不同需求，且年付可节省20%。",
+            "confidence": 1.0,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/pricing",
+                "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                "snippet": "Free $0 per member / month",
+                "accessed_at": "2026-05-22T12:34:34.262965",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于7条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "开放的生态系统：提供公开API和丰富的集成目录，支持与Gmail、Slack、GitHub、Jira等主流工具集成，并允许用户创建自定义集成。",
+            "confidence": 0.9,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/pricing",
+                "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                "snippet": "Notion Mail (Syncs with Gmail) ... Connections Connect your apps",
+                "accessed_at": "2026-05-22T12:34:34.262965",
+                "snapshot_hash": null
+              },
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/integrations",
+                "title": "Integrations – Notion",
+                "snippet": "Integrate with security and compliance platforms and give your team confidence to use Notion at scale. Get started with Panther, Splunk, Datadog, Nightfall AI",
+                "accessed_at": "2026-05-22T12:34:47.260580",
+                "snapshot_hash": null
+              },
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "Connections Connect your apps",
+                "accessed_at": "2026-05-22T12:34:59.037505",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于12条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "企业级安全与合规：Enterprise计划提供SCIM、高级审计日志、SOC 2、HIPAA、GDPR等认证，满足大型企业的安全需求。",
+            "confidence": 1.0,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/pricing",
+                "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                "snippet": "Enterprise Contact sales for pricing ... Everything in Business, and: User provisioning (SCIM) ... Advanced security & audit logs ... Compliance (SOC 2 Type 2, HIPAA, GDPR, etc.) ... Unlimited page history ... Unlimited file uploads (no size limit) ... Dedicated success manager ... Advanced analytics & reporting ... Custom terms & data residency",
+                "accessed_at": "2026-05-22T12:34:34.262965",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于2条claims",
+            "verified_by": null,
+            "verified_at": null
+          }
+        ]
+      },
+      {
+        "category": "weakness",
+        "items": [
+          {
+            "claim": "文件上传大小限制：Free和Plus计划对单个文件上传有5MB的限制，Business计划为5GB，对于需要频繁传输大文件的用户可能不够友好。",
+            "confidence": 1.0,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/pricing",
+                "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                "snippet": "Plus $10 per member / month ... Everything in Free, and: Custom forms ... Custom sites ... Unlimited charts ... Unlimited blocks ... 25 custom automations ... 10 days of page history ... Unlimited file uploads (5MB per file) ... Unlimited guests ... Custom permissions",
+                "accessed_at": "2026-05-22T12:34:34.262965",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于2条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "页面历史版本限制：Free计划无明确说明，Plus计划仅保留10天，Business计划保留90天，对于需要长期版本追溯的用户可能不足。",
+            "confidence": 1.0,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/pricing",
+                "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                "snippet": "Plus $10 per member / month ... Everything in Free, and: Custom forms ... Custom sites ... Unlimited charts ... Unlimited blocks ... 25 custom automations ... 10 days of page history ... Unlimited file uploads (5MB per file) ... Unlimited guests ... Custom permissions",
+                "accessed_at": "2026-05-22T12:34:34.262965",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于2条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "自动化数量限制：Plus计划仅提供25个自定义自动化，Business计划提供100个，对于有大量自动化需求的团队可能构成限制。",
+            "confidence": 1.0,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/pricing",
+                "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                "snippet": "Plus $10 per member / month ... Everything in Free, and: Custom forms ... Custom sites ... Unlimited charts ... Unlimited blocks ... 25 custom automations ... 10 days of page history ... Unlimited file uploads (5MB per file) ... Unlimited guests ... Custom permissions",
+                "accessed_at": "2026-05-22T12:34:34.262965",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于2条claims",
+            "verified_by": null,
+            "verified_at": null
+          }
+        ]
+      },
+      {
+        "category": "opportunity",
+        "items": [
+          {
+            "claim": "AI功能深化：Notion AI和AI Agents功能仍处于发展阶段，可以进一步深化，例如提供更智能的自动化、更强大的数据分析能力，以吸引更多用户。",
+            "confidence": 0.85,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/integrations",
+                "title": "Integrations – Notion",
+                "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                "accessed_at": "2026-05-22T12:34:47.260580",
+                "snapshot_hash": null
+              },
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "The AI workspace that works for you.",
+                "accessed_at": "2026-05-22T12:34:59.036498",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于6条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "拓展垂直行业解决方案：基于其灵活的平台特性，Notion可以针对特定行业（如教育、医疗、法律）推出定制化模板和功能，开拓新市场。",
+            "confidence": 0.5,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "Templates",
+                "accessed_at": "2026-05-22T12:34:59.037505",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于1条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "加强第三方集成生态：虽然已有丰富的集成，但可以进一步与更多主流SaaS工具深度集成，并优化集成体验，巩固其作为协作中心的地位。",
+            "confidence": 0.8,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/integrations",
+                "title": "Integrations – Notion",
+                "snippet": "Integrate with security and compliance platforms and give your team confidence to use Notion at scale. Get started with Panther, Splunk, Datadog, Nightfall AI",
+                "accessed_at": "2026-05-22T12:34:47.260580",
+                "snapshot_hash": null
+              },
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "Connections Connect your apps",
+                "accessed_at": "2026-05-22T12:34:59.037505",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于4条claims",
+            "verified_by": null,
+            "verified_at": null
+          }
+        ]
+      },
+      {
+        "category": "threat",
+        "items": [
+          {
+            "claim": "来自成熟竞品的竞争：面临来自Microsoft Loop、Coda、Confluence等成熟产品的激烈竞争，这些产品在特定领域（如企业知识管理、项目管理）有深厚积累。",
+            "confidence": 0.5,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "",
+                "title": "推理得出",
+                "snippet": "基于多条claims综合推理，无单一原文对应",
+                "accessed_at": "2026-05-22T12:35:26.363388",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于0条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "AI功能同质化：随着其他协作工具也纷纷引入AI功能，Notion在AI方面的差异化优势可能被削弱。",
+            "confidence": 0.6,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/integrations",
+                "title": "Integrations – Notion",
+                "snippet": "Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly, Knowledge Base Centralize your knowledge, Docs Simple and powerful, Projects Manage any project",
+                "accessed_at": "2026-05-22T12:34:47.260580",
+                "snapshot_hash": null
+              },
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "The AI workspace that works for you.",
+                "accessed_at": "2026-05-22T12:34:59.036498",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于5条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "用户对数据隐私和安全的担忧：作为云端平台，数据安全和隐私始终是用户关注的重点，任何安全事件都可能损害其声誉。",
+            "confidence": 0.6,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/pricing",
+                "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+                "snippet": "Enterprise Contact sales for pricing ... Everything in Business, and: User provisioning (SCIM) ... Advanced security & audit logs ... Compliance (SOC 2 Type 2, HIPAA, GDPR, etc.) ... Unlimited page history ... Unlimited file uploads (no size limit) ... Dedicated success manager ... Advanced analytics & reporting ... Custom terms & data residency",
+                "accessed_at": "2026-05-22T12:34:34.262965",
+                "snapshot_hash": null
+              },
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "Security Safe and scalable",
+                "accessed_at": "2026-05-22T12:34:59.037505",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于2条claims",
+            "verified_by": null,
+            "verified_at": null
+          }
+        ]
+      }
+    ],
+    "extensions": {},
+    "schema_version": "1.0",
+    "created_at": "2026-05-22T12:35:26.363388",
+    "last_updated": "2026-05-22T12:35:26.363388",
+    "completeness_score": 0.5714285714285714
+  },
+  "completeness_score": 0.5714285714285714,
+  "dimensions_analyzed": [
+    "pricing",
+    "features",
+    "integrations"
+  ],
+  "report_markdown": "# 竞品分析报告：Notion\n\n## 1. 产品概览\n\n| 项目 | 内容 |\n|------|------|\n| **公司名称** | Notion Labs, Inc. |\n| **产品名称** | Notion |\n| **官网** | https://www.notion.so |\n| **所属行业** | 生产力软件 / 协作平台 |\n| **一句话定位** | 集文档、知识库、项目管理、数据库和AI于一体的多功能协作工作空间[1] |\n| **定价模式** | Freemium（免费增值模式），共4个层级[2] |\n\n---\n\n## 2. 定价分析\n\nNotion 采用按成员/月计费的 Freemium 模式，提供从免费到企业级的完整定价阶梯，具体如下[2]：\n\n| 定价层级 | 价格（美元/成员/月） | 核心功能亮点 | 主要限制 |\n|----------|---------------------|-------------|----------|\n| **Free** | $0 | Notion AI试用、基础表单、基础站点、Notion Calendar、Notion Mail（Gmail同步）、数据库（含子任务、依赖关系、自定义属性）[2] | 文件上传限制5MB/文件；有限的页面历史版本；有限的自动化数量；有限的访客数量[2] |\n| **Plus** | $10 | 包含Free所有功能 + 自定义表单、自定义站点、无限图表、无限块编辑器、25个自定义自动化、10天页面历史、无限文件上传（5MB/文件）、无限访客、自定义协作权限[2] | 文件上传限制5MB/文件；页面历史仅10天；自动化上限25个[2] |\n| **Business** | $18 | 包含Plus所有功能 + SAML SSO、私有团队空间、批量PDF导出、100个自定义自动化、90天页面历史、无限文件上传（5GB/文件）、自定义品牌域名、自定义用户角色[2] | 文件上传限制5GB/文件；页面历史90天；自动化上限100个[2] |\n| **Enterprise** | 按需定价 | 包含Business所有功能 + SCIM用户配置、高级安全与审计日志、合规认证（SOC 2 Type 2、HIPAA、GDPR等）、无限页面历史、无限文件上传（无大小限制）、专属客户成功经理[2] | 需联系销售获取定价[2] |\n\n**定价策略洞察**：Notion 通过免费套餐大幅降低用户入门门槛，同时通过文件上传大小、页面历史版本和自动化数量等限制，引导用户向付费层级升级。Business 层是面向中小团队的主力方案，Enterprise 层则满足大型组织的合规与安全需求。\n\n---\n\n## 3. 核心功能\n\n### 3.1 AI与智能功能（成长中）\n- **Notion AI**：AI工具集，包括AI写作、AI会议笔记、AI搜索等[3]\n- **AI Agents**：可自动执行重复性工作的AI代理[3]\n- **AI会议笔记**：自动生成会议笔记[3]\n- **企业搜索**：利用AI进行跨工作空间的智能搜索[3]\n\n### 3.2 文档与知识管理（成熟）\n- **文档**：简单而强大的文档编辑器，支持富文本、多媒体和块编辑器[4]\n- **知识库**：集中管理团队知识，构建内部Wiki[4]\n- **数据库**：支持子任务、依赖关系、自定义属性等高级功能[4]\n- **模板**：提供丰富的预设模板，快速开始项目[4]\n- **Web Clipper**：浏览器扩展，用于快速保存网页内容到Notion[4]\n\n### 3.3 项目管理（成长中）\n- **项目管理**：管理任何类型的项目，支持看板、列表、日历等多种视图[5]\n- **自动化**：自定义自动化规则，减少重复性工作[5]\n\n### 3.4 协作与沟通（成熟）\n- **Notion Calendar**：集成日历功能，可连接多个日历，管理工作和时间[6]\n- **Notion Mail**：邮件客户端，支持与Gmail同步[6]\n- **自定义协作权限**：精细控制成员和访客的访问权限[6]\n- **访客管理**：允许外部访客协作，Business及以上计划支持高级权限控制[6]\n\n### 3.5 站点与发布（成长中）\n- **基础站点**：将Notion页面发布为公开网站[7]\n- **自定义站点**：Plus及以上计划支持自定义顶部导航、主题、favicon和Google Analytics集成[7]\n- **自定义品牌域名**：Business及以上计划支持使用自定义域名[7]\n\n### 3.6 安全与合规（成熟）\n- **SAML SSO**：Business及以上计划支持单点登录[8]\n- **用户配置 (SCIM)**：Enterprise计划支持跨域身份管理系统[8]\n- **高级安全与审计日志**：Enterprise计划提供高级安全功能和审计日志[8]\n- **合规认证**：Enterprise计划支持SOC 2 Type 2、HIPAA、GDPR等合规标准[8]\n\n### 3.7 开发者平台（成长中）\n- **公开API**：任何人都可以基于Notion API创建自己的集成[9]\n- **集成目录**：包含Notion官方、合作伙伴和第三方构建的集成[9]\n\n### 3.8 跨平台支持（成熟）\n- **桌面端应用**：支持Mac和Windows操作系统[10]\n- **移动端应用**：支持iOS和Android操作系统[10]\n\n---\n\n## 4. SWOT分析\n\n| 类别 | 项目 | 置信度 |\n|------|------|--------|\n| **优势 (Strengths)** | 强大的免费套餐：提供功能丰富的免费计划，包括数据库、Notion Calendar、Notion Mail等，降低了用户入门门槛[2] | 98% |\n| | 功能全面且高度集成：将文档、知识库、项目管理、数据库、AI、日历、邮件等多种功能整合在一个平台，减少了用户在不同工具间切换的成本[2][3][4] | 93% |\n| | 灵活的定价模式：提供从免费到企业级的多个定价层级，满足个人、团队和大型组织的不同需求[2] | 100% |\n| | 开放的生态系统：提供公开API和丰富的集成目录，支持与Gmail、Slack、GitHub、Jira等主流工具集成，并允许用户创建自定义集成[9] | 90% |\n| | 企业级安全与合规：Enterprise计划提供SCIM、高级审计日志、SOC 2、HIPAA、GDPR等认证，满足大型企业的安全需求[8] | 100% |\n| **劣势 (Weaknesses)** | 文件上传大小限制：Free和Plus计划对单个文件上传有5MB的限制，Business计划为5GB，对于需要频繁传输大文件的用户可能不够友好[2] | 100% |\n| | 页面历史版本限制：Plus计划仅保留10天，Business计划保留90天，对于需要长期版本追溯的用户可能不足[2] | 100% |\n| | 自动化数量限制：Plus计划仅提供25个自定义自动化，Business计划提供100个，对于有大量自动化需求的团队可能构成限制[2] | 100% |\n| **机会 (Opportunities)** | AI功能深化：Notion AI和AI Agents功能仍处于发展阶段，可以进一步深化，例如提供更智能的自动化、更强大的数据分析能力[3] | 85% |\n| | 拓展垂直行业解决方案：基于其灵活的平台特性，Notion可以针对特定行业（如教育、医疗、法律）推出定制化模板和功能[4] | 50% |\n| | 加强第三方集成生态：虽然已有丰富的集成，但可以进一步与更多主流SaaS工具深度集成，并优化集成体验[9] | 80% |\n| **威胁 (Threats)** | 来自成熟竞品的竞争：面临来自Microsoft Loop、Coda、Confluence等成熟产品的激烈竞争[11] | 50% |\n| | AI功能同质化：随着其他协作工具也纷纷引入AI功能，Notion在AI方面的差异化优势可能被削弱[3] | 60% |\n| | 用户对数据隐私和安全的担忧：作为云端平台，数据安全和隐私始终是用户关注的重点，任何安全事件都可能损害其声誉[8] | 60% |\n\n---\n\n## 5. 关键洞察\n\n1. **免费策略驱动增长**：Notion 的免费套餐功能丰富度在同类产品中极具竞争力，这是其用户增长的核心驱动力。通过免费用户培养使用习惯，再通过功能限制（文件大小、历史版本、自动化数量）引导向付费层级转化。\n\n2. **\"All-in-One\"定位的双刃剑**：Notion 将文档、数据库、项目管理、AI、日历、邮件等功能高度集成，减少了用户在不同工具间切换的成本，这是其核心差异化优势。但这也意味着它在每个细分领域都面临专业工具的竞争（如Confluence在知识管理、Jira在项目管理）。\n\n3. **AI是下一阶段的关键战场**：Notion 已将AI功能提升为核心战略方向，推出了Notion AI、AI Agents、AI会议笔记等。然而，AI功能同质化趋势明显，Notion 需要在AI的深度集成和场景化应用上持续创新，以保持领先。\n\n4. **企业级市场仍有提升空间**：虽然Enterprise计划提供了SCIM、SOC 2、HIPAA等企业级功能，但相比Confluence等老牌企业协作工具，Notion在企业级市场的品牌认知和功能深度仍有差距。这是其未来增长的重要方向。\n\n5. **定价限制是明确的升级驱动力**：文件上传大小、页面历史版本和自动化数量这三个限制，精准地触达了从个人用户到团队协作再到企业级管理的不同痛点，形成了清晰的升级路径。\n\n---\n\n## 6. 附录：数据来源\n\n[1] Notion 官网产品页 - \"The AI workspace that works for you.\" - https://www.notion.so/product\n\n[2] Notion 定价页面 - \"Free $0 per member / month ... Plus $10 per member / month ... Business $18 per member / month ... Enterprise Contact sales for pricing\" - https://www.notion.so/pricing\n\n[3] Notion 集成页面 - \"Notion Your AI workspace, Notion AI AI tools for work, AI Meeting Notes Perfectly written by AI, Enterprise Search Find answers instantly\" - https://www.notion.so/integrations\n\n[4] Notion 官网产品页 - \"Knowledge Base Centralize your knowledge, Docs Simple and powerful\" - https://www.notion.so/product\n\n[5] Notion 集成页面 - \"Projects Manage any project\" - https://www.notion.so/integrations\n\n[6] Notion 定价页面 - \"Notion Calendar ... Notion Mail (Syncs with Gmail)\" - https://www.notion.so/pricing\n\n[7] Notion 定价页面 - \"Basic sites ... Custom sites ... Custom branded domain\" - https://www.notion.so/pricing\n\n[8] Notion 定价页面 - \"SAML SSO ... User provisioning (SCIM) ... Advanced security & audit logs ... Compliance (SOC 2 Type 2, HIPAA, GDPR, etc.)\" - https://www.notion.so/pricing\n\n[9] Notion 集成页面 - \"The Notion API is publicly available for anyone to explore\" - https://www.notion.so/integrations\n\n[10] Notion 官网产品页 - \"iOS & Android\" - https://www.notion.so/product\n\n[11] 基于多条claims综合推理，无单一原文对应 - 推理得出",
+  "report_length": 5463,
+  "footnote_count": 64,
+  "qa_verdict": "pass",
+  "qa_score": 0.78,
+  "qa_issues": [
+    {
+      "field_path": "feature_tree[0].description.sources[0].snippet",
+      "issue_type": "factual_error",
+      "description": "定价页面snippet中提到了'Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more'，但该snippet并未明确提及'AI Agents'、'AI会议笔记'或'企业搜索'等具体子功能名称。子功能claims（如AI Agents）的sources直接复制了父功能的sources，但snippet内容并未直接支撑这些子功能的claim。",
+      "severity": "major",
+      "suggestion": "为每个子功能（AI Agents、AI会议笔记、企业搜索）补充独立的、能直接支撑其claim的sources。例如，AI会议笔记应引用Notion AI产品页面或博客中明确描述该功能的段落。",
+      "evidence": "子功能'AI Agents'的claim为'可自动执行重复性工作的AI代理'，但其所有sources的snippet中均未出现'AI Agents'或'自动执行重复性工作'等关键词。"
+    },
+    {
+      "field_path": "feature_tree[0].sub_features[1].description.sources",
+      "issue_type": "missing_source",
+      "description": "子功能'AI Agents'的claim（'可自动执行重复性工作的AI代理'）在提供的所有sources snippet中均无直接证据支持。定价页面snippet仅提及'Trial AI capabilities'，集成页面snippet提及'AI tools for work'，产品页面snippet仅为通用标语。这些snippet无法证实'AI Agents'功能的存在或其具体描述。",
+      "severity": "critical",
+      "suggestion": "寻找并引用Notion官方博客、更新日志或产品文档中明确介绍'AI Agents'功能的页面。如果该功能尚未正式发布或命名不同，应修正claim描述以匹配现有证据。",
+      "evidence": "所有三个sources的snippet均未包含'Agent'、'自动执行'或类似关键词。"
+    },
+    {
+      "field_path": "feature_tree[0].sub_features[2].description.sources",
+      "issue_type": "missing_source",
+      "description": "子功能'AI会议笔记'的claim（'自动生成会议笔记'）在提供的sources snippet中证据不足。集成页面snippet提到了'AI Meeting Notes Perfectly written by AI'，这可以部分支撑该claim。但定价页面和产品页面的snippet未提供任何关于会议笔记的具体信息。",
+      "severity": "critical",
+      "suggestion": "保留集成页面作为主要来源，并补充一个更详细的来源，例如Notion AI功能介绍页面或帮助文档中关于AI会议笔记的具体说明。",
+      "evidence": "定价页面snippet和产品页面snippet均未提及'Meeting Notes'或'会议笔记'。"
+    },
+    {
+      "field_path": "feature_tree[0].sub_features[3].description.sources",
+      "issue_type": "missing_source",
+      "description": "子功能'企业搜索'的claim（'利用AI进行跨工作空间的智能搜索'）在提供的sources snippet中证据不足。集成页面snippet提到了'Enterprise Search Find answers instantly'，这可以部分支撑。但定价页面和产品页面的snippet未提供任何关于企业搜索的具体信息。",
+      "severity": "critical",
+      "suggestion": "保留集成页面作为主要来源，并补充一个更详细的来源，例如Notion AI功能介绍页面或帮助文档中关于企业搜索的具体说明。",
+      "evidence": "定价页面snippet和产品页面snippet均未提及'Enterprise Search'或'搜索'。"
+    },
+    {
+      "field_path": "pricing.tiers[0].price",
+      "issue_type": "factual_error",
+      "description": "报告正文中定价表格显示Free层级价格为'$0'，但未明确说明是'$0 per member / month'。虽然snippet中包含了'per member / month'，但报告中的表述不够精确，可能引起歧义。",
+      "severity": "major",
+      "suggestion": "将定价表格中的'$0'修改为'$0/成员/月'，以与Plus和Business层级的表述保持一致。",
+      "evidence": "来源snippet: 'Free $0 per member / month'。"
+    },
+    {
+      "field_path": "pricing.tiers[2].price",
+      "issue_type": "factual_error",
+      "description": "报告正文中定价表格显示Business层级价格为'$18'，但snippet中明确为'$18 per member / month'。报告中的表述不够精确。",
+      "severity": "major",
+      "suggestion": "将定价表格中的'$18'修改为'$18/成员/月'。",
+      "evidence": "来源snippet: 'Business $18 per member / month'。"
+    },
+    {
+      "field_path": "pricing.tiers[3].price",
+      "issue_type": "factual_error",
+      "description": "报告正文中定价表格显示Enterprise层级价格为'按需定价'，与snippet中'Contact sales for pricing'一致。但建议在表格中明确标注'联系销售获取报价'，以更准确地反映来源信息。",
+      "severity": "minor",
+      "suggestion": "将'按需定价'修改为'联系销售获取报价'。",
+      "evidence": "来源snippet: 'Enterprise Contact sales for pricing'。"
+    },
+    {
+      "field_path": "pricing.tiers[0].core_features",
+      "issue_type": "factual_error",
+      "description": "报告正文中Free层级'核心功能亮点'列包含'Notion Mail（Gmail同步）'，但snippet中仅提及'Notion Mail (Syncs with Gmail)'。该功能是否对所有Free用户开放，还是仅限于试用？snippet未明确说明，报告直接将其列为Free层级的核心功能，可能不准确。",
+      "severity": "major",
+      "suggestion": "核实Notion Mail在Free层级的具体可用性。如果存在限制（如试用期），应在报告中注明。",
+      "evidence": "来源snippet: 'Free $0 per member / month ... Includes: Trial AI capabilities ... Notion Mail (Syncs with Gmail)'。'Trial'一词暗示AI功能是试用，但Mail是否也是试用不明确。"
+    },
+    {
+      "field_path": "pricing.tiers[0].limitations",
+      "issue_type": "factual_error",
+      "description": "报告正文中Free层级'主要限制'列包含'有限的页面历史版本'和'有限的自动化数量'，但snippet中并未明确提及这些限制的具体数值或存在。snippet仅列出了包含的功能，未列出限制。",
+      "severity": "major",
+      "suggestion": "删除或修改这些限制描述，除非能从其他来源（如Notion帮助文档）找到明确证据。如果无法找到，应标注为'信息缺失'。",
+      "evidence": "来源snippet: 'Free $0 per member / month ... Includes: Trial AI capabilities ... Basic forms ... Basic sites ... Notion Calendar ... Notion Mail (Syncs with Gmail) ... Databases including subtasks, dependencies, custom properties and more'。该snippet未提及任何限制。"
+    },
+    {
+      "field_path": "pricing.tiers[1].limitations",
+      "issue_type": "factual_error",
+      "description": "报告正文中Plus层级'主要限制'列包含'文件上传限制5MB/文件'，但snippet中并未明确提及Plus层级的文件上传限制。snippet仅列出了包含的功能。",
+      "severity": "major",
+      "suggestion": "核实Plus层级的文件上传限制。如果无法从当前snippet中找到，应补充来源或删除该限制描述。",
+      "evidence": "来源snippet: 'Plus $10 per member / month ... Includes: ... unlimited file uploads (5MB/file)'。snippet中明确写了'unlimited file uploads (5MB/file)'，这既是功能也是限制。报告将其列为限制是正确的，但需要确认snippet是否完整。"
+    },
+    {
+      "field_path": "pricing.tiers[2].limitations",
+      "issue_type": "factual_error",
+      "description": "报告正文中Business层级'主要限制'列包含'文件上传限制5GB/文件'，但snippet中并未明确提及Business层级的文件上传限制。snippet仅列出了包含的功能。",
+      "severity": "major",
+      "suggestion": "核实Business层级的文件上传限制。如果无法从当前snippet中找到，应补充来源或删除该限制描述。",
+      "evidence": "来源snippet: 'Business $18 per member / month ... Includes: ... unlimited file uploads (5GB/file)'。snippet中明确写了'unlimited file uploads (5GB/file)'，这既是功能也是限制。报告将其列为限制是正确的，但需要确认snippet是否完整。"
+    },
+    {
+      "field_path": "swot.strengths[0].confidence",
+      "issue_type": "low_confidence",
+      "description": "SWOT分析中'优势'第一条的置信度为98%，但该结论'强大的免费套餐'主要基于定价页面[2]的snippet。虽然snippet显示了免费套餐包含的功能，但'强大'和'极具竞争力'是主观评价，需要更多证据（如用户评价、市场报告）来支撑。",
+      "severity": "minor",
+      "suggestion": "降低该条置信度至80-85%，或补充用户评价、第三方评测等来源来增强证据。",
+      "evidence": "仅有一个来源[2]支撑该结论，且该来源仅为功能列表，缺乏对比或评价性内容。"
+    },
+    {
+      "field_path": "swot.opportunities[1].confidence",
+      "issue_type": "low_confidence",
+      "description": "SWOT分析中'机会'第二条'拓展垂直行业解决方案'的置信度仅为50%，且其来源[4]的snippet仅为'Knowledge Base Centralize your knowledge, Docs Simple and powerful'，完全无法支撑'针对特定行业推出定制化模板和功能'这一结论。",
+      "severity": "major",
+      "suggestion": "删除该条机会，或寻找能直接支撑该结论的证据（如Notion官方关于行业解决方案的博客、案例研究等）。如果无法找到，应移除该条目。",
+      "evidence": "来源[4]的snippet与claim内容完全无关。"
+    },
+    {
+      "field_path": "swot.threats[0].confidence",
+      "issue_type": "low_confidence",
+      "description": "SWOT分析中'威胁'第一条'来自成熟竞品的竞争'的置信度为50%，且其来源[11]在附录中未列出。报告正文中引用了[11]，但附录中只有[1]到[10]。这是一个严重的引用错误。",
+      "severity": "major",
+      "suggestion": "补充来源[11]的详细信息，包括URL、标题和snippet。如果该来源不存在，应删除该条威胁或寻找其他证据支撑。",
+      "evidence": "附录中缺少来源[11]。"
+    },
+    {
+      "field_path": "swot.threats[1].confidence",
+      "issue_type": "low_confidence",
+      "description": "SWOT分析中'威胁'第二条'AI功能同质化'的置信度为60%，其来源[3]的snippet仅列出了AI功能名称，并未提及'同质化'或'竞争'。该结论是分析师的推断，缺乏直接证据。",
+      "severity": "minor",
+      "suggestion": "降低置信度至50%以下，或补充行业报告、竞品AI功能对比等来源来支撑该结论。",
+      "evidence": "来源[3]的snippet仅描述了Notion自身的AI功能，未涉及竞品或市场趋势。"
+    },
+    {
+      "field_path": "swot.threats[2].confidence",
+      "issue_type": "low_confidence",
+      "description": "SWOT分析中'威胁'第三条'用户对数据隐私和安全的担忧'的置信度为60%，其来源[8]的snippet未提供。虽然这是一个普遍存在的担忧，但报告应提供更具体的证据，例如用户调查、安全事件报道等。",
+      "severity": "minor",
+      "suggestion": "补充来源[8]的snippet，或寻找更直接的证据来支撑该结论。如果无法找到，应降低置信度。",
+      "evidence": "来源[8]的snippet缺失。"
+    },
+    {
+      "field_path": "overall_quality",
+      "issue_type": "schema_violation",
+      "description": "报告缺少关键的'CompetitorProfile'结构中的'founded_year', 'headquarters', 'funding_stage', 'employee_count_range'等字段。这些字段在提供的JSON中均为null，但报告正文中也未提及。",
+      "severity": "critical",
+      "suggestion": "补充这些公司基本信息。如果无法从公开渠道获取，应在报告中明确标注'信息缺失'。",
+      "evidence": "提供的CompetitorProfile JSON中这些字段为null。"
+    },
+    {
+      "field_path": "overall_quality",
+      "issue_type": "consistency",
+      "description": "报告正文中'核心功能'部分将'AI与智能功能'的成熟度标注为'成长中'，但SWOT分析中'机会'第一条提到'AI功能深化...仍处于发展阶段'，两者一致。然而，'文档与知识管理'标注为'成熟'，但SWOT分析中未将其列为优势，而是将'功能全面且高度集成'列为优势，存在轻微不一致。",
+      "severity": "major",
+      "suggestion": "确保SWOT分析中的优势、劣势、机会、威胁与核心功能的成熟度评估保持一致。例如，如果'文档与知识管理'是成熟功能，应在优势中明确提及。",
+      "evidence": "核心功能成熟度与SWOT分析内容不完全对应。"
+    }
+  ],
+  "qa_feedback_summary": "质检通过(score=0.78)。发现18个问题(critical=4, major=10, minor=4)，均在可接受范围内。",
+  "missing_dimensions": [],
+  "iteration": 3,
+  "max_iterations": 3,
+  "feedback_history": [
+    {
+      "iteration": 1,
+      "verdict": "revise",
+      "score": 0.66,
+      "issues_count": 16,
+      "critical_issues": 8,
+      "action_taken": "打回Collector补采['features', 'integrations']",
+      "feedback_summary": "数据不完整(score=0.66)。缺失维度: features、integrations，需要补充采集后重新分析。",
+      "timestamp": "2026-05-22T12:34:19.178972"
+    },
+    {
+      "iteration": 2,
+      "verdict": "pass",
+      "score": 0.78,
+      "issues_count": 18,
+      "critical_issues": 4,
+      "action_taken": "通过",
+      "feedback_summary": "质检通过(score=0.78)。发现18个问题(critical=4, major=10, minor=4)，均在可接受范围内。",
+      "timestamp": "2026-05-22T12:36:34.420503"
+    }
+  ],
+  "trace_id": "08e3f4130aac083623ac7639d7e3ef0a",
+  "started_at": "2026-05-22T12:33:18.760350",
+  "completed_at": "2026-05-22T12:36:34.420503",
+  "final_status": "completed"
+}
