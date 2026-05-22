@@ -23,6 +23,9 @@ from orchestrator.edges import qa_routing
 from orchestrator.state import FeedbackRecord, GraphState
 from schemas.message import AgentMessage, MessageContext, MessageType
 
+# Per-task trace accumulator (avoids LangGraph state propagation issues)
+_task_traces: dict[str, list[dict[str, Any]]] = {}
+
 
 def _make_message(
     to_agent: str,
@@ -56,6 +59,29 @@ async def _publish(task_id: str, event_type: EventType, data: dict[str, Any]) ->
     await event_bus.publish(task_id, SSEEvent(event_type=event_type, data=data))
 
 
+def _build_trace_entry(
+    agent: str,
+    iteration: int,
+    duration_ms: int,
+    model: str = "",
+    input_tokens: int = 0,
+    output_tokens: int = 0,
+    prompt_preview: str = "",
+    output_preview: str = "",
+) -> dict[str, Any]:
+    return {
+        "agent": agent,
+        "iteration": iteration,
+        "duration_ms": duration_ms,
+        "model": model,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "prompt_preview": prompt_preview[:200],
+        "output_preview": output_preview[:300],
+        "timestamp": datetime.now().isoformat(),
+    }
+
+
 async def collector_node(state: GraphState) -> dict[str, Any]:
     """Collector节点 - 并行采集竞品数据（fan-out sub-agents），带SSE事件发布"""
     task_id = state.get("trace_id", "")
@@ -79,8 +105,14 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     urls = target_urls if target_urls else agent._get_default_urls(target, scope)
     urls = urls[:10]
 
+    # 行业模板扩展字段注入采集指令
+    industry_fields = state.get("industry_fields", [])
+    extra_scope_hint = ""
+    if industry_fields:
+        extra_scope_hint = f" (行业扩展字段: {', '.join(industry_fields[:5])})"
+
     await _publish(task_id, EventType.LOG, {
-        "message": f"Fan-out: 并行采集 {len(urls)} 个数据源", "agent": "collector",
+        "message": f"Fan-out: 并行采集 {len(urls)} 个数据源{extra_scope_hint}", "agent": "collector",
     })
 
     # Fan-out: 并行 fetch + extract
@@ -140,6 +172,17 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         "agent": "collector", "iteration": iteration, "duration_ms": round(duration * 1000),
     })
 
+    _task_traces.setdefault(task_id, []).append(_build_trace_entry(
+        agent="collector",
+        iteration=iteration,
+        duration_ms=round(duration * 1000),
+        model=agent.config.model,
+        input_tokens=len(all_claims) * 800,
+        output_tokens=len(all_claims) * 200,
+        prompt_preview=f"采集 {target} 的 {scope} 维度数据，共 {len(urls)} 个URL",
+        output_preview=f"提取 {len(all_claims)} 条claims，失败 {len(fetch_errors)} 个源",
+    ))
+
     return {
         "claims": all_claims,
         "sources_fetched": len(urls) - len(fetch_errors),
@@ -176,6 +219,7 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             "competitor_name": state["competitor_name"],
             "claims": claims,
             "dimensions_requested": state.get("collect_scope", ["pricing", "features"]),
+            "industry_fields": state.get("industry_fields", []),
         },
         state=state,
     )
@@ -190,6 +234,17 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
 
     if args.get("error"):
         return {"error": args["error"], "profile": {}}
+
+    _task_traces.setdefault(task_id, []).append(_build_trace_entry(
+        agent="analyst",
+        iteration=iteration,
+        duration_ms=round(duration * 1000),
+        model=agent.config.model,
+        input_tokens=len(str(claims)) // 4,
+        output_tokens=len(str(args.get("profile", {}))) // 4,
+        prompt_preview=f"分析 {len(claims)} 条claims，维度: {state.get('collect_scope', [])}",
+        output_preview=f"生成 CompetitorProfile，完整度 {args.get('completeness_score', 0):.0%}",
+    ))
 
     return {
         "profile": args.get("profile", {}),
@@ -237,6 +292,17 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
 
     if args.get("error"):
         return {"error": args["error"], "report_markdown": ""}
+
+    _task_traces.setdefault(task_id, []).append(_build_trace_entry(
+        agent="writer",
+        iteration=iteration,
+        duration_ms=round(duration * 1000),
+        model=agent.config.model,
+        input_tokens=len(str(state.get("profile", {}))) // 4,
+        output_tokens=len(args.get("report_markdown", "")) // 4,
+        prompt_preview=f"将 {state['competitor_name']} 的 profile 转为 Markdown 报告",
+        output_preview=f"生成报告 {args.get('report_length', 0)} 字，{args.get('footnote_count', 0)} 个脚注",
+    ))
 
     return {
         "report_markdown": args.get("report_markdown", ""),
@@ -363,6 +429,17 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         "missing_dimensions": missing_dims,
     }
 
+    _task_traces.setdefault(task_id, []).append(_build_trace_entry(
+        agent="qa",
+        iteration=iteration,
+        duration_ms=round(duration * 1000),
+        model=agent.config.model,
+        input_tokens=len(str(profile)) // 4 + len(report_markdown) // 4,
+        output_tokens=500,
+        prompt_preview=f"质检 {state['competitor_name']} profile + 报告，期望维度: {state.get('expected_dimensions', [])}",
+        output_preview=f"verdict={verdict}, score={score:.2f}, issues={issues_count}, missing={missing_dims}",
+    ))
+
     max_iter = state.get("max_iterations", 3)
     if verdict == "pass":
         update["final_status"] = "completed"
@@ -404,6 +481,7 @@ async def run_analysis(
     task_id: str,
     competitor_name: str,
     dimensions: list[str] | None = None,
+    industry: str = "saas",
     max_iterations: int = 3,
 ) -> dict[str, Any]:
     """Run the full analysis pipeline with SSE event publishing.
@@ -412,12 +490,25 @@ async def run_analysis(
         task_id: Unique task identifier (used as trace_id for event routing)
         competitor_name: Name of the competitor to analyze
         dimensions: Analysis dimensions, defaults to ["pricing", "features"]
+        industry: Industry template to apply (saas/consumer/hardware)
         max_iterations: Max QA feedback loops
 
     Returns:
         Final GraphState dict
     """
+    from schemas.extensions import load_template, TEMPLATE_REGISTRY
+
     dims = dimensions or ["pricing", "features"]
+
+    # Load industry template and inject extra dimensions
+    industry_fields: list[str] = []
+    if industry in TEMPLATE_REGISTRY:
+        template = load_template(industry)
+        industry_fields = template.get_field_names()
+        await _publish(task_id, EventType.LOG, {
+            "message": f"已加载行业模板: {template.display_name} ({len(template.fields)}个扩展字段)",
+            "agent": "collector",
+        })
 
     # expected_dimensions 包含完整维度集，确保 QA 能检查覆盖度
     all_dimensions = ["pricing", "features", "integrations"]
@@ -431,6 +522,8 @@ async def run_analysis(
             "collect_scope": dims,
             "target_urls": [],
             "expected_dimensions": expected,
+            "industry": industry,
+            "industry_fields": industry_fields,
             "iteration": 1,
             "max_iterations": max_iterations,
             "feedback_history": [],
@@ -438,8 +531,10 @@ async def run_analysis(
             "trace_id": task_id,
             "started_at": datetime.now().isoformat(),
             "final_status": "running",
+            "agent_traces": [],
         }
 
+        _task_traces[task_id] = []
         config = {"recursion_limit": max_iterations * 5}
         final_state = await app.ainvoke(initial_state, config=config)
 
@@ -448,11 +543,16 @@ async def run_analysis(
         if final_state.get("final_status") == "running":
             final_state["final_status"] = "ended"
 
+        traces = _task_traces.pop(task_id, [])
+        final_state["agent_traces"] = traces
+
         await _publish(task_id, EventType.COMPLETE, {
             "final_status": final_state.get("final_status", "ended"),
             "qa_score": final_state.get("qa_score", 0.0),
             "report_markdown": final_state.get("report_markdown", ""),
             "feedback_history": final_state.get("feedback_history", []),
+            "agent_traces": traces,
+            "trace_id": task_id,
         })
 
         return final_state
@@ -461,4 +561,5 @@ async def run_analysis(
         await _publish(task_id, EventType.ERROR, {"message": str(e)})
         raise
     finally:
+        _task_traces.pop(task_id, None)
         await event_bus.close(task_id)

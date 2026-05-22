@@ -5,7 +5,19 @@ export interface SSEAgentStart { agent: AgentName; iteration: number }
 export interface SSEAgentEnd { agent: AgentName; iteration: number; duration_ms: number }
 export interface SSELog { message: string; agent?: AgentName; iteration?: number }
 export interface SSEQaVerdict { verdict: string; score: number; missing_dims: string[]; iteration: number; issues_count?: number; missing_dimensions?: string[] }
-export interface SSEComplete { final_status: string; qa_score: number; report_markdown: string; feedback_history: FeedbackRecord[] }
+export interface SSEComplete { final_status: string; qa_score: number; report_markdown: string; feedback_history: FeedbackRecord[]; agent_traces: AgentTrace[]; trace_id: string }
+
+export interface AgentTrace {
+  agent: AgentName
+  iteration: number
+  duration_ms: number
+  model: string
+  input_tokens: number
+  output_tokens: number
+  prompt_preview: string
+  output_preview: string
+  timestamp: string
+}
 
 export interface SSESubAgentStart {
   parent: AgentName

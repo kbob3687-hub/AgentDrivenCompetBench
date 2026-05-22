@@ -105,8 +105,11 @@ class CollectorAgent(BaseAgent):
         )
 
     async def _fetch_url(self, url: str) -> FetchResult:
-        """获取URL内容，仅用Jina Reader（测试阶段跳过Playwright降级）"""
-        return await jina_reader(url)
+        """获取URL内容，Jina Reader优先，失败时降级到Playwright"""
+        result = await jina_reader(url)
+        if not result.success:
+            result = await playwright_fetch(url)
+        return result
 
     async def _extract_info(
         self,

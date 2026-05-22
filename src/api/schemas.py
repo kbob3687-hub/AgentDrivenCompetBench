@@ -13,6 +13,7 @@ class AnalyzeRequest(BaseModel):
         default=["pricing", "features"],
         description="分析维度列表",
     )
+    industry: str = Field(default="saas", description="行业模板: saas/consumer/hardware")
     max_iterations: int = Field(default=3, ge=1, le=10, description="最大迭代次数")
 
 

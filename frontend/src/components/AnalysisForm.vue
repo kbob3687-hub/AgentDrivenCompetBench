@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 const emit = defineEmits<{
-  submit: [payload: { competitorName: string; dimensions: string[] }]
+  submit: [payload: { competitorName: string; dimensions: string[]; industry: string }]
 }>()
 
 defineProps<{
@@ -18,6 +18,13 @@ const allDimensions = [
 ]
 const selectedDimensions = ref<string[]>(['pricing', 'features', 'integrations', 'ai_features'])
 
+const industries = [
+  { id: 'saas', label: 'SaaS/项目管理' },
+  { id: 'consumer', label: '消费品' },
+  { id: 'hardware', label: '硬件/智能设备' }
+]
+const selectedIndustry = ref('saas')
+
 function toggleDimension(id: string) {
   const idx = selectedDimensions.value.indexOf(id)
   if (idx >= 0) {
@@ -31,7 +38,8 @@ function handleSubmit() {
   if (!competitorName.value.trim() || selectedDimensions.value.length === 0) return
   emit('submit', {
     competitorName: competitorName.value.trim(),
-    dimensions: [...selectedDimensions.value]
+    dimensions: [...selectedDimensions.value],
+    industry: selectedIndustry.value
   })
 }
 </script>
@@ -48,6 +56,26 @@ function handleSubmit() {
           class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-md text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
           placeholder="输入竞品名称..."
         />
+      </div>
+      <div class="min-w-[160px]">
+        <label class="block text-sm font-medium text-slate-300 mb-1">行业模板</label>
+        <div class="flex gap-1.5">
+          <button
+            v-for="ind in industries"
+            :key="ind.id"
+            type="button"
+            :disabled="disabled"
+            :class="[
+              'px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors',
+              selectedIndustry === ind.id
+                ? 'bg-purple-600 text-white'
+                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+            ]"
+            @click="selectedIndustry = ind.id"
+          >
+            {{ ind.label }}
+          </button>
+        </div>
       </div>
       <div class="flex-1 min-w-[300px]">
         <label class="block text-sm font-medium text-slate-300 mb-1">分析维度</label>
