@@ -1,0 +1,986 @@
+{
+  "competitor_name": "Notion",
+  "collect_scope": [
+    "features",
+    "pricing"
+  ],
+  "target_urls": [],
+  "expected_dimensions": [
+    "pricing",
+    "features"
+  ],
+  "claims": [
+    {
+      "claim": "Notion提供AI工作空间，内置AI代理（Agents），可自动执行工作、捕获知识、回答问题并推动项目进展。",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Notion agents keep work moving 24/7. They capture knowledge, answer questions, and push projects forward—all while you sleep.",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion提供AI会议笔记功能，由AI自动生成。",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "AI Meeting Notes Perfectly written by AI",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion提供企业搜索功能，可即时查找答案。",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Enterprise Search Find answers instantly",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion提供知识库功能，用于集中管理知识。",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Knowledge Base Centralize your knowledge",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion提供文档功能，简单且强大。",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Docs Simple and powerful",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion提供项目管理功能，可管理任何项目。",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Projects Manage any project",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion支持连接第三方应用（集成）。",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Connections Connect your apps",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion提供开发者平台，支持任何数据、任何工具、任何代理，无需基础设施。",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "New Notion's developer platform: Any data. Any tool. Any agent. No infra required.",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion提供日历功能（Notion Calendar），整合时间、日程和任务。",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Notion Calendar Time, scheduling, tasks—all together.",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion提供邮件功能（Notion Mail），AI驱动的智能收件箱。",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Notion Mail The AI inbox that thinks like you.",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion被G2评为连续3年排名第一的知识库、第一的AI企业搜索、第一的AI写作。",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "#1 knowledge base 3 years running (G2) #1 AI enterprise search (G2) #1 rated AI writing (G2)",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion拥有超过1亿全球用户。",
+      "confidence": 0.95,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Over 100M users worldwide",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "features"
+    },
+    {
+      "claim": "Notion提供免费版本（Get Notion free）。",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Get Notion free",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "Notion提供企业版，需要联系销售（Request a demo）。",
+      "confidence": 0.8,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Enterprise Request a demo",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "pricing"
+    },
+    {
+      "claim": "Notion有专门的定价页面（Pricing）。",
+      "confidence": 0.9,
+      "reasoning": "从The AI workspace that works for you. | Notion页面提取",
+      "sources": [
+        {
+          "source_type": "web_page",
+          "url": "https://www.notion.so/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Pricing",
+          "accessed_at": "2026-05-21T23:38:20.890143",
+          "snapshot_hash": "232fd1892aa21245"
+        }
+      ],
+      "dimension": "pricing"
+    }
+  ],
+  "sources_fetched": 1,
+  "sources_failed": 1,
+  "collect_errors": [
+    "https://www.notion.so/pricing: Failed after 1 attempts: ConnectError: "
+  ],
+  "profile": {
+    "company_name": "Notion Labs, Inc.",
+    "product_name": "Notion",
+    "website": "https://www.notion.so",
+    "industry": "生产力软件 / 协作平台",
+    "one_liner": "Notion是一个集AI工作空间、知识库、文档、项目管理、日历和邮件于一体的全能型协作平台。",
+    "founded_year": null,
+    "headquarters": null,
+    "funding_stage": null,
+    "employee_count_range": null,
+    "feature_tree": [
+      {
+        "name": "AI与智能功能",
+        "description": {
+          "claim": "利用AI技术提升工作效率，包括AI代理、会议笔记、搜索和写作。",
+          "confidence": 0.93,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "Notion agents keep work moving 24/7. They capture knowledge, answer questions, and push projects forward—all while you sleep.",
+              "accessed_at": "2026-05-21T23:38:20.890143",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于4条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "AI工作空间与代理",
+            "description": {
+              "claim": "内置AI代理，可自动执行工作、捕获知识、回答问题并推动项目进展。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Notion agents keep work moving 24/7. They capture knowledge, answer questions, and push projects forward—all while you sleep.",
+                  "accessed_at": "2026-05-21T23:38:20.890143",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "AI会议笔记",
+            "description": {
+              "claim": "由AI自动生成会议笔记。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Notion agents keep work moving 24/7. They capture knowledge, answer questions, and push projects forward—all while you sleep.",
+                  "accessed_at": "2026-05-21T23:38:20.890143",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "AI企业搜索",
+            "description": {
+              "claim": "提供企业级搜索功能，可即时查找答案。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Notion agents keep work moving 24/7. They capture knowledge, answer questions, and push projects forward—all while you sleep.",
+                  "accessed_at": "2026-05-21T23:38:20.890143",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "AI写作",
+            "description": {
+              "claim": "提供AI写作功能，被G2评为第一。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Notion agents keep work moving 24/7. They capture knowledge, answer questions, and push projects forward—all while you sleep.",
+                  "accessed_at": "2026-05-21T23:38:20.890143",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "growing",
+        "category": "core"
+      },
+      {
+        "name": "知识管理与文档",
+        "description": {
+          "claim": "集中管理知识和文档，提供强大的文档编辑和知识库功能。",
+          "confidence": 0.92,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "Knowledge Base Centralize your knowledge",
+              "accessed_at": "2026-05-21T23:38:20.890143",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于3条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "知识库",
+            "description": {
+              "claim": "用于集中管理知识，被G2评为连续3年排名第一。",
+              "confidence": 0.92,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Knowledge Base Centralize your knowledge",
+                  "accessed_at": "2026-05-21T23:38:20.890143",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "文档",
+            "description": {
+              "claim": "提供简单且强大的文档编辑功能。",
+              "confidence": 0.92,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Knowledge Base Centralize your knowledge",
+                  "accessed_at": "2026-05-21T23:38:20.890143",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "mature",
+        "category": "core"
+      },
+      {
+        "name": "项目管理",
+        "description": {
+          "claim": "提供项目管理功能，可管理任何项目。",
+          "confidence": 0.9,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "Projects Manage any project",
+              "accessed_at": "2026-05-21T23:38:20.890143",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于1条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [],
+        "maturity": "mature",
+        "category": "core"
+      },
+      {
+        "name": "集成与开发者平台",
+        "description": {
+          "claim": "支持连接第三方应用，并提供强大的开发者平台。",
+          "confidence": 0.93,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "Connections Connect your apps",
+              "accessed_at": "2026-05-21T23:38:20.890143",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于2条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "应用集成",
+            "description": {
+              "claim": "支持连接第三方应用。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Connections Connect your apps",
+                  "accessed_at": "2026-05-21T23:38:20.890143",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "开发者平台",
+            "description": {
+              "claim": "支持任何数据、任何工具、任何代理，无需基础设施。",
+              "confidence": 0.93,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Connections Connect your apps",
+                  "accessed_at": "2026-05-21T23:38:20.890143",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "growing",
+        "category": "advanced"
+      },
+      {
+        "name": "日历与邮件",
+        "description": {
+          "claim": "提供日历和邮件功能，整合时间、日程和任务。",
+          "confidence": 0.9,
+          "sources": [
+            {
+              "source_type": "web_page",
+              "url": "https://www.notion.so/product",
+              "title": "The AI workspace that works for you. | Notion",
+              "snippet": "Notion Calendar Time, scheduling, tasks—all together.",
+              "accessed_at": "2026-05-21T23:38:20.890143",
+              "snapshot_hash": null
+            }
+          ],
+          "reasoning": "基于2条claims归纳",
+          "verified_by": null,
+          "verified_at": null
+        },
+        "sub_features": [
+          {
+            "name": "Notion Calendar",
+            "description": {
+              "claim": "整合时间、日程和任务的日历功能。",
+              "confidence": 0.9,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Notion Calendar Time, scheduling, tasks—all together.",
+                  "accessed_at": "2026-05-21T23:38:20.890143",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          },
+          {
+            "name": "Notion Mail",
+            "description": {
+              "claim": "AI驱动的智能收件箱。",
+              "confidence": 0.9,
+              "sources": [
+                {
+                  "source_type": "web_page",
+                  "url": "https://www.notion.so/product",
+                  "title": "The AI workspace that works for you. | Notion",
+                  "snippet": "Notion Calendar Time, scheduling, tasks—all together.",
+                  "accessed_at": "2026-05-21T23:38:20.890143",
+                  "snapshot_hash": null
+                }
+              ],
+              "reasoning": "从父功能claims继承",
+              "verified_by": null,
+              "verified_at": null
+            },
+            "sub_features": [],
+            "maturity": null,
+            "category": null
+          }
+        ],
+        "maturity": "growing",
+        "category": "advanced"
+      }
+    ],
+    "pricing": {
+      "model_type": "freemium",
+      "tiers": [
+        {
+          "name": "Free",
+          "price": "$0",
+          "billing_cycle": "monthly",
+          "features": [
+            "基础功能"
+          ],
+          "limitations": [
+            "功能受限，具体限制未在claims中说明"
+          ]
+        },
+        {
+          "name": "Enterprise",
+          "price": "联系销售获取报价",
+          "billing_cycle": "annually",
+          "features": [
+            "企业级功能"
+          ],
+          "limitations": [
+            "需要联系销售获取定价和功能详情"
+          ]
+        }
+      ],
+      "currency": "USD",
+      "evidence": {
+        "claim": "定价模式为freemium，共2个层级",
+        "confidence": 0.87,
+        "sources": [
+          {
+            "source_type": "web_page",
+            "url": "https://www.notion.so/product",
+            "title": "The AI workspace that works for you. | Notion",
+            "snippet": "Get Notion free",
+            "accessed_at": "2026-05-21T23:38:20.890143",
+            "snapshot_hash": null
+          }
+        ],
+        "reasoning": "基于3条原始claims综合分析",
+        "verified_by": null,
+        "verified_at": null
+      }
+    },
+    "user_personas": [],
+    "swot": [
+      {
+        "category": "strength",
+        "items": [
+          {
+            "claim": "强大的AI功能集成，包括AI代理、会议笔记、搜索和写作，提升用户效率。",
+            "confidence": 0.93,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "Notion agents keep work moving 24/7. They capture knowledge, answer questions, and push projects forward—all while you sleep.",
+                "accessed_at": "2026-05-21T23:38:20.890143",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于4条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "在知识库、AI企业搜索和AI写作领域获得G2行业排名第一，市场认可度高。",
+            "confidence": 0.95,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "#1 knowledge base 3 years running (G2) #1 AI enterprise search (G2) #1 rated AI writing (G2)",
+                "accessed_at": "2026-05-21T23:38:20.890143",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于1条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "拥有超过1亿全球用户，用户基础庞大。",
+            "confidence": 0.95,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "Over 100M users worldwide",
+                "accessed_at": "2026-05-21T23:38:20.890143",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于1条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "提供免费版本，降低用户使用门槛。",
+            "confidence": 0.9,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "Get Notion free",
+                "accessed_at": "2026-05-21T23:38:20.890143",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于1条claims",
+            "verified_by": null,
+            "verified_at": null
+          }
+        ]
+      },
+      {
+        "category": "weakness",
+        "items": [
+          {
+            "claim": "企业版定价不透明，需要联系销售获取报价，可能影响部分潜在客户的决策效率。",
+            "confidence": 0.8,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "Enterprise Request a demo",
+                "accessed_at": "2026-05-21T23:38:20.890143",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于1条claims",
+            "verified_by": null,
+            "verified_at": null
+          }
+        ]
+      },
+      {
+        "category": "opportunity",
+        "items": [
+          {
+            "claim": "AI功能（如AI代理、AI邮件）仍处于发展阶段，有持续优化和扩展的空间，可进一步巩固市场领先地位。",
+            "confidence": 0.85,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "Notion agents keep work moving 24/7. They capture knowledge, answer questions, and push projects forward—all while you sleep.",
+                "accessed_at": "2026-05-21T23:38:20.890143",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于2条claims",
+            "verified_by": null,
+            "verified_at": null
+          },
+          {
+            "claim": "开发者平台的推出（支持任何数据、任何工具、任何代理）可吸引更多开发者和企业用户，构建更强大的生态系统。",
+            "confidence": 0.85,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "https://www.notion.so/product",
+                "title": "The AI workspace that works for you. | Notion",
+                "snippet": "New Notion's developer platform: Any data. Any tool. Any agent. No infra required.",
+                "accessed_at": "2026-05-21T23:38:20.890143",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于1条claims",
+            "verified_by": null,
+            "verified_at": null
+          }
+        ]
+      },
+      {
+        "category": "threat",
+        "items": [
+          {
+            "claim": "面临来自其他成熟协作平台（如Microsoft Teams、Slack、Confluence等）的激烈竞争，这些平台也在积极整合AI功能。",
+            "confidence": 0.5,
+            "sources": [
+              {
+                "source_type": "web_page",
+                "url": "",
+                "title": "推理得出",
+                "snippet": "基于多条claims综合推理，无单一原文对应",
+                "accessed_at": "2026-05-21T23:38:41.800257",
+                "snapshot_hash": null
+              }
+            ],
+            "reasoning": "SWOT分析推理，基于0条claims",
+            "verified_by": null,
+            "verified_at": null
+          }
+        ]
+      }
+    ],
+    "extensions": {},
+    "schema_version": "1.0",
+    "created_at": "2026-05-21T23:38:41.800257",
+    "last_updated": "2026-05-21T23:38:41.800257",
+    "completeness_score": 0.5714285714285714
+  },
+  "completeness_score": 0.5714285714285714,
+  "dimensions_analyzed": [
+    "features",
+    "pricing"
+  ],
+  "report_markdown": "# 竞品分析报告：Notion\n\n## 1. 产品概览\n\n| 项目 | 内容 |\n| :--- | :--- |\n| **公司名称** | Notion Labs, Inc. |\n| **产品名称** | Notion |\n| **行业** | 生产力软件 / 协作平台 |\n| **一句话定位** | 集AI工作空间、知识库、文档、项目管理、日历和邮件于一体的全能型协作平台[1] |\n| **官网** | https://www.notion.so |\n\n## 2. 定价分析\n\nNotion 采用 **Freemium（免费增值）** 定价模式，目前公开的定价层级如下[2]：\n\n| 层级名称 | 定价 | 计费周期 | 核心功能 | 限制 |\n| :--- | :--- | :--- | :--- | :--- |\n| **Free** | $0 | 按月 | 基础功能[2] | 功能受限，具体限制未明确说明[2] |\n| **Enterprise** | 联系销售获取报价 | 按年 | 企业级功能[2] | 需联系销售获取定价和功能详情[2] |\n\n**定价策略洞察**：\n- **低门槛获客**：通过免费版吸引个人用户和小团队，建立庞大的用户基础（超过1亿全球用户[3]）。\n- **企业级销售**：企业版采用不透明定价，需联系销售，这有助于针对大型组织进行定制化报价和深度销售，但可能影响部分潜在客户的决策效率[4]。\n\n## 3. 核心功能\n\nNotion 的功能体系可归纳为以下五大模块，其中AI与智能功能、集成与开发者平台、日历与邮件处于**成长阶段**，知识管理与文档、项目管理处于**成熟阶段**[1]。\n\n### 3.1 AI与智能功能（核心，成长中）\n- **AI工作空间与代理**：内置AI代理，可7x24小时自动执行工作、捕获知识、回答问题并推动项目进展[5]。\n- **AI会议笔记**：自动生成会议笔记，提升会议效率[5]。\n- **AI企业搜索**：提供企业级搜索功能，可即时查找答案[5]。\n- **AI写作**：提供AI写作功能，被G2评为行业第一[5]。\n\n### 3.2 知识管理与文档（核心，成熟）\n- **知识库**：集中管理知识，被G2评为连续3年排名第一[6]。\n- **文档**：提供简单且强大的文档编辑功能[6]。\n\n### 3.3 项目管理（核心，成熟）\n- 提供项目管理功能，可管理任何类型的项目[7]。\n\n### 3.4 集成与开发者平台（高级，成长中）\n- **应用集成**：支持连接第三方应用[8]。\n- **开发者平台**：支持任何数据、任何工具、任何代理，无需基础设施[8]。\n\n### 3.5 日历与邮件（高级，成长中）\n- **Notion Calendar**：整合时间、日程和任务的日历功能[9]。\n- **Notion Mail**：AI驱动的智能收件箱[9]。\n\n## 4. SWOT分析\n\n| 类别 | 结论 | 置信度 |\n| :--- | :--- | :--- |\n| **优势 (Strengths)** | **强大的AI功能集成**：包括AI代理、会议笔记、搜索和写作，显著提升用户效率[5]。 | 93% |\n| | **市场认可度高**：在知识库、AI企业搜索和AI写作领域获得G2行业排名第一[10]。 | 95% |\n| | **庞大的用户基础**：拥有超过1亿全球用户，形成强大的网络效应和品牌影响力[3]。 | 95% |\n| | **低使用门槛**：提供免费版本，有效降低用户尝试和使用的门槛[2]。 | 90% |\n| **劣势 (Weaknesses)** | **企业版定价不透明**：需要联系销售获取报价，可能影响部分潜在客户的决策效率[4]。 | 80% |\n| **机会 (Opportunities)** | **AI功能持续进化**：AI功能（如AI代理、AI邮件）仍处于发展阶段，有持续优化和扩展的空间，可进一步巩固市场领先地位[5][9]。 | 85% |\n| | **开发者生态建设**：开发者平台的推出可吸引更多开发者和企业用户，构建更强大的生态系统[8]。 | 85% |\n| **威胁 (Threats)** | **市场竞争激烈**：面临来自其他成熟协作平台（如Microsoft Teams、Slack、Confluence等）的激烈竞争，这些平台也在积极整合AI功能[11]。 | 50% |\n\n## 5. 关键洞察\n\n1.  **AI是核心增长引擎**：Notion正积极将AI能力嵌入其所有核心功能（写作、搜索、会议、代理），并以此作为差异化竞争的关键。其在G2上的多项AI相关排名第一，表明其AI战略已初步获得市场认可[5][10]。\n2.  **从工具向平台演进**：Notion不再仅仅是一个笔记或文档工具，而是通过集成日历、邮件和开发者平台，试图构建一个覆盖工作全流程的“全能型”操作系统。开发者平台的推出是其向平台化演进的关键一步[8][9]。\n3.  **Freemium模式驱动增长**：免费版是Notion获取海量用户（超过1亿）的核心策略，为后续的付费转化和生态建设奠定了坚实基础[2][3]。\n4.  **企业级市场存在不确定性**：虽然用户基础庞大，但企业版定价不透明可能成为其拓展大型企业客户的障碍，尤其是在面对定价更透明的竞品时[4]。\n\n## 6. 附录：数据来源\n\n| 编号 | 来源URL | 原文摘录 |\n| :--- | :--- | :--- |\n| [1] | https://www.notion.so/product | Notion是一个集AI工作空间、知识库、文档、项目管理、日历和邮件于一体的全能型协作平台。 |\n| [2] | https://www.notion.so/product | Get Notion free |\n| [3] | https://www.notion.so/product | Over 100M users worldwide |\n| [4] | https://www.notion.so/product | Enterprise Request a demo |\n| [5] | https://www.notion.so/product | Notion agents keep work moving 24/7. They capture knowledge, answer questions, and push projects forward—all while you sleep. |\n| [6] | https://www.notion.so/product | Knowledge Base Centralize your knowledge |\n| [7] | https://www.notion.so/product | Projects Manage any project |\n| [8] | https://www.notion.so/product | Connections Connect your apps |\n| [9] | https://www.notion.so/product | Notion Calendar Time, scheduling, tasks—all together. |\n| [10] | https://www.notion.so/product | #1 knowledge base 3 years running (G2) #1 AI enterprise search (G2) #1 rated AI writing (G2) |\n| [11] | 推理得出 | 基于多条claims综合推理，无单一原文对应 |",
+  "report_length": 3269,
+  "footnote_count": 47,
+  "qa_verdict": "reject",
+  "qa_score": 0.57,
+  "qa_issues": [
+    {
+      "field_path": "pricing.tiers[0].price",
+      "issue_type": "missing_source",
+      "description": "定价层级'Free'的定价为'$0'，但附录来源[2]的原文摘录仅为'Get Notion free'，未明确提及'$0'或'免费'的具体价格数字。该claim缺乏直接支撑的snippet。",
+      "severity": "major",
+      "suggestion": "补充来源snippet，例如从Notion定价页面或相关页面截取明确显示'Free $0'的文本。如果无法找到，则降低该条目的confidence。",
+      "evidence": "附录[2]原文摘录: 'Get Notion free'，未包含价格数字。"
+    },
+    {
+      "field_path": "pricing.tiers[1].price",
+      "issue_type": "missing_source",
+      "description": "定价层级'Enterprise'的定价为'联系销售获取报价'，但附录来源[2]的原文摘录仅为'Get Notion free'，与Enterprise定价无关。来源[4]的原文摘录为'Enterprise Request a demo'，也未明确提及'联系销售获取报价'。该claim缺乏直接支撑的snippet。",
+      "severity": "major",
+      "suggestion": "补充来源snippet，例如从Notion定价页面截取显示'Enterprise: Contact sales'或类似表述的文本。如果无法找到，则降低该条目的confidence。",
+      "evidence": "附录[2]原文摘录: 'Get Notion free'；附录[4]原文摘录: 'Enterprise Request a demo'。均未直接支持'联系销售获取报价'。"
+    },
+    {
+      "field_path": "pricing.tiers[0].restrictions",
+      "issue_type": "missing_source",
+      "description": "Free层级的限制描述为'功能受限，具体限制未明确说明'，但未提供任何来源支撑该限制的存在。",
+      "severity": "minor",
+      "suggestion": "补充来源snippet，例如从Notion定价页面截取显示'Free plan limitations'或类似表述的文本。如果无法找到，则删除该描述或降低confidence。",
+      "evidence": "附录中无相关来源。"
+    },
+    {
+      "field_path": "pricing.tiers[1].billing_cycle",
+      "issue_type": "missing_source",
+      "description": "Enterprise层级的计费周期被描述为'按年'，但附录来源[4]的原文摘录仅为'Enterprise Request a demo'，未提及计费周期。该claim缺乏直接支撑的snippet。",
+      "severity": "major",
+      "suggestion": "补充来源snippet，例如从Notion定价页面截取显示'Enterprise: Annual billing'或类似表述的文本。如果无法找到，则删除该描述或降低confidence。",
+      "evidence": "附录[4]原文摘录: 'Enterprise Request a demo'，未包含计费周期信息。"
+    },
+    {
+      "field_path": "feature_tree[0].sub_features[0].description.sources[0].snippet",
+      "issue_type": "factual_error",
+      "description": "子功能'AI工作空间与代理'的claim为'内置AI代理，可自动执行工作、捕获知识、回答问题并推动项目进展'，但其引用的snippet与'AI会议笔记'、'AI企业搜索'、'AI写作'的snippet完全相同，均为'Notion agents keep work moving 24/7...'。该snippet仅支持'AI工作空间与代理'，无法支撑其他三个子功能的claim。",
+      "severity": "critical",
+      "suggestion": "为'AI会议笔记'、'AI企业搜索'、'AI写作'分别补充独立的、直接相关的来源snippet。例如，从Notion产品页面或博客中查找专门描述AI会议笔记、AI搜索、AI写作功能的文本。",
+      "evidence": "所有四个子功能（AI工作空间与代理、AI会议笔记、AI企业搜索、AI写作）的snippet均相同，且仅与'AI工作空间与代理'相关。"
+    },
+    {
+      "field_path": "feature_tree[0].sub_features[3].description.claim",
+      "issue_type": "missing_source",
+      "description": "子功能'AI写作'的claim为'提供AI写作功能，被G2评为第一'，但引用的snippet未提及'G2'或'第一'。附录[10]的原文摘录为'#1 rated AI writing (G2)'，但该来源未被引用到该子功能中。",
+      "severity": "major",
+      "suggestion": "将附录[10]的snippet（'#1 rated AI writing (G2)'）添加到'AI写作'子功能的sources中，以支撑'被G2评为第一'的claim。",
+      "evidence": "当前snippet: 'Notion agents keep work moving 24/7...'；附录[10]原文摘录: '#1 rated AI writing (G2)'。"
+    },
+    {
+      "field_path": "feature_tree[1].sub_features[0].description.claim",
+      "issue_type": "missing_source",
+      "description": "子功能'知识库'的claim为'用于集中管理知识，被G2评为连续3年排名第一'，但引用的snippet未提及'G2'或'连续3年'。附录[10]的原文摘录为'#1 knowledge base 3 years running (G2)'，但该来源未被引用到该子功能中。",
+      "severity": "major",
+      "suggestion": "将附录[10]的snippet（'#1 knowledge base 3 years running (G2)'）添加到'知识库'子功能的sources中，以支撑'被G2评为连续3年排名第一'的claim。",
+      "evidence": "当前snippet: 'Knowledge Base Centralize your knowledge'；附录[10]原文摘录: '#1 knowledge base 3 years running (G2)'。"
+    },
+    {
+      "field_path": "swot.strengths[1].evidence",
+      "issue_type": "missing_source",
+      "description": "SWOT优势'市场认可度高'的结论为'在知识库、AI企业搜索和AI写作领域获得G2行业排名第一'，置信度95%。但附录[10]的原文摘录为'#1 knowledge base 3 years running (G2) #1 AI enterprise search (G2) #1 rated AI writing (G2)'，该来源未被引用到该SWOT条目中。",
+      "severity": "major",
+      "suggestion": "将附录[10]的snippet添加到该SWOT条目的sources中。",
+      "evidence": "SWOT条目未列出来源，但附录[10]包含支撑该结论的原文。"
+    },
+    {
+      "field_path": "swot.weaknesses[0].evidence",
+      "issue_type": "missing_source",
+      "description": "SWOT劣势'企业版定价不透明'的结论为'需要联系销售获取报价，可能影响部分潜在客户的决策效率'，置信度80%。但附录[4]的原文摘录仅为'Enterprise Request a demo'，未明确提及'联系销售获取报价'或'定价不透明'。该claim缺乏直接支撑的snippet。",
+      "severity": "major",
+      "suggestion": "补充来源snippet，例如从Notion定价页面截取显示'Enterprise: Contact sales for pricing'或类似表述的文本。如果无法找到，则降低该条目的confidence。",
+      "evidence": "附录[4]原文摘录: 'Enterprise Request a demo'，未直接支持'定价不透明'。"
+    },
+    {
+      "field_path": "swot.threats[0].evidence",
+      "issue_type": "missing_source",
+      "description": "SWOT威胁'市场竞争激烈'的结论为'面临来自其他成熟协作平台（如Microsoft Teams、Slack、Confluence等）的激烈竞争，这些平台也在积极整合AI功能'，置信度仅50%。但附录[11]的来源为'推理得出'，无任何原文支撑。该claim完全缺乏事实依据。",
+      "severity": "critical",
+      "suggestion": "删除该SWOT条目，或补充具体的、可验证的来源（如行业报告、新闻文章、竞品官网等）来支撑该威胁。如果无法找到可靠来源，则不应包含此条目。",
+      "evidence": "附录[11]标注为'推理得出，无单一原文对应'。"
+    },
+    {
+      "field_path": "overall_quality",
+      "issue_type": "low_confidence",
+      "description": "报告整体置信度偏低。多个关键claim（如定价、SWOT威胁）缺乏直接来源支撑，或来源与claim不匹配。平均confidence可能低于0.75。",
+      "severity": "major",
+      "suggestion": "针对上述所有缺失来源或来源不匹配的问题进行修正，补充或替换来源，并重新评估各条目的confidence。确保所有关键claim都有>=2个独立来源支撑。",
+      "evidence": "检查发现多个条目存在missing_source或factual_error问题。"
+    },
+    {
+      "field_path": "feature_tree[0].sub_features[1].description.sources[0].snippet",
+      "issue_type": "factual_error",
+      "description": "子功能'AI会议笔记'的claim为'由AI自动生成会议笔记'，但引用的snippet为'Notion agents keep work moving 24/7...'，该snippet未提及'会议笔记'。",
+      "severity": "critical",
+      "suggestion": "为'AI会议笔记'补充独立的、直接相关的来源snippet，例如从Notion产品页面或博客中查找专门描述AI会议笔记功能的文本。",
+      "evidence": "当前snippet: 'Notion agents keep work moving 24/7...'，与'会议笔记'无关。"
+    },
+    {
+      "field_path": "feature_tree[0].sub_features[2].description.sources[0].snippet",
+      "issue_type": "factual_error",
+      "description": "子功能'AI企业搜索'的claim为'提供企业级搜索功能，可即时查找答案'，但引用的snippet为'Notion agents keep work moving 24/7...'，该snippet未提及'搜索'。",
+      "severity": "critical",
+      "suggestion": "为'AI企业搜索'补充独立的、直接相关的来源snippet，例如从Notion产品页面或博客中查找专门描述AI搜索功能的文本。",
+      "evidence": "当前snippet: 'Notion agents keep work moving 24/7...'，与'搜索'无关。"
+    }
+  ],
+  "qa_feedback_summary": "质量不达标(score=0.57)。存在4个严重问题，建议重新采集数据并分析。",
+  "missing_dimensions": [],
+  "iteration": 4,
+  "max_iterations": 3,
+  "feedback_history": [
+    {
+      "iteration": 1,
+      "verdict": "revise",
+      "score": 0.59,
+      "issues_count": 16,
+      "critical_issues": 3,
+      "action_taken": "打回Collector补采['features']",
+      "feedback_summary": "数据不完整(score=0.59)。缺失维度: features，需要补充采集后重新分析。",
+      "timestamp": "2026-05-21T23:35:41.600955"
+    },
+    {
+      "iteration": 2,
+      "verdict": "revise",
+      "score": 0.6,
+      "issues_count": 41,
+      "critical_issues": 17,
+      "action_taken": "打回Collector重采",
+      "feedback_summary": "需要修改(score=0.60)。发现17个严重问题、17个主要问题需修复后重新提交。",
+      "timestamp": "2026-05-21T23:38:02.088518"
+    },
+    {
+      "iteration": 3,
+      "verdict": "reject",
+      "score": 0.57,
+      "issues_count": 13,
+      "critical_issues": 4,
+      "action_taken": "终止流程（质量不达标）",
+      "feedback_summary": "质量不达标(score=0.57)。存在4个严重问题，建议重新采集数据并分析。",
+      "timestamp": "2026-05-21T23:39:23.931149"
+    }
+  ],
+  "trace_id": "3a5f25c9-bbba-488e-8bfb-784653b36c9f",
+  "started_at": "2026-05-21T23:34:15.462146",
+  "completed_at": "2026-05-21T23:39:23.931149",
+  "final_status": "rejected(score=0.57)"
+}

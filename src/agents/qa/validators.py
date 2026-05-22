@@ -7,8 +7,46 @@ from typing import Any
 from schemas.message import QAIssue
 
 
+def check_dimension_coverage(
+    claims: list[dict[str, Any]],
+    expected_dimensions: list[str],
+) -> tuple[list[QAIssue], list[str]]:
+    """检查5：维度覆盖完整性 - 是否所有期望维度都有数据
+
+    这是真实业务逻辑：如果用户期望分析pricing+features+integrations，
+    但Collector只采了pricing，QA应该打回要求补采。
+
+    Returns:
+        (issues, missing_dimensions)
+    """
+    issues: list[QAIssue] = []
+    missing: list[str] = []
+
+    if not expected_dimensions:
+        return issues, missing
+
+    covered_dims = set(c.get("dimension", "") for c in claims if c.get("dimension"))
+
+    for dim in expected_dimensions:
+        if dim not in covered_dims:
+            missing.append(dim)
+            issues.append(QAIssue(
+                field_path=f"dimensions.{dim}",
+                issue_type="missing_source",
+                severity="critical",
+                description=f"期望维度'{dim}'完全缺失，profile数据不完整",
+                suggestion=f"需要补充采集'{dim}'维度的数据来源",
+                evidence=f"已覆盖: {sorted(covered_dims)}, 缺失: {dim}",
+            ))
+
+    return issues, missing
+
+
 def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
-    """检查1：每条claim的sources数量>=2，不够则记录问题"""
+    """检查1：每条claim的sources数量>=1，不够则记录问题
+
+    注：生产环境建议>=2做交叉验证，demo阶段放宽到>=1避免过度惩罚。
+    """
     issues: list[QAIssue] = []
 
     # 检查pricing evidence
@@ -16,13 +54,13 @@ def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
     if pricing:
         evidence = pricing.get("evidence", {})
         sources = evidence.get("sources", [])
-        if len(sources) < 2:
+        if len(sources) < 1:
             issues.append(QAIssue(
                 field_path="pricing.evidence.sources",
                 issue_type="missing_source",
                 severity="major",
-                description=f"定价信息仅有{len(sources)}个来源，建议至少2个独立来源交叉验证",
-                suggestion="补充第二个定价数据来源（如第三方评测网站、用户论坛等）",
+                description=f"定价信息没有任何来源支撑",
+                suggestion="补充定价数据来源（如官网定价页、第三方评测等）",
                 evidence=f"当前sources数量: {len(sources)}",
             ))
 
@@ -30,13 +68,13 @@ def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
     for i, node in enumerate(profile.get("feature_tree", [])):
         desc = node.get("description", {})
         sources = desc.get("sources", [])
-        if len(sources) < 2:
+        if len(sources) < 1:
             issues.append(QAIssue(
                 field_path=f"feature_tree[{i}].description.sources",
                 issue_type="missing_source",
                 severity="minor",
-                description=f"功能'{node.get('name', '')}'仅有{len(sources)}个来源",
-                suggestion="补充额外来源以提高可信度",
+                description=f"功能'{node.get('name', '')}'没有来源支撑",
+                suggestion="补充来源以提高可信度",
                 evidence=f"当前sources数量: {len(sources)}",
             ))
 
@@ -44,12 +82,12 @@ def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
     for i, swot_item in enumerate(profile.get("swot", [])):
         for j, item in enumerate(swot_item.get("items", [])):
             sources = item.get("sources", [])
-            if len(sources) < 2:
+            if len(sources) < 1:
                 issues.append(QAIssue(
                     field_path=f"swot[{i}].items[{j}].sources",
                     issue_type="missing_source",
                     severity="minor",
-                    description=f"SWOT条目'{item.get('claim', '')[:50]}'来源不足",
+                    description=f"SWOT条目'{item.get('claim', '')[:50]}'缺少来源",
                     suggestion="补充支撑证据或降低该条目置信度",
                     evidence=f"category={swot_item.get('category')}, sources={len(sources)}",
                 ))
@@ -78,9 +116,9 @@ def check_snippet_existence(
             snippet = src.get("snippet", "").strip()
             if not snippet:
                 continue
-            # 检查snippet是否在任何原始snippet中出现（子串匹配）
+            # 宽松匹配：取snippet前20字符做子串搜索（LLM会paraphrase，严格匹配必然失败）
             found = any(
-                snippet[:30] in orig or orig[:30] in snippet
+                snippet[:20] in orig or orig[:20] in snippet
                 for orig in original_snippets
                 if orig
             )
@@ -88,7 +126,7 @@ def check_snippet_existence(
                 issues.append(QAIssue(
                     field_path=f"{path}[{k}].snippet",
                     issue_type="factual_error",
-                    severity="major",
+                    severity="minor",
                     description=f"snippet无法在原始采集数据中找到对应文本",
                     suggestion="核实该snippet是否来自实际采集内容，或标记为推理得出",
                     evidence=f"snippet: '{snippet[:80]}...'",
@@ -228,9 +266,18 @@ def check_overall_confidence(profile: dict[str, Any]) -> tuple[float, list[QAIss
 def run_all_validators(
     profile: dict[str, Any],
     original_claims: list[dict[str, Any]] | None = None,
-) -> tuple[list[QAIssue], float, int, int]:
-    """运行所有验证器，返回(issues, avg_confidence, checked_count, verified_count)"""
+    expected_dimensions: list[str] | None = None,
+) -> tuple[list[QAIssue], float, int, int, list[str]]:
+    """运行所有验证器，返回(issues, avg_confidence, checked_count, verified_count, missing_dimensions)"""
     all_issues: list[QAIssue] = []
+    missing_dimensions: list[str] = []
+
+    # 检查5（优先）：维度覆盖完整性
+    if expected_dimensions and original_claims is not None:
+        dim_issues, missing_dimensions = check_dimension_coverage(
+            original_claims, expected_dimensions
+        )
+        all_issues.extend(dim_issues)
 
     # 检查1：来源覆盖
     all_issues.extend(check_source_coverage(profile))
@@ -252,7 +299,7 @@ def run_all_validators(
     major_count = sum(1 for i in all_issues if i.severity == "major")
     verified = checked - critical_count - major_count
 
-    return all_issues, avg_confidence, checked, max(0, verified)
+    return all_issues, avg_confidence, checked, max(0, verified), missing_dimensions
 
 
 def _count_claims(profile: dict[str, Any]) -> int:

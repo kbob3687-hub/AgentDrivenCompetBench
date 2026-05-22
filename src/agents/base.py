@@ -61,7 +61,9 @@ class BaseAgent(ABC):
         langfuse: Langfuse | None = None,
     ):
         self.config = config or self.default_config()
-        self.langfuse = langfuse or Langfuse()
+        self.langfuse = langfuse or Langfuse(
+            timeout=30,
+        )
 
         if self.config.provider == "anthropic":
             self.anthropic_client = anthropic.AsyncAnthropic(
@@ -108,17 +110,23 @@ class BaseAgent(ABC):
         """执行入口 - 包装run()方法，添加Langfuse追踪和重试机制
 
         不要重写此方法，重写run()即可。
+        Trace层级: trace(pipeline) → span(agent) → generation(llm_call)
+        同一个trace_id下的所有agent span自动归入同一条trace。
         """
+        iteration = message.context.iteration
+        trace_ctx = {"trace_id": message.trace_id, "session_id": None}
         span = self.langfuse.start_observation(
-            name=f"{self.role}.execute",
+            trace_context=trace_ctx,
+            name=f"{self.role}",
+            as_type="span",
             input=message.model_dump(mode="json"),
             metadata={
                 "agent_role": self.role,
                 "function_name": message.function_name,
-                "iteration": message.context.iteration,
-                "trace_id": message.trace_id,
+                "iteration": iteration,
             },
         )
+        self._current_span = span
 
         last_error: Exception | None = None
 
@@ -134,7 +142,7 @@ class BaseAgent(ABC):
                     ).end()
                     self.langfuse.flush()
                 except Exception:
-                    pass  # Langfuse failure should not block agent result
+                    pass
                 return result
 
             except Exception as e:
@@ -163,15 +171,33 @@ class BaseAgent(ABC):
     ) -> LLMResponse:
         """调用LLM - 根据provider路由到不同后端，自动记录到Langfuse
 
-        Returns:
-            统一的LLMResponse对象
+        Generation挂在当前agent span下，形成 trace → span → generation 层级。
         """
-        generation = self.langfuse.start_observation(
-            name=f"{self.role}.llm_call",
-            input={"messages": messages, "system": self.system_prompt[:200] + "..."},
-            metadata={"model": self.config.model, "provider": self.config.provider},
-            model=self.config.model,
-        )
+        parent_span = getattr(self, "_current_span", None)
+        if parent_span is not None:
+            generation = parent_span.start_observation(
+                name=f"{self.role}.llm_call",
+                as_type="generation",
+                input={"messages": messages, "system": self.system_prompt[:200] + "..."},
+                metadata={"provider": self.config.provider},
+                model=self.config.model,
+                model_parameters={
+                    "temperature": self.config.temperature,
+                    "max_tokens": self.config.max_tokens,
+                },
+            )
+        else:
+            generation = self.langfuse.start_observation(
+                name=f"{self.role}.llm_call",
+                as_type="generation",
+                input={"messages": messages, "system": self.system_prompt[:200] + "..."},
+                metadata={"provider": self.config.provider},
+                model=self.config.model,
+                model_parameters={
+                    "temperature": self.config.temperature,
+                    "max_tokens": self.config.max_tokens,
+                },
+            )
 
         try:
             if self.config.provider == "anthropic":
@@ -180,7 +206,7 @@ class BaseAgent(ABC):
                 result = await self._call_openai_compat(messages, tools, response_format)
 
             generation.update(
-                output=result.text,
+                output=result.text[:2000],
                 usage_details={
                     "input": result.input_tokens,
                     "output": result.output_tokens,

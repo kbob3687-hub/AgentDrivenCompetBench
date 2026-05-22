@@ -21,7 +21,7 @@ class FetchResult(BaseModel):
     error: str | None = None
 
 
-async def jina_reader(url: str, timeout: float = 60.0, max_retries: int = 3) -> FetchResult:
+async def jina_reader(url: str, timeout: float = 20.0, max_retries: int = 1) -> FetchResult:
     """通过Jina Reader获取网页的干净文本
 
     Jina Reader会自动：

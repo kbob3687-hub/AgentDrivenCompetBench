@@ -62,11 +62,15 @@ class CollectorAgent(BaseAgent):
         fetch_errors: list[str] = []
 
         for url in urls[: request.max_sources]:
+            print(f"  [Collector] 正在抓取: {url[:60]}...")
             fetch_result = await self._fetch_url(url)
 
             if not fetch_result.success:
+                print(f"  [Collector] 失败: {fetch_result.error}")
                 fetch_errors.append(f"{url}: {fetch_result.error}")
                 continue
+
+            print(f"  [Collector] 成功: {len(fetch_result.content)} 字符")
 
             # 内容过长时截断，避免超出上下文窗口
             content = self._truncate_content(fetch_result.content, max_chars=12000)
@@ -101,13 +105,8 @@ class CollectorAgent(BaseAgent):
         )
 
     async def _fetch_url(self, url: str) -> FetchResult:
-        """获取URL内容，Jina Reader优先，失败降级到Playwright"""
-        result = await jina_reader(url)
-        if result.success:
-            return result
-
-        # Jina失败，尝试Playwright（适用于JS渲染页面）
-        return await playwright_fetch(url)
+        """获取URL内容，仅用Jina Reader（测试阶段跳过Playwright降级）"""
+        return await jina_reader(url)
 
     async def _extract_info(
         self,

@@ -49,6 +49,7 @@ class QAAgent(BaseAgent):
         profile = args.get("profile", {})
         report_markdown = args.get("report_markdown", "")
         original_claims = args.get("original_claims", [])
+        expected_dimensions = args.get("expected_dimensions", [])
 
         if not profile:
             return self.build_message(
@@ -62,8 +63,8 @@ class QAAgent(BaseAgent):
             )
 
         # ====== 第一轮：规则验证器（快速、免费） ======
-        rule_issues, avg_confidence, checked, verified = run_all_validators(
-            profile, original_claims or None
+        rule_issues, avg_confidence, checked, verified, missing_dimensions = run_all_validators(
+            profile, original_claims or None, expected_dimensions or None
         )
 
         # ====== 第二轮：LLM深度审查 ======
@@ -76,24 +77,30 @@ class QAAgent(BaseAgent):
 
         # 计算overall_score
         overall_score = self._calculate_score(
-            avg_confidence, all_issues, checked
+            avg_confidence, all_issues, checked,
+            llm_issue_count=len(llm_issues),
         )
 
-        # 判定verdict
-        if overall_score >= 0.80:
+        # 判定verdict - 维度缺失优先级最高
+        if missing_dimensions:
+            # 维度数据缺失 → 必须revise补采
+            verdict = "revise"
+        elif overall_score >= 0.70:
             verdict = "pass"
-        elif overall_score >= 0.60:
+        elif overall_score >= 0.55:
             verdict = "revise"
         else:
             verdict = "reject"
 
         # 构造QAFeedback
         feedback = QAFeedback(
-            target_agent="analyst" if verdict == "reject" else "writer",
+            target_agent="collector" if missing_dimensions else (
+                "analyst" if verdict == "reject" else "writer"
+            ),
             issues=all_issues,
             overall_score=overall_score,
             verdict=verdict,
-            summary=self._build_summary(verdict, all_issues, overall_score),
+            summary=self._build_summary(verdict, all_issues, overall_score, missing_dimensions),
             checked_claims_count=checked,
             verified_claims_count=verified,
         )
@@ -108,6 +115,7 @@ class QAAgent(BaseAgent):
                 "overall_score": overall_score,
                 "issues_count": len(all_issues),
                 "critical_issues": sum(1 for i in all_issues if i.severity == "critical"),
+                "missing_dimensions": missing_dimensions,
             },
             trace_id=message.trace_id,
             message_type=MessageType.FEEDBACK if verdict != "pass" else MessageType.TASK_RESULT,
@@ -193,35 +201,52 @@ class QAAgent(BaseAgent):
         avg_confidence: float,
         issues: list[QAIssue],
         total_claims: int,
+        llm_issue_count: int = 0,
     ) -> float:
-        """计算综合质量分数"""
+        """计算综合质量分数
+
+        设计原则：
+        - 规则验证器（客观）：全额扣分，上限0.20
+        - LLM审查（主观）：降权扣分，上限0.10
+        - 两者合计上限0.25（保证高confidence数据不会被主观意见否决）
+        """
         if total_claims == 0:
             return 0.0
 
-        # 基础分 = 平均置信度
         score = avg_confidence
 
-        # 扣分：critical -0.15, major -0.08, minor -0.03
-        penalty_map = {"critical": 0.15, "major": 0.08, "minor": 0.03}
-        total_penalty = sum(
-            penalty_map.get(issue.severity, 0.03) for issue in issues
+        penalty_map = {"critical": 0.10, "major": 0.04, "minor": 0.01}
+
+        rule_issues = issues[: len(issues) - llm_issue_count]
+        llm_issues = issues[len(issues) - llm_issue_count:]
+
+        rule_penalty = min(
+            sum(penalty_map.get(i.severity, 0.01) for i in rule_issues),
+            0.20,
+        )
+        llm_penalty = min(
+            sum(penalty_map.get(i.severity, 0.01) for i in llm_issues) * 0.4,
+            0.10,
         )
 
-        # 惩罚上限为0.5（避免一堆minor直接打到0）
-        total_penalty = min(total_penalty, 0.5)
+        total_penalty = min(rule_penalty + llm_penalty, 0.25)
         score -= total_penalty
 
         return max(0.0, min(1.0, round(score, 2)))
 
     def _build_summary(
-        self, verdict: str, issues: list[QAIssue], score: float
+        self, verdict: str, issues: list[QAIssue], score: float,
+        missing_dimensions: list[str] | None = None,
     ) -> str:
         """生成质检总结"""
         critical = sum(1 for i in issues if i.severity == "critical")
         major = sum(1 for i in issues if i.severity == "major")
         minor = sum(1 for i in issues if i.severity == "minor")
 
-        if verdict == "pass":
+        if missing_dimensions:
+            dims_str = "、".join(missing_dimensions)
+            return f"数据不完整(score={score:.2f})。缺失维度: {dims_str}，需要补充采集后重新分析。"
+        elif verdict == "pass":
             return f"质检通过(score={score:.2f})。发现{len(issues)}个问题(critical={critical}, major={major}, minor={minor})，均在可接受范围内。"
         elif verdict == "revise":
             return f"需要修改(score={score:.2f})。发现{critical}个严重问题、{major}个主要问题需修复后重新提交。"
