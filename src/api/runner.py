@@ -79,8 +79,14 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     urls = target_urls if target_urls else agent._get_default_urls(target, scope)
     urls = urls[:10]
 
+    # 行业模板扩展字段注入采集指令
+    industry_fields = state.get("industry_fields", [])
+    extra_scope_hint = ""
+    if industry_fields:
+        extra_scope_hint = f" (行业扩展字段: {', '.join(industry_fields[:5])})"
+
     await _publish(task_id, EventType.LOG, {
-        "message": f"Fan-out: 并行采集 {len(urls)} 个数据源", "agent": "collector",
+        "message": f"Fan-out: 并行采集 {len(urls)} 个数据源{extra_scope_hint}", "agent": "collector",
     })
 
     # Fan-out: 并行 fetch + extract
@@ -176,6 +182,7 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             "competitor_name": state["competitor_name"],
             "claims": claims,
             "dimensions_requested": state.get("collect_scope", ["pricing", "features"]),
+            "industry_fields": state.get("industry_fields", []),
         },
         state=state,
     )
@@ -404,6 +411,7 @@ async def run_analysis(
     task_id: str,
     competitor_name: str,
     dimensions: list[str] | None = None,
+    industry: str = "saas",
     max_iterations: int = 3,
 ) -> dict[str, Any]:
     """Run the full analysis pipeline with SSE event publishing.
@@ -412,12 +420,25 @@ async def run_analysis(
         task_id: Unique task identifier (used as trace_id for event routing)
         competitor_name: Name of the competitor to analyze
         dimensions: Analysis dimensions, defaults to ["pricing", "features"]
+        industry: Industry template to apply (saas/consumer/hardware)
         max_iterations: Max QA feedback loops
 
     Returns:
         Final GraphState dict
     """
+    from schemas.extensions import load_template, TEMPLATE_REGISTRY
+
     dims = dimensions or ["pricing", "features"]
+
+    # Load industry template and inject extra dimensions
+    industry_fields: list[str] = []
+    if industry in TEMPLATE_REGISTRY:
+        template = load_template(industry)
+        industry_fields = template.get_field_names()
+        await _publish(task_id, EventType.LOG, {
+            "message": f"已加载行业模板: {template.display_name} ({len(template.fields)}个扩展字段)",
+            "agent": "collector",
+        })
 
     # expected_dimensions 包含完整维度集，确保 QA 能检查覆盖度
     all_dimensions = ["pricing", "features", "integrations"]
@@ -431,6 +452,8 @@ async def run_analysis(
             "collect_scope": dims,
             "target_urls": [],
             "expected_dimensions": expected,
+            "industry": industry,
+            "industry_fields": industry_fields,
             "iteration": 1,
             "max_iterations": max_iterations,
             "feedback_history": [],

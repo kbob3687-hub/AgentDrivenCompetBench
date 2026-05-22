@@ -36,6 +36,8 @@ class GraphState(TypedDict, total=False):
     collect_scope: list[str]
     target_urls: list[str]
     expected_dimensions: list[str]
+    industry: str
+    industry_fields: list[str]
 
     # ---- Collector输出 ----
     claims: list[dict[str, Any]]

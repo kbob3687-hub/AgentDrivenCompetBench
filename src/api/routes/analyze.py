@@ -12,6 +12,7 @@ from fastapi.responses import StreamingResponse
 from api.events import event_bus
 from api.runner import run_analysis
 from api.schemas import AnalyzeRequest, AnalyzeResponse, TaskStatus
+from schemas.extensions import list_templates, get_template_schema, TEMPLATE_REGISTRY
 
 router = APIRouter(prefix="/api/analyze", tags=["analyze"])
 
@@ -26,6 +27,7 @@ async def _run_task(task_id: str, req: AnalyzeRequest) -> None:
             task_id=task_id,
             competitor_name=req.competitor_name,
             dimensions=req.dimensions,
+            industry=req.industry,
             max_iterations=req.max_iterations,
         )
         _tasks[task_id]["status"] = "completed"
@@ -77,3 +79,17 @@ async def get_task_status(task_id: str) -> TaskStatus:
         status=task_info["status"],
         result=task_info["result"],
     )
+
+
+@router.get("/templates", tags=["templates"])
+async def get_templates() -> list[dict[str, str]]:
+    """列出所有可用行业模板"""
+    return list_templates()
+
+
+@router.get("/templates/{industry}", tags=["templates"])
+async def get_template_detail(industry: str) -> dict[str, Any]:
+    """获取指定行业模板的详细Schema"""
+    if industry not in TEMPLATE_REGISTRY:
+        raise HTTPException(status_code=404, detail=f"Template '{industry}' not found")
+    return get_template_schema(industry)

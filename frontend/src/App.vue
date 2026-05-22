@@ -12,8 +12,8 @@ const { state, startAnalysis, restoreFromHash } = useAnalysis()
 const isRunning = computed(() => state.status === 'running')
 const isCompleted = computed(() => state.status === 'completed')
 
-function handleSubmit(payload: { competitorName: string; dimensions: string[] }) {
-  startAnalysis(payload.competitorName, payload.dimensions)
+function handleSubmit(payload: { competitorName: string; dimensions: string[]; industry: string }) {
+  startAnalysis(payload.competitorName, payload.dimensions, payload.industry)
 }
 
 onMounted(() => {

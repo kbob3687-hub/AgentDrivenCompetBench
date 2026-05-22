@@ -105,7 +105,7 @@ export function useAnalysis() {
 
   const { connect, close } = useSSE(handleEvent)
 
-  async function startAnalysis(competitorName: string, dimensions: string[]) {
+  async function startAnalysis(competitorName: string, dimensions: string[], industry: string = 'saas') {
     resetState()
     state.status = 'running'
 
@@ -113,7 +113,7 @@ export function useAnalysis() {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ competitor_name: competitorName, dimensions })
+        body: JSON.stringify({ competitor_name: competitorName, dimensions, industry })
       })
 
       if (!response.ok) {
