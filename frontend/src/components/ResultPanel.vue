@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { marked } from 'marked'
 import type { SSEComplete } from '../types'
 
@@ -11,6 +11,26 @@ const activeTab = ref<'report' | 'feedback'>('report')
 
 const renderedMarkdown = computed(() => {
   return marked.parse(props.result.report_markdown || '') as string
+})
+
+function handleLinkClick(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  const anchor = target.closest('a') as HTMLAnchorElement | null
+  if (!anchor) return
+  const href = anchor.getAttribute('href')
+  if (!href || href.startsWith('#')) return
+  e.preventDefault()
+  window.open(href, '_blank', 'noopener,noreferrer')
+}
+
+const reportEl = ref<HTMLElement | null>(null)
+
+onMounted(() => {
+  reportEl.value?.addEventListener('click', handleLinkClick)
+})
+
+onBeforeUnmount(() => {
+  reportEl.value?.removeEventListener('click', handleLinkClick)
 })
 </script>
 
@@ -43,7 +63,7 @@ const renderedMarkdown = computed(() => {
     </div>
 
     <!-- Report Tab -->
-    <div v-if="activeTab === 'report'" class="p-6 max-h-[700px] overflow-y-auto report-content">
+    <div v-if="activeTab === 'report'" ref="reportEl" class="p-6 max-h-[700px] overflow-y-auto report-content">
       <div class="flex items-center gap-3 mb-6">
         <span class="text-sm text-slate-400">最终状态:</span>
         <span class="px-2 py-0.5 rounded bg-green-700 text-green-100 text-sm font-medium">
