@@ -21,7 +21,7 @@ class FetchResult(BaseModel):
     error: str | None = None
 
 
-async def jina_reader(url: str, timeout: float = 20.0, max_retries: int = 1) -> FetchResult:
+async def jina_reader(url: str, timeout: float = 45.0, max_retries: int = 2) -> FetchResult:
     """通过Jina Reader获取网页的干净文本
 
     Jina Reader会自动：
@@ -38,6 +38,7 @@ async def jina_reader(url: str, timeout: float = 20.0, max_retries: int = 1) -> 
         FetchResult包含干净文本内容
     """
     import asyncio
+    import os
 
     jina_url = f"https://r.jina.ai/{url}"
 
@@ -46,10 +47,15 @@ async def jina_reader(url: str, timeout: float = 20.0, max_retries: int = 1) -> 
         "X-Return-Format": "markdown",
     }
 
+    proxy = os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
+
     last_error = ""
     for attempt in range(max_retries):
         try:
-            async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
+            use_proxy = proxy if attempt > 0 else None
+            async with httpx.AsyncClient(
+                timeout=timeout, follow_redirects=True, proxy=use_proxy
+            ) as client:
                 response = await client.get(jina_url, headers=headers)
                 response.raise_for_status()
 
