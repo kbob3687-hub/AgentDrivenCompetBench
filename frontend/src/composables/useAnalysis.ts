@@ -6,6 +6,7 @@ function createInitialState(): AnalysisState {
   return {
     taskId: null,
     status: 'idle',
+    pauseVerdict: null,
     nodeStates: {
       collector: 'idle',
       analyst: 'idle',
@@ -95,6 +96,18 @@ export function useAnalysis() {
         addLog(`Analysis complete! Final score: ${event.data.qa_score}`, 'success')
         break
       }
+      case 'hitl_pause': {
+        state.status = 'paused'
+        state.pauseVerdict = event.data.verdict || 'revise'
+        addLog(`Pipeline paused: ${event.data.message} (score: ${event.data.score})`, 'warning', 'qa')
+        break
+      }
+      case 'hitl_resume': {
+        state.status = 'running'
+        state.pauseVerdict = null
+        addLog(`Human decision: ${event.data.decision}, pipeline resumed`, 'info')
+        break
+      }
       case 'error': {
         state.status = 'failed'
         addLog(`Error: ${event.data.message}`, 'error')
@@ -105,7 +118,7 @@ export function useAnalysis() {
 
   const { connect, close } = useSSE(handleEvent)
 
-  async function startAnalysis(competitorName: string, dimensions: string[], industry: string = 'saas') {
+  async function startAnalysis(competitorName: string, dimensions: string[], industry: string = 'saas', targetUrls: string[] = []) {
     resetState()
     state.status = 'running'
 
@@ -113,7 +126,7 @@ export function useAnalysis() {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ competitor_name: competitorName, dimensions, industry })
+        body: JSON.stringify({ competitor_name: competitorName, dimensions, industry, target_urls: targetUrls })
       })
 
       if (!response.ok) {
@@ -178,5 +191,28 @@ export function useAnalysis() {
     })
   }
 
-  return { state, startAnalysis, resetState, restoreFromHash }
+  async function intervene(action: 'force_pass' | 'abort' | 'continue', reason: string = '') {
+    if (!state.taskId) return
+    try {
+      const response = await fetch(`/api/analyze/${state.taskId}/intervene`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, reason })
+      })
+      if (response.ok) {
+        if (action === 'force_pass') {
+          addLog(`Human intervention: force pass (${reason || 'no reason'})`, 'warning')
+        } else if (action === 'abort') {
+          state.status = 'failed'
+          addLog(`Human intervention: aborted (${reason || 'no reason'})`, 'error')
+        } else {
+          addLog(`Human intervention: continue iteration`, 'info')
+        }
+      }
+    } catch (err: any) {
+      addLog(`Intervene failed: ${err.message}`, 'error')
+    }
+  }
+
+  return { state, startAnalysis, resetState, restoreFromHash, intervene }
 }

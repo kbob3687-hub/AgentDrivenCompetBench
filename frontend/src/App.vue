@@ -7,13 +7,14 @@ import ResultPanel from './components/ResultPanel.vue'
 import IterationTimeline from './components/IterationTimeline.vue'
 import { useAnalysis } from './composables/useAnalysis'
 
-const { state, startAnalysis, restoreFromHash } = useAnalysis()
+const { state, startAnalysis, restoreFromHash, intervene } = useAnalysis()
 
 const isRunning = computed(() => state.status === 'running')
 const isCompleted = computed(() => state.status === 'completed')
+const isPaused = computed(() => state.status === 'paused')
 
-function handleSubmit(payload: { competitorName: string; dimensions: string[]; industry: string }) {
-  startAnalysis(payload.competitorName, payload.dimensions, payload.industry)
+function handleSubmit(payload: { competitorName: string; dimensions: string[]; industry: string; targetUrls: string[] }) {
+  startAnalysis(payload.competitorName, payload.dimensions, payload.industry, payload.targetUrls)
 }
 
 onMounted(() => {
@@ -36,10 +37,10 @@ onMounted(() => {
           <span
             :class="[
               'w-2 h-2 rounded-full',
-              isRunning ? 'bg-blue-500 animate-pulse' : isCompleted ? 'bg-green-500' : 'bg-slate-600'
+              isRunning ? 'bg-blue-500 animate-pulse' : isPaused ? 'bg-orange-500 animate-pulse' : isCompleted ? 'bg-green-500' : 'bg-slate-600'
             ]"
           ></span>
-          <span>{{ state.status === 'idle' ? '就绪' : state.status === 'running' ? '分析中...' : state.status === 'completed' ? '已完成' : '失败' }}</span>
+          <span>{{ state.status === 'idle' ? '就绪' : state.status === 'running' ? '分析中...' : state.status === 'paused' ? '等待审核' : state.status === 'completed' ? '已完成' : '失败' }}</span>
           <span v-if="state.currentIteration > 0" class="text-slate-500">
             | 第 {{ state.currentIteration }} 轮
           </span>
@@ -67,6 +68,9 @@ onMounted(() => {
         :iterations="state.iterations"
         :current-iteration="state.currentIteration"
         :is-running="isRunning"
+        :is-paused="isPaused"
+        :pause-verdict="state.pauseVerdict"
+        @intervene="(action) => intervene(action)"
       />
 
       <!-- Result Panel -->

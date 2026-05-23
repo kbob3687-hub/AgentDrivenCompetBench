@@ -11,6 +11,9 @@
 
 > 多智能体驱动的竞品分析系统 —— 从数据采集到报告生成全链路自动化，QA 反馈闭环驱动迭代优化
 
+<p align="center">
+  <img src="docs/architecture.png" alt="系统架构图" width="720" />
+</p>
 
 ## 项目亮点
 

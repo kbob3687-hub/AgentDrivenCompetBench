@@ -5,6 +5,12 @@ const props = defineProps<{
   iterations: FeedbackRecord[]
   currentIteration: number
   isRunning: boolean
+  isPaused: boolean
+  pauseVerdict: 'pass' | 'revise' | null
+}>()
+
+const emit = defineEmits<{
+  intervene: [action: 'force_pass' | 'abort' | 'continue']
 }>()
 
 function scoreColor(score: number): string {
@@ -129,6 +135,57 @@ function issuesDelta(index: number): number | null {
       <span class="text-xs text-slate-300">
         共 {{ iterations.length }} 轮迭代
       </span>
+    </div>
+
+    <!-- 人工介入按钮 -->
+    <div
+      v-if="isPaused"
+      class="mt-3 px-3 py-2 rounded-md bg-orange-950/50 border border-orange-700/50 flex items-center gap-3"
+    >
+      <!-- QA pass: 确认发布 or 打回重跑 -->
+      <template v-if="pauseVerdict === 'pass'">
+        <span class="text-xs text-orange-300">QA 已通过，等待人工确认发布</span>
+        <button
+          class="px-3 py-1 text-xs font-medium rounded bg-green-700 text-green-100 hover:bg-green-600 transition-colors"
+          @click="emit('intervene', 'force_pass')"
+        >
+          确认发布
+        </button>
+        <button
+          class="px-3 py-1 text-xs font-medium rounded bg-blue-700 text-blue-100 hover:bg-blue-600 transition-colors"
+          @click="emit('intervene', 'continue')"
+        >
+          打回重跑
+        </button>
+        <button
+          class="px-3 py-1 text-xs font-medium rounded bg-red-700 text-red-100 hover:bg-red-600 transition-colors"
+          @click="emit('intervene', 'abort')"
+        >
+          终止任务
+        </button>
+      </template>
+      <!-- QA revise: 继续迭代 / 强制通过 / 终止 -->
+      <template v-else>
+        <span class="text-xs text-orange-300">Pipeline 已暂停，等待人工审核决策</span>
+        <button
+          class="px-3 py-1 text-xs font-medium rounded bg-blue-700 text-blue-100 hover:bg-blue-600 transition-colors"
+          @click="emit('intervene', 'continue')"
+        >
+          继续迭代
+        </button>
+        <button
+          class="px-3 py-1 text-xs font-medium rounded bg-green-700 text-green-100 hover:bg-green-600 transition-colors"
+          @click="emit('intervene', 'force_pass')"
+        >
+          强制通过
+        </button>
+        <button
+          class="px-3 py-1 text-xs font-medium rounded bg-red-700 text-red-100 hover:bg-red-600 transition-colors"
+          @click="emit('intervene', 'abort')"
+        >
+          终止任务
+        </button>
+      </template>
     </div>
   </div>
 </template>

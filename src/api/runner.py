@@ -26,6 +26,18 @@ from schemas.message import AgentMessage, MessageContext, MessageType
 # Per-task trace accumulator (avoids LangGraph state propagation issues)
 _task_traces: dict[str, list[dict[str, Any]]] = {}
 
+# Per-task HITL gate: when QA says revise, pipeline waits here until human decides
+_hitl_gates: dict[str, asyncio.Event] = {}
+_hitl_decisions: dict[str, str] = {}  # task_id -> "continue" | "force_pass" | "abort"
+
+
+def hitl_resume(task_id: str, decision: str) -> None:
+    """Called by intervene API to unblock a paused pipeline."""
+    _hitl_decisions[task_id] = decision
+    gate = _hitl_gates.get(task_id)
+    if gate:
+        gate.set()
+
 
 def _make_message(
     to_agent: str,
@@ -442,14 +454,72 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
 
     max_iter = state.get("max_iterations", 3)
     if verdict == "pass":
-        update["final_status"] = "completed"
+        # HITL: pause for human confirmation before completing
+        await _publish(task_id, EventType.HITL_PAUSE, {
+            "iteration": iteration,
+            "score": score,
+            "verdict": verdict,
+            "missing_dimensions": [],
+            "message": f"QA通过(score={score:.2f})，等待人工确认发布...",
+        })
+        gate = asyncio.Event()
+        _hitl_gates[task_id] = gate
+        _hitl_decisions.pop(task_id, None)
+        await gate.wait()
+        _hitl_gates.pop(task_id, None)
+
+        decision = _hitl_decisions.pop(task_id, "force_pass")
+        await _publish(task_id, EventType.HITL_RESUME, {
+            "decision": decision, "iteration": iteration,
+        })
+
+        if decision == "abort":
+            update["qa_verdict"] = "reject"
+            update["final_status"] = "human_abort"
+        elif decision == "continue":
+            # 人工要求重跑
+            update["final_status"] = "running"
+            update.pop("iteration", None)
+            update["iteration"] = iteration + 1
+        else:
+            update["final_status"] = "completed"
         update["completed_at"] = datetime.now().isoformat()
+
     elif verdict == "reject":
         update["final_status"] = f"rejected(score={score:.2f})"
         update["completed_at"] = datetime.now().isoformat()
     elif iteration >= max_iter:
         update["final_status"] = f"max_iterations_reached(last_verdict={verdict})"
         update["completed_at"] = datetime.now().isoformat()
+    elif verdict == "revise":
+        # HITL: pause and wait for human decision
+        await _publish(task_id, EventType.HITL_PAUSE, {
+            "iteration": iteration,
+            "score": score,
+            "verdict": verdict,
+            "missing_dimensions": missing_dims,
+            "message": "QA打回，等待人工审核决策...",
+        })
+        gate = asyncio.Event()
+        _hitl_gates[task_id] = gate
+        _hitl_decisions.pop(task_id, None)
+        await gate.wait()
+        _hitl_gates.pop(task_id, None)
+
+        decision = _hitl_decisions.pop(task_id, "continue")
+        await _publish(task_id, EventType.HITL_RESUME, {
+            "decision": decision, "iteration": iteration,
+        })
+
+        if decision == "force_pass":
+            update["qa_verdict"] = "pass"
+            update["final_status"] = "human_force_pass"
+            update["completed_at"] = datetime.now().isoformat()
+        elif decision == "abort":
+            update["qa_verdict"] = "reject"
+            update["final_status"] = "human_abort"
+            update["completed_at"] = datetime.now().isoformat()
+        # else "continue" → pipeline proceeds to collector as normal
 
     return update
 
@@ -483,6 +553,7 @@ async def run_analysis(
     dimensions: list[str] | None = None,
     industry: str = "saas",
     max_iterations: int = 3,
+    target_urls: list[str] | None = None,
 ) -> dict[str, Any]:
     """Run the full analysis pipeline with SSE event publishing.
 
@@ -520,7 +591,7 @@ async def run_analysis(
         initial_state: GraphState = {
             "competitor_name": competitor_name,
             "collect_scope": dims,
-            "target_urls": [],
+            "target_urls": target_urls or [],
             "expected_dimensions": expected,
             "industry": industry,
             "industry_fields": industry_fields,

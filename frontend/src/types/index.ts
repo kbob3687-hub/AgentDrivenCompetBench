@@ -56,7 +56,8 @@ export interface FeedbackRecord {
 
 export interface AnalysisState {
   taskId: string | null
-  status: 'idle' | 'running' | 'completed' | 'failed'
+  status: 'idle' | 'running' | 'completed' | 'failed' | 'paused'
+  pauseVerdict: 'pass' | 'revise' | null
   nodeStates: Record<AgentName, NodeStatus>
   logs: LogEntry[]
   result: SSEComplete | null

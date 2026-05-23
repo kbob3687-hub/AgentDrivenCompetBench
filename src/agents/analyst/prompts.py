@@ -64,6 +64,16 @@ ANALYST_SYSTEM_PROMPT = """你是一个专业的竞品分析Agent。你的职责
     "threats": [{"item": "威胁描述", "evidence_claim_indices": [], "confidence": 0.5}]
   },
 
+  "user_personas": [
+    {
+      "segment": "用户群体名称（如：个人用户/中小团队/企业客户）",
+      "pain_points": ["痛点1", "痛点2"],
+      "usage_scenarios": ["使用场景1", "使用场景2"],
+      "evidence_claim_indices": [5, 6],
+      "confidence": 0.7
+    }
+  ],
+
   "analysis_summary": {
     "total_claims_processed": 11,
     "dimensions_covered": ["pricing", "features"],
@@ -97,4 +107,5 @@ ANALYZE_USER_PROMPT_TEMPLATE = """请分析以下关于 **{competitor_name}** �
 2. feature_tree按功能类别分组
 3. 每条结论都通过evidence_claim_indices引用原始claims
 4. SWOT分析基于claims推理得出
+5. user_personas基于claims推断2-3个核心用户画像（角色/痛点/使用场景）
 """

@@ -18,6 +18,8 @@ def qa_routing(state: GraphState) -> str:
     """QA节点后的条件路由
 
     路由逻辑：
+    - human_force_pass / human_abort → end
+    - final_status == "running" → collector（人工打回重跑）
     - 达到最大迭代 → end
     - pass → end
     - revise → collector（补采缺失维度后重走全流程）
@@ -29,6 +31,15 @@ def qa_routing(state: GraphState) -> str:
     verdict = state.get("qa_verdict", "reject")
     iteration = state.get("iteration", 1)
     max_iterations = state.get("max_iterations", 3)
+    final_status = state.get("final_status", "")
+
+    # Human intervention overrides
+    if final_status in ("human_force_pass", "human_abort", "completed"):
+        return "end"
+
+    # Human requested re-run after pass
+    if final_status == "running":
+        return "collector"
 
     if iteration > max_iterations:
         return "end"
