@@ -77,13 +77,18 @@ class AnalystAgent(BaseAgent):
         # 构造claims的JSON表示（带索引）
         indexed_claims = []
         for i, claim in enumerate(claims):
+            source_url = claim.get("sources", [{}])[0].get("url", "") if claim.get("sources") else ""
+            is_customer_source = any(
+                kw in source_url for kw in ["/customers", "/customer-stories", "/case-studies"]
+            )
             indexed_claims.append({
                 "index": i,
                 "dimension": claim.get("dimension", "unknown"),
                 "claim": claim.get("claim", ""),
                 "confidence": claim.get("confidence", 0.5),
-                "source_url": claim.get("sources", [{}])[0].get("url", "") if claim.get("sources") else "",
+                "source_url": source_url,
                 "snippet": claim.get("sources", [{}])[0].get("snippet", "") if claim.get("sources") else "",
+                "is_customer_source": is_customer_source,
             })
 
         user_prompt = ANALYZE_USER_PROMPT_TEMPLATE.format(

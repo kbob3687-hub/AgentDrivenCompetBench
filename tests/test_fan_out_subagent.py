@@ -28,7 +28,7 @@ class TestFanOutSubAgent:
     def test_get_default_urls_unknown_competitor(self, collector):
         urls = collector._get_default_urls("UnknownProduct", ["pricing"])
         assert len(urls) >= 1
-        assert "google.com" in urls[0]
+        assert "s.jina.ai" in urls[0]
 
     def test_truncate_content_short(self, collector):
         content = "Short content"

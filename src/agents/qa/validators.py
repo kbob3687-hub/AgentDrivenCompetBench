@@ -105,6 +105,56 @@ def check_extensions_coverage(
     return issues, missing
 
 
+def check_user_persona_sourcing(
+    profile: dict[str, Any],
+    original_claims: list[dict[str, Any]] | None = None,
+) -> list[QAIssue]:
+    """检查7：UserPersona 必须有客户案例来源支撑
+
+    每个 persona 的 pain_points 必须有 sources，且 source URL 应来自客户案例页。
+    """
+    issues: list[QAIssue] = []
+    personas = profile.get("user_personas", [])
+
+    if not personas:
+        return issues
+
+    for i, persona in enumerate(personas):
+        segment = persona.get("segment", f"persona_{i}")
+        pain_points = persona.get("pain_points", [])
+
+        if not pain_points:
+            issues.append(QAIssue(
+                field_path=f"user_personas[{i}].pain_points",
+                issue_type="missing_source",
+                severity="major",
+                description=f"用户画像'{segment}'缺少痛点数据",
+                suggestion="从客户案例页补充该用户群体的痛点信息",
+                evidence=f"segment={segment}, pain_points=[]",
+            ))
+            continue
+
+        has_source = False
+        for pp in pain_points:
+            if isinstance(pp, dict):
+                sources = pp.get("sources", [])
+                if sources:
+                    has_source = True
+                    break
+
+        if not has_source:
+            issues.append(QAIssue(
+                field_path=f"user_personas[{i}].pain_points",
+                issue_type="missing_source",
+                severity="minor",
+                description=f"用户画像'{segment}'的痛点缺少溯源来源",
+                suggestion="确保痛点数据引用了客户案例页的原始内容",
+                evidence=f"segment={segment}, no sources found in pain_points",
+            ))
+
+    return issues
+
+
 def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
     """检查1：每条claim的sources数量>=1，不够则记录问题
 
@@ -354,6 +404,9 @@ def run_all_validators(
 
     # 检查1：来源覆盖
     all_issues.extend(check_source_coverage(profile))
+
+    # 检查7：UserPersona溯源
+    all_issues.extend(check_user_persona_sourcing(profile, original_claims))
 
     # 检查2：snippet真实性
     if original_claims:

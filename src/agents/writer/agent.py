@@ -108,6 +108,7 @@ class WriterAgent(BaseAgent):
             "one_liner": profile.get("one_liner"),
             "pricing": profile.get("pricing"),
             "feature_tree": profile.get("feature_tree"),
+            "user_personas": profile.get("user_personas"),
             "swot": profile.get("swot"),
         }
         return json.dumps(compact, ensure_ascii=False, indent=2)
