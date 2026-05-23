@@ -1,0 +1,72 @@
+template_id: hardware_v1
+industry: hardware
+display_name: "硬件/智能设备模板"
+description: "适用于智能硬件、IoT设备、消费电子、机器人等产品"
+version: "1.0"
+
+recommended_sources:
+  - official_doc
+  - tech_blog
+  - web_page
+  - news_article
+
+fields:
+  - field_name: core_specs
+    field_type: list
+    description: "核心硬件参数列表（处理器/内存/存储/传感器等关键规格）"
+    required: true
+    example:
+      - spec: "处理器"
+        value: "Apple M3 Pro"
+      - spec: "内存"
+        value: "18GB统一内存"
+      - spec: "存储"
+        value: "512GB SSD"
+
+  - field_name: ecosystem_lock_in
+    field_type: evidenced_claim
+    description: "生态锁定程度（与其他设备/服务的绑定深度、迁移成本）"
+    required: true
+    example: "深度绑定Apple生态：iCloud、AirDrop、Handoff、Universal Control，迁移到Windows/Android成本极高"
+
+  - field_name: repairability_score
+    field_type: number
+    description: "可维修性评分（1-10，参考iFixit标准）"
+    required: false
+    example: 4
+
+  - field_name: certifications
+    field_type: list
+    description: "认证与合规: FCC/CE/3C/IP等级/MIL-STD等"
+    required: true
+    example: ["FCC", "CE", "3C", "IP68", "MIL-STD-810H"]
+
+  - field_name: manufacturing_origin
+    field_type: string
+    description: "制造产地/代工厂信息"
+    required: false
+    example: "中国大陆（富士康/和硕代工）"
+
+  - field_name: update_policy
+    field_type: evidenced_claim
+    description: "软件/固件更新策略（更新频率、支持年限）"
+    required: true
+    example: "承诺5年系统更新+3年安全更新，月度安全补丁"
+
+  - field_name: connectivity
+    field_type: list
+    description: "连接方式: wifi/bluetooth/usb_c/thunderbolt/nfc/5g/zigbee"
+    required: true
+    example: ["WiFi 6E", "Bluetooth 5.3", "USB-C (Thunderbolt 4)", "NFC"]
+
+  - field_name: battery_life
+    field_type: evidenced_claim
+    description: "续航表现（官方标称 vs 实测）"
+    required: false
+    example: "官方标称18小时，实测混合使用约14小时（来源：Tom's Hardware评测）"
+
+  - field_name: after_sales_policy
+    field_type: evidenced_claim
+    description: "售后政策（保修期限、维修网络、退换货政策）"
+    required: false
+    example: "1年有限保修，可购买AppleCare+延长至3年，全国500+授权服务点"

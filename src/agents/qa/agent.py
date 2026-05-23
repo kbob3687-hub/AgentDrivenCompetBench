@@ -50,6 +50,7 @@ class QAAgent(BaseAgent):
         report_markdown = args.get("report_markdown", "")
         original_claims = args.get("original_claims", [])
         expected_dimensions = args.get("expected_dimensions", [])
+        industry = args.get("industry", "")
 
         if not profile:
             return self.build_message(
@@ -64,7 +65,7 @@ class QAAgent(BaseAgent):
 
         # ====== 第一轮：规则验证器（快速、免费） ======
         rule_issues, avg_confidence, checked, verified, missing_dimensions = run_all_validators(
-            profile, original_claims or None, expected_dimensions or None
+            profile, original_claims or None, expected_dimensions or None, industry=industry
         )
 
         # ====== 第二轮：LLM深度审查 ======

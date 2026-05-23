@@ -1,0 +1,72 @@
+template_id: saas_v1
+industry: saas
+display_name: "项目管理/SaaS产品模板"
+description: "适用于SaaS协作工具、项目管理、文档协作类产品（如Notion、飞书、ClickUp）"
+version: "1.0"
+
+recommended_sources:
+  - official_doc
+  - web_page
+  - app_store_review
+  - tech_blog
+
+fields:
+  - field_name: api_openness
+    field_type: evidenced_claim
+    description: "API开放程度与开发者生态（公开API数量、SDK支持、文档质量）"
+    required: true
+    example: "Notion提供完整的REST API，支持数据库查询、页面创建等操作，有官方SDK覆盖Python/JS/Go"
+
+  - field_name: integration_count
+    field_type: number
+    description: "第三方集成/插件数量"
+    required: true
+    example: 150
+
+  - field_name: integration_highlights
+    field_type: list
+    description: "重点集成伙伴列表"
+    required: false
+    example: ["Slack", "Google Drive", "GitHub", "Figma"]
+
+  - field_name: deployment_options
+    field_type: list
+    description: "部署方式: cloud_only/self_hosted/hybrid/on_premise"
+    required: true
+    example: ["cloud_only"]
+
+  - field_name: data_export_formats
+    field_type: list
+    description: "数据导出格式支持"
+    required: false
+    example: ["Markdown", "CSV", "PDF", "HTML"]
+
+  - field_name: collaboration_features
+    field_type: list
+    description: "协作特性列表: real_time_editing/comments/mentions/permissions/version_history"
+    required: true
+    example: ["real_time_editing", "comments", "mentions", "granular_permissions"]
+
+  - field_name: ai_features
+    field_type: evidenced_claim
+    description: "AI功能集成情况（AI写作、AI搜索、AI自动化等）"
+    required: true
+    example: "Notion AI支持文本生成、摘要、翻译、问答，基于GPT-4，需额外付费$10/用户/月"
+
+  - field_name: mobile_experience
+    field_type: evidenced_claim
+    description: "移动端体验评价（App Store评分、功能完整度）"
+    required: false
+    example: "iOS 4.7分，Android 4.3分，移动端功能覆盖桌面端约80%"
+
+  - field_name: template_marketplace
+    field_type: evidenced_claim
+    description: "模板市场/社区生态"
+    required: false
+    example: "官方模板库1000+，社区贡献模板5000+，支持一键复制"
+
+  - field_name: security_compliance
+    field_type: list
+    description: "安全合规认证: SOC2/ISO27001/GDPR/等保"
+    required: false
+    example: ["SOC2 Type II", "ISO 27001", "GDPR"]

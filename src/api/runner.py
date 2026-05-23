@@ -159,6 +159,7 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
                 title=fetch_result.title,
                 content=content,
                 snapshot_hash=fetch_result.snapshot_hash,
+                industry_fields=industry_fields,
             )
 
             await _publish(task_id, EventType.SUB_AGENT_END, {
@@ -386,6 +387,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             "report_markdown": report_markdown,
             "original_claims": state.get("claims", []),
             "expected_dimensions": state.get("expected_dimensions", []),
+            "industry": state.get("industry", ""),
         },
         state=state,
     )

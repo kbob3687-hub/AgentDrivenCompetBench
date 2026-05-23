@@ -63,6 +63,48 @@ def check_dimension_coverage(
     return issues, missing
 
 
+def check_extensions_coverage(
+    profile: dict[str, Any],
+    industry: str,
+) -> tuple[list[QAIssue], list[str]]:
+    """检查6：行业模板扩展字段填充完整性
+
+    根据行业模板定义的 required 字段，检查 profile.extensions 是否已填充。
+    未填充的必填字段会触发 revise 补采。
+
+    Returns:
+        (issues, missing_extension_fields)
+    """
+    issues: list[QAIssue] = []
+    missing: list[str] = []
+
+    if not industry:
+        return issues, missing
+
+    try:
+        from schemas.extensions import load_template
+        template = load_template(industry)
+    except (ValueError, ImportError):
+        return issues, missing
+
+    extensions = profile.get("extensions", {})
+    missing = template.validate_extensions(extensions)
+
+    for field_name in missing:
+        field_def = next((f for f in template.fields if f.field_name == field_name), None)
+        desc = field_def.description if field_def else field_name
+        issues.append(QAIssue(
+            field_path=f"extensions.{field_name}",
+            issue_type="missing_source",
+            severity="major",
+            description=f"行业模板必填扩展字段'{field_name}'未填充: {desc}",
+            suggestion=f"补充采集'{field_name}'相关数据并在分析时填充该字段",
+            evidence=f"industry={industry}, field={field_name}, required=True",
+        ))
+
+    return issues, missing
+
+
 def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
     """检查1：每条claim的sources数量>=1，不够则记录问题
 
@@ -288,6 +330,7 @@ def run_all_validators(
     profile: dict[str, Any],
     original_claims: list[dict[str, Any]] | None = None,
     expected_dimensions: list[str] | None = None,
+    industry: str | None = None,
 ) -> tuple[list[QAIssue], float, int, int, list[str]]:
     """运行所有验证器，返回(issues, avg_confidence, checked_count, verified_count, missing_dimensions)"""
     all_issues: list[QAIssue] = []
@@ -299,6 +342,15 @@ def run_all_validators(
             original_claims, expected_dimensions
         )
         all_issues.extend(dim_issues)
+
+    # 检查6：行业模板扩展字段填充
+    if industry:
+        ext_issues, missing_ext = check_extensions_coverage(profile, industry)
+        all_issues.extend(ext_issues)
+        # 扩展字段缺失也加入 missing_dimensions 触发补采
+        for f in missing_ext:
+            if f not in missing_dimensions:
+                missing_dimensions.append(f)
 
     # 检查1：来源覆盖
     all_issues.extend(check_source_coverage(profile))

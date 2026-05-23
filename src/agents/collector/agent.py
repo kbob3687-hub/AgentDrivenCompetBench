@@ -119,14 +119,27 @@ class CollectorAgent(BaseAgent):
         title: str,
         content: str,
         snapshot_hash: str,
+        industry_fields: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         """调用LLM从网页内容中提取结构化信息"""
+        # 构建行业扩展字段提示段
+        if industry_fields:
+            fields_str = "、".join(industry_fields[:8])
+            industry_fields_section = (
+                f"\n## 行业扩展字段（请重点关注）\n"
+                f"除基础维度外，请特别留意以下行业相关信息：{fields_str}\n"
+                f"如果网页中包含这些字段的相关信息，请一并提取（dimension 标记为对应字段名）。\n\n"
+            )
+        else:
+            industry_fields_section = "\n"
+
         user_prompt = COLLECT_USER_PROMPT_TEMPLATE.format(
             competitor_name=competitor_name,
             dimensions="、".join(dimensions),
             url=url,
             title=title,
             content=content,
+            industry_fields_section=industry_fields_section,
         )
 
         response = await self.call_llm(
