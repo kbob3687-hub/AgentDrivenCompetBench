@@ -99,40 +99,24 @@ async def get_template_detail(industry: str) -> dict[str, Any]:
 
 @router.post("/{task_id}/intervene")
 async def intervene_task(task_id: str, req: InterveneRequest) -> dict[str, str]:
-    """人工介入 - 强制通过/补充URL/终止任务"""
+    """人工介入 - 强制通过/继续迭代/终止任务"""
+    from api.runner import hitl_resume
+
     task_info = _tasks.get(task_id)
     if not task_info:
         raise HTTPException(status_code=404, detail="Task not found")
 
     if req.action == "force_pass":
-        if task_info.get("asyncio_task") and not task_info["asyncio_task"].done():
-            task_info["asyncio_task"].cancel()
-        task_info["status"] = "completed"
-        result = task_info.get("result") or {}
-        result["final_status"] = f"human_force_pass(reason={req.reason})"
-        result["human_intervention"] = {
-            "action": "force_pass",
-            "reason": req.reason,
-            "timestamp": __import__("datetime").datetime.now().isoformat(),
-        }
-        task_info["result"] = result
-        from storage.crud import save_run
-        await save_run(result, task_id, "completed")
+        hitl_resume(task_id, "force_pass")
         return {"status": "ok", "message": "Task force-passed by human"}
 
-    elif req.action == "abort":
-        if task_info.get("asyncio_task") and not task_info["asyncio_task"].done():
-            task_info["asyncio_task"].cancel()
-        task_info["status"] = "failed"
-        task_info["result"] = {
-            "error": f"Aborted by human: {req.reason}",
-            "human_intervention": {"action": "abort", "reason": req.reason},
-        }
-        return {"status": "ok", "message": "Task aborted"}
+    elif req.action == "continue":
+        hitl_resume(task_id, "continue")
+        return {"status": "ok", "message": "Pipeline resumed, continuing iteration"}
 
-    elif req.action == "add_urls":
-        task_info.setdefault("added_urls", []).extend(req.urls)
-        return {"status": "ok", "message": f"Added {len(req.urls)} URLs for next iteration"}
+    elif req.action == "abort":
+        hitl_resume(task_id, "abort")
+        return {"status": "ok", "message": "Task aborted by human"}
 
     raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
 

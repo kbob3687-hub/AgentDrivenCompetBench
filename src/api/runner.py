@@ -454,8 +454,37 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
 
     max_iter = state.get("max_iterations", 3)
     if verdict == "pass":
-        update["final_status"] = "completed"
+        # HITL: pause for human confirmation before completing
+        await _publish(task_id, EventType.HITL_PAUSE, {
+            "iteration": iteration,
+            "score": score,
+            "verdict": verdict,
+            "missing_dimensions": [],
+            "message": f"QA通过(score={score:.2f})，等待人工确认发布...",
+        })
+        gate = asyncio.Event()
+        _hitl_gates[task_id] = gate
+        _hitl_decisions.pop(task_id, None)
+        await gate.wait()
+        _hitl_gates.pop(task_id, None)
+
+        decision = _hitl_decisions.pop(task_id, "force_pass")
+        await _publish(task_id, EventType.HITL_RESUME, {
+            "decision": decision, "iteration": iteration,
+        })
+
+        if decision == "abort":
+            update["qa_verdict"] = "reject"
+            update["final_status"] = "human_abort"
+        elif decision == "continue":
+            # 人工要求重跑
+            update["final_status"] = "running"
+            update.pop("iteration", None)
+            update["iteration"] = iteration + 1
+        else:
+            update["final_status"] = "completed"
         update["completed_at"] = datetime.now().isoformat()
+
     elif verdict == "reject":
         update["final_status"] = f"rejected(score={score:.2f})"
         update["completed_at"] = datetime.now().isoformat()

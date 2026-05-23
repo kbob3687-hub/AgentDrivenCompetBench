@@ -203,19 +203,19 @@ class CollectorAgent(BaseAgent):
     def _get_default_urls(self, target: str, scope: list[str]) -> list[str]:
         """根据竞品名称和采集维度生成默认URL列表"""
         url_map: dict[str, dict[str, list[str]]] = {
-            "Notion": {
+            "notion": {
                 "pricing": ["https://www.notion.so/pricing"],
                 "features": ["https://www.notion.so/product"],
                 "integrations": ["https://www.notion.so/integrations"],
                 "ai_features": ["https://www.notion.so/product/ai"],
             },
-            "Feishu": {
+            "feishu": {
                 "pricing": ["https://www.feishu.cn/pricing"],
                 "features": ["https://www.feishu.cn/product/docs"],
                 "integrations": ["https://www.feishu.cn/ecosystem"],
                 "ai_features": ["https://www.feishu.cn/product/ai"],
             },
-            "ClickUp": {
+            "clickup": {
                 "pricing": ["https://clickup.com/pricing"],
                 "features": ["https://clickup.com/features"],
                 "integrations": ["https://clickup.com/integrations"],
@@ -223,8 +223,18 @@ class CollectorAgent(BaseAgent):
             },
         }
 
+        # Aliases: 中文名/变体 → 标准key
+        aliases: dict[str, str] = {
+            "飞书": "feishu",
+            "lark": "feishu",
+            "click up": "clickup",
+        }
+
+        key = target.lower().strip()
+        key = aliases.get(key, key)
+
         urls: list[str] = []
-        target_urls = url_map.get(target, {})
+        target_urls = url_map.get(key, {})
         for dim in scope:
             urls.extend(target_urls.get(dim, []))
 

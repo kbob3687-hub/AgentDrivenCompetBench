@@ -6,6 +6,7 @@ function createInitialState(): AnalysisState {
   return {
     taskId: null,
     status: 'idle',
+    pauseVerdict: null,
     nodeStates: {
       collector: 'idle',
       analyst: 'idle',
@@ -95,6 +96,18 @@ export function useAnalysis() {
         addLog(`Analysis complete! Final score: ${event.data.qa_score}`, 'success')
         break
       }
+      case 'hitl_pause': {
+        state.status = 'paused'
+        state.pauseVerdict = event.data.verdict || 'revise'
+        addLog(`Pipeline paused: ${event.data.message} (score: ${event.data.score})`, 'warning', 'qa')
+        break
+      }
+      case 'hitl_resume': {
+        state.status = 'running'
+        state.pauseVerdict = null
+        addLog(`Human decision: ${event.data.decision}, pipeline resumed`, 'info')
+        break
+      }
       case 'error': {
         state.status = 'failed'
         addLog(`Error: ${event.data.message}`, 'error')
@@ -178,7 +191,7 @@ export function useAnalysis() {
     })
   }
 
-  async function intervene(action: 'force_pass' | 'abort', reason: string = '') {
+  async function intervene(action: 'force_pass' | 'abort' | 'continue', reason: string = '') {
     if (!state.taskId) return
     try {
       const response = await fetch(`/api/analyze/${state.taskId}/intervene`, {
@@ -188,11 +201,12 @@ export function useAnalysis() {
       })
       if (response.ok) {
         if (action === 'force_pass') {
-          state.status = 'completed'
           addLog(`Human intervention: force pass (${reason || 'no reason'})`, 'warning')
-        } else {
+        } else if (action === 'abort') {
           state.status = 'failed'
           addLog(`Human intervention: aborted (${reason || 'no reason'})`, 'error')
+        } else {
+          addLog(`Human intervention: continue iteration`, 'info')
         }
       }
     } catch (err: any) {

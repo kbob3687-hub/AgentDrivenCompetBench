@@ -19,7 +19,7 @@ class AnalyzeRequest(BaseModel):
 
 
 class InterveneRequest(BaseModel):
-    action: str = Field(description="人工介入动作: force_pass / add_urls / abort")
+    action: str = Field(description="人工介入动作: force_pass / continue / abort")
     urls: list[str] = Field(default_factory=list, description="补充的URL列表")
     reason: str = Field(default="", description="介入原因")
 

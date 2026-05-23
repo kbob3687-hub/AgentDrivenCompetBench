@@ -9,6 +9,8 @@ export type SSEEvent =
   | { type: 'iteration_summary'; data: FeedbackRecord }
   | { type: 'sub_agent_start'; data: SSESubAgentStart }
   | { type: 'sub_agent_end'; data: SSESubAgentEnd }
+  | { type: 'hitl_pause'; data: { iteration: number; score: number; verdict: string; missing_dimensions: string[]; message: string } }
+  | { type: 'hitl_resume'; data: { decision: string; iteration: number } }
   | { type: 'complete'; data: SSEComplete }
   | { type: 'error'; data: { message: string } }
 
@@ -48,6 +50,14 @@ export function useSSE(onEvent: (event: SSEEvent) => void) {
 
     eventSource.addEventListener('sub_agent_end', (e: MessageEvent) => {
       onEvent({ type: 'sub_agent_end', data: JSON.parse(e.data) })
+    })
+
+    eventSource.addEventListener('hitl_pause', (e: MessageEvent) => {
+      onEvent({ type: 'hitl_pause', data: JSON.parse(e.data) })
+    })
+
+    eventSource.addEventListener('hitl_resume', (e: MessageEvent) => {
+      onEvent({ type: 'hitl_resume', data: JSON.parse(e.data) })
     })
 
     eventSource.addEventListener('complete', (e: MessageEvent) => {
