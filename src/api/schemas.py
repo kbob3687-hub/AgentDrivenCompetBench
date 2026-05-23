@@ -26,3 +26,24 @@ class TaskStatus(BaseModel):
     task_id: str
     status: str = Field(description="running / completed / failed")
     result: dict[str, Any] | None = Field(default=None, description="完成后的结果")
+
+
+class HistoryItem(BaseModel):
+    task_id: str
+    competitor_name: str
+    industry: str
+    status: str
+    qa_score: float | None = None
+    qa_verdict: str | None = None
+    iteration: int = 1
+    report_length: int = 0
+    sources_fetched: int = 0
+    started_at: str | None = None
+    completed_at: str | None = None
+
+
+class PaginatedHistory(BaseModel):
+    items: list[HistoryItem]
+    total: int
+    page: int
+    page_size: int

@@ -29,7 +29,9 @@ class GraphState(TypedDict, total=False):
     """LangGraph StateGraph的状态定义
 
     所有node通过读写这个dict通信，避免Agent间直接耦合。
-    agent_traces 使用 operator.add reducer 实现跨 node 自动追加。
+    注：agent_traces 实际由 api/runner.py 中的模块级 _task_traces 累积，
+    不依赖 LangGraph 的 state reducer（早期试过 Annotated[list, operator.add]
+    在 TypedDict 上不稳定，最终改为外部累加）。
     """
 
     # ---- 输入参数 ----
