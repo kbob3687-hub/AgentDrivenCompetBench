@@ -14,6 +14,7 @@ from schemas.competitor import (
     SourceReference,
     SourceType,
     SWOTItem,
+    UserPersona,
 )
 
 
@@ -158,6 +159,37 @@ def build_swot(
     return swot_items
 
 
+def build_user_personas(
+    llm_personas: list[dict[str, Any]] | None,
+    original_claims: list[dict[str, Any]],
+) -> list[UserPersona]:
+    """从LLM分析结果构建UserPersona列表"""
+    if not llm_personas:
+        return []
+    personas = []
+    for p in llm_personas:
+        indices = p.get("evidence_claim_indices", [])
+        supporting = [original_claims[i] for i in indices if i < len(original_claims)]
+        confidence = p.get("confidence", average_confidence(supporting))
+        sources = _collect_sources(supporting)
+
+        pain_claims = []
+        for pain in p.get("pain_points", []):
+            pain_claims.append(EvidencedClaim(
+                claim=pain if isinstance(pain, str) else pain.get("claim", ""),
+                confidence=confidence,
+                sources=sources if sources else [_placeholder_source()],
+                reasoning="基于用户相关claims推断",
+            ))
+
+        personas.append(UserPersona(
+            segment=p.get("segment", "未知用户群"),
+            pain_points=pain_claims,
+            usage_scenarios=p.get("usage_scenarios", []),
+        ))
+    return personas
+
+
 def build_competitor_profile(
     competitor_name: str,
     llm_output: dict[str, Any],
@@ -167,6 +199,7 @@ def build_competitor_profile(
     pricing = build_pricing_model(llm_output.get("pricing"), original_claims)
     feature_tree = build_feature_tree(llm_output.get("feature_tree") or [], original_claims)
     swot = build_swot(llm_output.get("swot") or {}, original_claims)
+    user_personas = build_user_personas(llm_output.get("user_personas") or [], original_claims)
 
     profile = CompetitorProfile(
         company_name=llm_output.get("company_name", competitor_name),
@@ -177,6 +210,7 @@ def build_competitor_profile(
         feature_tree=feature_tree,
         pricing=pricing,
         swot=swot,
+        user_personas=user_personas,
     )
     profile.calculate_completeness()
     return profile

@@ -15,6 +15,7 @@ from api.schemas import (
     AnalyzeRequest,
     AnalyzeResponse,
     HistoryItem,
+    InterveneRequest,
     PaginatedHistory,
     TaskStatus,
 )
@@ -35,6 +36,7 @@ async def _run_task(task_id: str, req: AnalyzeRequest) -> None:
             dimensions=req.dimensions,
             industry=req.industry,
             max_iterations=req.max_iterations,
+            target_urls=req.target_urls,
         )
         _tasks[task_id]["status"] = "completed"
         _tasks[task_id]["result"] = result
@@ -93,6 +95,46 @@ async def get_template_detail(industry: str) -> dict[str, Any]:
     if industry not in TEMPLATE_REGISTRY:
         raise HTTPException(status_code=404, detail=f"Template '{industry}' not found")
     return get_template_schema(industry)
+
+
+@router.post("/{task_id}/intervene")
+async def intervene_task(task_id: str, req: InterveneRequest) -> dict[str, str]:
+    """人工介入 - 强制通过/补充URL/终止任务"""
+    task_info = _tasks.get(task_id)
+    if not task_info:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    if req.action == "force_pass":
+        if task_info.get("asyncio_task") and not task_info["asyncio_task"].done():
+            task_info["asyncio_task"].cancel()
+        task_info["status"] = "completed"
+        result = task_info.get("result") or {}
+        result["final_status"] = f"human_force_pass(reason={req.reason})"
+        result["human_intervention"] = {
+            "action": "force_pass",
+            "reason": req.reason,
+            "timestamp": __import__("datetime").datetime.now().isoformat(),
+        }
+        task_info["result"] = result
+        from storage.crud import save_run
+        await save_run(result, task_id, "completed")
+        return {"status": "ok", "message": "Task force-passed by human"}
+
+    elif req.action == "abort":
+        if task_info.get("asyncio_task") and not task_info["asyncio_task"].done():
+            task_info["asyncio_task"].cancel()
+        task_info["status"] = "failed"
+        task_info["result"] = {
+            "error": f"Aborted by human: {req.reason}",
+            "human_intervention": {"action": "abort", "reason": req.reason},
+        }
+        return {"status": "ok", "message": "Task aborted"}
+
+    elif req.action == "add_urls":
+        task_info.setdefault("added_urls", []).extend(req.urls)
+        return {"status": "ok", "message": f"Added {len(req.urls)} URLs for next iteration"}
+
+    raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
 
 
 @router.get("/{task_id}/stream")

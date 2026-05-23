@@ -7,6 +7,10 @@ const props = defineProps<{
   isRunning: boolean
 }>()
 
+const emit = defineEmits<{
+  intervene: [action: 'force_pass' | 'abort']
+}>()
+
 function scoreColor(score: number): string {
   if (score >= 0.7) return 'bg-green-600'
   if (score >= 0.55) return 'bg-orange-500'
@@ -129,6 +133,27 @@ function issuesDelta(index: number): number | null {
       <span class="text-xs text-slate-300">
         共 {{ iterations.length }} 轮迭代
       </span>
+    </div>
+
+    <!-- 人工介入按钮 -->
+    <div
+      v-if="isRunning && iterations.length > 0 && iterations[iterations.length - 1].verdict === 'revise'"
+      class="mt-3 px-3 py-2 rounded-md bg-orange-950/50 border border-orange-700/50 flex items-center gap-3"
+    >
+      <span class="text-xs text-orange-300">QA 打回，是否人工介入？</span>
+      <button
+        class="px-3 py-1 text-xs font-medium rounded bg-green-700 text-green-100 hover:bg-green-600 transition-colors"
+        @click="emit('intervene', 'force_pass')"
+      >
+        强制通过
+      </button>
+      <button
+        class="px-3 py-1 text-xs font-medium rounded bg-red-700 text-red-100 hover:bg-red-600 transition-colors"
+        @click="emit('intervene', 'abort')"
+      >
+        终止任务
+      </button>
+      <span class="text-[10px] text-slate-500 ml-auto">或等待 Agent 自动迭代</span>
     </div>
   </div>
 </template>

@@ -7,13 +7,13 @@ import ResultPanel from './components/ResultPanel.vue'
 import IterationTimeline from './components/IterationTimeline.vue'
 import { useAnalysis } from './composables/useAnalysis'
 
-const { state, startAnalysis, restoreFromHash } = useAnalysis()
+const { state, startAnalysis, restoreFromHash, intervene } = useAnalysis()
 
 const isRunning = computed(() => state.status === 'running')
 const isCompleted = computed(() => state.status === 'completed')
 
-function handleSubmit(payload: { competitorName: string; dimensions: string[]; industry: string }) {
-  startAnalysis(payload.competitorName, payload.dimensions, payload.industry)
+function handleSubmit(payload: { competitorName: string; dimensions: string[]; industry: string; targetUrls: string[] }) {
+  startAnalysis(payload.competitorName, payload.dimensions, payload.industry, payload.targetUrls)
 }
 
 onMounted(() => {
@@ -67,6 +67,7 @@ onMounted(() => {
         :iterations="state.iterations"
         :current-iteration="state.currentIteration"
         :is-running="isRunning"
+        @intervene="(action) => intervene(action)"
       />
 
       <!-- Result Panel -->

@@ -105,7 +105,7 @@ export function useAnalysis() {
 
   const { connect, close } = useSSE(handleEvent)
 
-  async function startAnalysis(competitorName: string, dimensions: string[], industry: string = 'saas') {
+  async function startAnalysis(competitorName: string, dimensions: string[], industry: string = 'saas', targetUrls: string[] = []) {
     resetState()
     state.status = 'running'
 
@@ -113,7 +113,7 @@ export function useAnalysis() {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ competitor_name: competitorName, dimensions, industry })
+        body: JSON.stringify({ competitor_name: competitorName, dimensions, industry, target_urls: targetUrls })
       })
 
       if (!response.ok) {
@@ -178,5 +178,27 @@ export function useAnalysis() {
     })
   }
 
-  return { state, startAnalysis, resetState, restoreFromHash }
+  async function intervene(action: 'force_pass' | 'abort', reason: string = '') {
+    if (!state.taskId) return
+    try {
+      const response = await fetch(`/api/analyze/${state.taskId}/intervene`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, reason })
+      })
+      if (response.ok) {
+        if (action === 'force_pass') {
+          state.status = 'completed'
+          addLog(`Human intervention: force pass (${reason || 'no reason'})`, 'warning')
+        } else {
+          state.status = 'failed'
+          addLog(`Human intervention: aborted (${reason || 'no reason'})`, 'error')
+        }
+      }
+    } catch (err: any) {
+      addLog(`Intervene failed: ${err.message}`, 'error')
+    }
+  }
+
+  return { state, startAnalysis, resetState, restoreFromHash, intervene }
 }

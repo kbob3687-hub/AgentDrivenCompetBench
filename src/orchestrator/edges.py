@@ -22,6 +22,7 @@ def qa_routing(state: GraphState) -> str:
     - pass → end
     - revise → collector（补采缺失维度后重走全流程）
     - reject → end（质量太差，不再重试）
+    - human_force_pass / human_abort → end
 
     Returns:
         下一个node的名称，或"end"表示流程结束
@@ -29,6 +30,11 @@ def qa_routing(state: GraphState) -> str:
     verdict = state.get("qa_verdict", "reject")
     iteration = state.get("iteration", 1)
     max_iterations = state.get("max_iterations", 3)
+    final_status = state.get("final_status", "")
+
+    # Human intervention overrides
+    if final_status in ("human_force_pass", "human_abort"):
+        return "end"
 
     if iteration > max_iterations:
         return "end"

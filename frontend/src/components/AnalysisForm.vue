@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 const emit = defineEmits<{
-  submit: [payload: { competitorName: string; dimensions: string[]; industry: string }]
+  submit: [payload: { competitorName: string; dimensions: string[]; industry: string; targetUrls: string[] }]
 }>()
 
 defineProps<{
@@ -24,6 +24,8 @@ const industries = [
   { id: 'hardware', label: '硬件/智能设备' }
 ]
 const selectedIndustry = ref('saas')
+const targetUrlsInput = ref('')
+const showUrlInput = ref(false)
 
 function toggleDimension(id: string) {
   const idx = selectedDimensions.value.indexOf(id)
@@ -34,12 +36,21 @@ function toggleDimension(id: string) {
   }
 }
 
+function parseUrls(): string[] {
+  if (!targetUrlsInput.value.trim()) return []
+  return targetUrlsInput.value
+    .split('\n')
+    .map(u => u.trim())
+    .filter(u => u.length > 0 && u.startsWith('http'))
+}
+
 function handleSubmit() {
   if (!competitorName.value.trim() || selectedDimensions.value.length === 0) return
   emit('submit', {
     competitorName: competitorName.value.trim(),
     dimensions: [...selectedDimensions.value],
-    industry: selectedIndustry.value
+    industry: selectedIndustry.value,
+    targetUrls: parseUrls()
   })
 }
 </script>
@@ -104,6 +115,27 @@ function handleSubmit() {
       >
         {{ disabled ? '分析中...' : '开始分析' }}
       </button>
+    </div>
+
+    <!-- 种子URL输入（人工介入） -->
+    <div class="mt-4 border-t border-slate-700 pt-3">
+      <button
+        type="button"
+        class="text-xs text-slate-400 hover:text-slate-200 transition-colors"
+        @click="showUrlInput = !showUrlInput"
+      >
+        {{ showUrlInput ? '收起' : '指定采集URL（可选）' }}
+      </button>
+      <div v-if="showUrlInput" class="mt-2">
+        <textarea
+          v-model="targetUrlsInput"
+          :disabled="disabled"
+          rows="3"
+          class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-md text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          placeholder="每行一个URL，例如：&#10;https://notion.so/pricing&#10;https://notion.so/product"
+        ></textarea>
+        <p class="text-xs text-slate-500 mt-1">人工指定数据源，Agent将优先采集这些页面</p>
+      </div>
     </div>
   </div>
 </template>

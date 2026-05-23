@@ -22,6 +22,8 @@ class EventType(str, Enum):
     ITERATION_SUMMARY = "iteration_summary"
     SUB_AGENT_START = "sub_agent_start"
     SUB_AGENT_END = "sub_agent_end"
+    HITL_PAUSE = "hitl_pause"
+    HITL_RESUME = "hitl_resume"
     COMPLETE = "complete"
     ERROR = "error"
 

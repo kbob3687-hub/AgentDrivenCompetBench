@@ -15,6 +15,13 @@ class AnalyzeRequest(BaseModel):
     )
     industry: str = Field(default="saas", description="行业模板: saas/consumer/hardware")
     max_iterations: int = Field(default=3, ge=1, le=10, description="最大迭代次数")
+    target_urls: list[str] = Field(default_factory=list, description="人工指定的种子URL列表")
+
+
+class InterveneRequest(BaseModel):
+    action: str = Field(description="人工介入动作: force_pass / add_urls / abort")
+    urls: list[str] = Field(default_factory=list, description="补充的URL列表")
+    reason: str = Field(default="", description="介入原因")
 
 
 class AnalyzeResponse(BaseModel):
