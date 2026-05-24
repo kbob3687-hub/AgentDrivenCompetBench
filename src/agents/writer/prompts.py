@@ -53,7 +53,8 @@ WRITER_SYSTEM_PROMPT = """你是一个专业的竞品分析报告撰写Agent。�
 - 每条用加粗标题 + 1-2句话说明，不超过50字
 
 ### 7. 附录：数据来源
-- 编号列表，每条：[N] 来源描述 - URL
+- 编号列表，每条格式：[N] 来源描述 - [URL](URL)
+- **URL必须用Markdown链接格式**，确保渲染后可点击跳转，如：[1] Notion官网定价页 - [https://notion.so/pricing](https://notion.so/pricing)
 - **重要**：同一个URL只出现一次，多处引用同一来源时使用相同编号
 """
 
@@ -72,5 +73,5 @@ WRITE_USER_PROMPT_TEMPLATE = """请基于以下CompetitorProfile生成完整的�
 2. 定价部分用表格展示，单元格内容简短（关键词而非长句）
 3. SWOT部分用列表而非表格，每条控制在一行内
 4. 功能列表每项不超过15字
-5. 附录列出所有引用来源的URL
+5. 附录列出所有引用来源，URL用Markdown链接格式 [URL](URL) 确保可点击
 """

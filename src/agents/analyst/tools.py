@@ -201,6 +201,9 @@ def build_competitor_profile(
     swot = build_swot(llm_output.get("swot") or {}, original_claims)
     user_personas = build_user_personas(llm_output.get("user_personas") or [], original_claims)
 
+    # 从LLM输出或原始claims中提取行业扩展字段
+    extensions = _build_extensions(llm_output, original_claims)
+
     profile = CompetitorProfile(
         company_name=llm_output.get("company_name", competitor_name),
         product_name=llm_output.get("product_name", competitor_name),
@@ -211,9 +214,54 @@ def build_competitor_profile(
         pricing=pricing,
         swot=swot,
         user_personas=user_personas,
+        extensions=extensions,
     )
     profile.calculate_completeness()
     return profile
+
+
+def _build_extensions(
+    llm_output: dict[str, Any],
+    original_claims: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """从LLM输出和原始claims中提取行业扩展字段
+
+    优先取LLM输出中的extensions字段，
+    否则从原始claims中按dimension分组提取行业相关claims。
+    """
+    # LLM直接输出了extensions
+    llm_ext = llm_output.get("extensions", {})
+    if llm_ext:
+        return llm_ext
+
+    # 从原始claims中按dimension分组，提取非核心维度的claims作为扩展字段
+    core_dims = {"pricing", "features", "integrations", "ai_features", "user_personas", "unknown"}
+    extensions: dict[str, Any] = {}
+
+    dim_groups: dict[str, list[dict]] = {}
+    for claim in original_claims:
+        dim = claim.get("dimension", "unknown")
+        if dim not in core_dims:
+            dim_groups.setdefault(dim, []).append(claim)
+
+    for dim, claims in dim_groups.items():
+        if len(claims) == 1:
+            extensions[dim] = {
+                "claim": claims[0].get("claim", ""),
+                "confidence": claims[0].get("confidence", 0.5),
+                "source_url": claims[0].get("sources", [{}])[0].get("url", "") if claims[0].get("sources") else "",
+            }
+        else:
+            extensions[dim] = [
+                {
+                    "claim": c.get("claim", ""),
+                    "confidence": c.get("confidence", 0.5),
+                    "source_url": c.get("sources", [{}])[0].get("url", "") if c.get("sources") else "",
+                }
+                for c in claims
+            ]
+
+    return extensions
 
 
 def _collect_sources(claims: list[dict[str, Any]]) -> list[SourceReference]:

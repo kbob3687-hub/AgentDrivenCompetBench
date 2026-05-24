@@ -393,14 +393,11 @@ def run_all_validators(
         )
         all_issues.extend(dim_issues)
 
-    # 检查6：行业模板扩展字段填充
+    # 检查6：行业模板扩展字段填充（只影响分数，不强制打回）
     if industry:
-        ext_issues, missing_ext = check_extensions_coverage(profile, industry)
+        ext_issues, _missing_ext = check_extensions_coverage(profile, industry)
         all_issues.extend(ext_issues)
-        # 扩展字段缺失也加入 missing_dimensions 触发补采
-        for f in missing_ext:
-            if f not in missing_dimensions:
-                missing_dimensions.append(f)
+        # 扩展字段缺失不加入 missing_dimensions，避免强制 revise
 
     # 检查1：来源覆盖
     all_issues.extend(check_source_coverage(profile))

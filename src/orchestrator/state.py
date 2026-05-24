@@ -42,6 +42,12 @@ class GraphState(TypedDict, total=False):
     industry: str
     industry_fields: list[str]
 
+    # ---- Discovery输出 ----
+    discovered_urls: list[str]
+    discovery_path: str  # "warm" | "cold"
+    discovery_domain: str
+    discovery_queries: list[str]
+
     # ---- Collector输出 ----
     claims: list[dict[str, Any]]
     sources_fetched: int
@@ -64,6 +70,7 @@ class GraphState(TypedDict, total=False):
     qa_issues: list[dict[str, Any]]
     qa_feedback_summary: str
     missing_dimensions: list[str]
+    qa_target_agent: str
 
     # ---- 迭代控制 ----
     iteration: int
