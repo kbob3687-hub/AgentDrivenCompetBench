@@ -4,6 +4,8 @@ display_name: "项目管理/SaaS产品模板"
 description: "适用于SaaS协作工具、项目管理、文档协作类产品（如Notion、飞书、ClickUp）"
 version: "1.0"
 
+discovery_strategy: official_only
+
 recommended_sources:
   - official_doc
   - web_page

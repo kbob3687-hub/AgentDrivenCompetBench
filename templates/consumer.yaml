@@ -4,6 +4,23 @@ display_name: "消费品模板"
 description: "适用于消费电子、快消品、零售、DTC品牌类产品"
 version: "1.0"
 
+discovery_strategy: open_search
+trusted_domains:
+  - "36kr.com"
+  - "latepost.com"
+  - "jiemian.com"
+  - "idc.com"
+  - "canalys.com"
+  - "counterpoint.com"
+  - "zhihu.com"
+  - "xiaohongshu.com"
+  - "tmall.com"
+  - "jd.com"
+  - "weibo.com"
+  - "ithome.com"
+  - "pingwest.com"
+  - "sspai.com"
+
 recommended_sources:
   - web_page
   - news_article
