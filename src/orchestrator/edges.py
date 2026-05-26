@@ -37,6 +37,10 @@ def qa_routing(state: GraphState) -> str:
     if final_status in ("human_force_pass", "human_abort", "completed"):
         return "end"
 
+    # Reject verdict sets final_status like "rejected(score=0.50)" — terminate
+    if final_status.startswith("rejected"):
+        return "end"
+
     # Human requested re-run after pass
     if final_status == "running":
         return "collector"

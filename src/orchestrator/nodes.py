@@ -53,10 +53,12 @@ def _make_message(
 
 
 async def discovery_node(state: GraphState) -> dict[str, Any]:
-    """Discovery节点 - URL发现与路由（Warm/Cold Path）"""
+    """Discovery节点 - URL发现与路由（Warm/Cold/Open Search Path）"""
     target = state["competitor_name"]
     scope = state.get("collect_scope", ["pricing", "features"])
     target_urls = state.get("target_urls", [])
+    strategy = state.get("discovery_strategy", "official_only")
+    trusted_domains = state.get("trusted_domains", [])
 
     # 如果用户指定了URL，跳过discovery
     if target_urls:
@@ -68,9 +70,9 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
             "discovery_queries": [],
         }
 
-    print(f"\n[Discovery] 发现 {target} 的数据源URL...")
+    print(f"\n[Discovery] 发现 {target} 的数据源URL (策略: {strategy})...")
     agent = DiscoveryAgent()
-    result = await agent.discover(target, scope)
+    result = await agent.discover(target, scope, strategy=strategy, trusted_domains=trusted_domains)
 
     path = result["path"]
     urls = result["urls"]
@@ -147,6 +149,7 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             "competitor_name": state["competitor_name"],
             "claims": claims,
             "dimensions_requested": state.get("collect_scope", ["pricing", "features"]),
+            "industry": state.get("industry", ""),
         },
         state=state,
     )

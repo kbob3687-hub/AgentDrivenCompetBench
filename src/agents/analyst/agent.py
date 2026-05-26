@@ -17,6 +17,7 @@ from agents.analyst.tools import (
     group_claims_by_dimension,
 )
 from schemas.competitor import CompetitorProfile
+from schemas.extensions import load_template, TEMPLATE_REGISTRY
 from schemas.message import AgentMessage, AnalyzeRequest, MessageType
 
 
@@ -35,7 +36,7 @@ class AnalystAgent(BaseAgent):
         return AgentConfig(
             provider="openai_compat",
             model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
-            max_tokens=8192,
+            max_tokens=16384,
             temperature=0.0,
         )
 
@@ -53,6 +54,7 @@ class AnalystAgent(BaseAgent):
         competitor_name = args.get("competitor_name", "")
         claims = args.get("claims", [])
         dimensions = args.get("dimensions_requested", [])
+        industry = args.get("industry", "") or getattr(message.context, "industry", "") if message.context else ""
 
         if not claims:
             return self.build_message(
@@ -91,6 +93,15 @@ class AnalystAgent(BaseAgent):
                 "is_customer_source": is_customer_source,
             })
 
+        # 动态注入行业扩展字段到 prompt
+        extension_prompt = ""
+        if industry and industry in TEMPLATE_REGISTRY:
+            try:
+                template = load_template(industry)
+                extension_prompt = template.to_prompt_section()
+            except ValueError:
+                pass
+
         user_prompt = ANALYZE_USER_PROMPT_TEMPLATE.format(
             competitor_name=competitor_name,
             dimensions=dimensions_summary,
@@ -98,14 +109,18 @@ class AnalystAgent(BaseAgent):
             claims_json=json.dumps(indexed_claims, ensure_ascii=False, indent=2),
         )
 
+        if extension_prompt:
+            user_prompt = user_prompt + "\n\n" + extension_prompt
+
         # 调用Claude进行分析
         response = await self.call_llm(
-            messages=[{"role": "user", "content": user_prompt}]
+            messages=[{"role": "user", "content": user_prompt}],
         )
 
         # 解析LLM输出
         llm_output = self._parse_llm_output(response.text)
         if not llm_output:
+            print(f"  [Analyst] LLM output parse FAILED. Raw text head: {response.text[:500]!r}")
             return self.build_message(
                 to_agent="orchestrator",
                 function_name="analyze_result",
@@ -121,7 +136,24 @@ class AnalystAgent(BaseAgent):
             )
 
         # 构建CompetitorProfile
-        profile = build_competitor_profile(competitor_name, llm_output, claims)
+        try:
+            profile = build_competitor_profile(competitor_name, llm_output, claims)
+        except Exception as e:
+            print(f"  [Analyst] build_competitor_profile FAILED: {type(e).__name__}: {e}")
+            print(f"  [Analyst] LLM output keys: {list(llm_output.keys())}")
+            return self.build_message(
+                to_agent="orchestrator",
+                function_name="analyze_result",
+                arguments={
+                    "error": f"build profile failed: {type(e).__name__}: {e}",
+                    "llm_output_keys": list(llm_output.keys()),
+                    "competitor_name": competitor_name,
+                },
+                trace_id=message.trace_id,
+                message_type=MessageType.TASK_RESULT,
+                parent_message_id=message.message_id,
+                context=message.context,
+            )
 
         return self.build_message(
             to_agent="orchestrator",
@@ -141,26 +173,61 @@ class AnalystAgent(BaseAgent):
         )
 
     def _parse_llm_output(self, text: str) -> dict[str, Any] | None:
-        """解析LLM的JSON输出"""
+        """解析LLM的JSON输出，支持多种格式容错"""
+        if not text or not text.strip():
+            print("  [Analyst] Empty LLM output")
+            return None
+
+        # 1. 直接解析
         try:
             return json.loads(text)
         except json.JSONDecodeError:
             pass
 
+        # 2. 提取 ```json ... ``` 代码块
         if "```json" in text:
             start = text.index("```json") + 7
-            end = text.index("```", start)
-            try:
-                return json.loads(text[start:end].strip())
-            except (json.JSONDecodeError, ValueError):
-                pass
+            end = text.find("```", start)
+            if end != -1:
+                try:
+                    return json.loads(text[start:end].strip())
+                except (json.JSONDecodeError, ValueError):
+                    pass
 
+        # 3. 提取 ``` ... ``` 代码块（无json标记）
+        if "```" in text:
+            parts = text.split("```")
+            for i in range(1, len(parts), 2):
+                try:
+                    return json.loads(parts[i].strip())
+                except (json.JSONDecodeError, ValueError):
+                    continue
+
+        # 4. 提取第一个完整的 JSON 对象
         first_brace = text.find("{")
-        last_brace = text.rfind("}")
-        if first_brace != -1 and last_brace != -1:
+        if first_brace != -1:
+            # 找到匹配的右括号
+            depth = 0
+            for i in range(first_brace, len(text)):
+                if text[i] == "{":
+                    depth += 1
+                elif text[i] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        try:
+                            return json.loads(text[first_brace:i + 1])
+                        except json.JSONDecodeError:
+                            break
+
+        # 5. 尝试修复常见格式问题
+        # 移除尾部逗号
+        cleaned = text.strip()
+        if cleaned.endswith(","):
+            cleaned = cleaned[:-1] + "}"
             try:
-                return json.loads(text[first_brace:last_brace + 1])
+                return json.loads(cleaned)
             except json.JSONDecodeError:
                 pass
 
+        print(f"  [Analyst] Failed to parse LLM output. Length: {len(text)}, Preview: {text[:300]!r}")
         return None

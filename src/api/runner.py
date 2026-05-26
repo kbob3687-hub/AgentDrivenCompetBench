@@ -125,7 +125,9 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
         }
 
     agent = DiscoveryAgent()
-    result = await agent.discover(target, scope)
+    strategy = state.get("discovery_strategy", "official_only")
+    trusted_domains = state.get("trusted_domains", [])
+    result = await agent.discover(target, scope, strategy=strategy, trusted_domains=trusted_domains)
 
     path = result["path"]
     urls = result["urls"]
@@ -299,6 +301,7 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             "claims": claims,
             "dimensions_requested": state.get("collect_scope", ["pricing", "features"]),
             "industry_fields": state.get("industry_fields", []),
+            "industry": state.get("industry", ""),
         },
         state=state,
     )
@@ -312,7 +315,20 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
     })
 
     if args.get("error"):
+        print(f"  [Analyst][iter={iteration}] ERROR: {args.get('error')}")
+        if args.get("raw_output"):
+            print(f"  [Analyst] raw_output[:500]: {args['raw_output'][:500]}")
         return {"error": args["error"], "profile": {}}
+
+    # Debug: 检查 profile 是否为空
+    profile_data = args.get("profile", {})
+    if not profile_data or not profile_data.get("company_name"):
+        print(f"  [Analyst][iter={iteration}] WARNING: profile is empty or incomplete")
+        print(f"  [Analyst] args keys: {list(args.keys())}")
+        print(f"  [Analyst] profile keys: {list(profile_data.keys()) if profile_data else 'None'}")
+        # 尝试返回部分数据
+        if not profile_data:
+            return {"error": "analyst returned empty profile", "profile": {}}
 
     _task_traces.setdefault(task_id, []).append(_build_trace_entry(
         agent="analyst",
@@ -654,11 +670,15 @@ async def run_analysis(
 
     # Load industry template and inject extra dimensions
     industry_fields: list[str] = []
+    discovery_strategy = "official_only"
+    trusted_domains: list[str] = []
     if industry in TEMPLATE_REGISTRY:
         template = load_template(industry)
         industry_fields = template.get_field_names()
+        discovery_strategy = template.discovery_strategy
+        trusted_domains = template.trusted_domains
         await _publish(task_id, EventType.LOG, {
-            "message": f"已加载行业模板: {template.display_name} ({len(template.fields)}个扩展字段)",
+            "message": f"已加载行业模板: {template.display_name} ({len(template.fields)}个扩展字段, 策略: {discovery_strategy})",
             "agent": "collector",
         })
 
@@ -676,6 +696,8 @@ async def run_analysis(
             "expected_dimensions": expected,
             "industry": industry,
             "industry_fields": industry_fields,
+            "discovery_strategy": discovery_strategy,
+            "trusted_domains": trusted_domains,
             "iteration": 1,
             "max_iterations": max_iterations,
             "feedback_history": [],

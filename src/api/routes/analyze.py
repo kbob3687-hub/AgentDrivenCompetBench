@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import time
 import uuid
 from typing import Any
 
@@ -19,12 +20,24 @@ from api.schemas import (
     PaginatedHistory,
     TaskStatus,
 )
-from schemas.extensions import list_templates, get_template_schema, TEMPLATE_REGISTRY
+from schemas.extensions import (
+    list_templates,
+    get_template_schema,
+    TEMPLATE_REGISTRY,
+    create_template,
+    update_template,
+    delete_template,
+    compare_templates,
+    get_changelog,
+)
 
 router = APIRouter(prefix="/api/analyze", tags=["analyze"])
 
-# In-memory task store: task_id -> {status, result, asyncio_task}
+# In-memory task store: task_id -> {status, result, asyncio_task, created_at}
 _tasks: dict[str, dict[str, Any]] = {}
+
+# Task timeout: 10 minutes (in seconds)
+TASK_TIMEOUT_SECONDS = 600
 
 
 async def _run_task(task_id: str, req: AnalyzeRequest) -> None:
@@ -59,8 +72,14 @@ async def create_analysis(req: AnalyzeRequest) -> AnalyzeResponse:
     """创建竞品分析任务，后台异步执行"""
     task_id = str(uuid.uuid4())
     event_bus.create_task(task_id)
+    _tasks[task_id] = {
+        "status": "running",
+        "result": None,
+        "asyncio_task": None,
+        "created_at": time.time(),
+    }
     task = asyncio.create_task(_run_task(task_id, req))
-    _tasks[task_id] = {"status": "running", "result": None, "asyncio_task": task}
+    _tasks[task_id]["asyncio_task"] = task
     return AnalyzeResponse(task_id=task_id, status="running")
 
 
@@ -97,6 +116,51 @@ async def get_template_detail(industry: str) -> dict[str, Any]:
     return get_template_schema(industry)
 
 
+@router.post("/templates", tags=["templates"], status_code=201)
+async def create_new_template(body: dict[str, Any]) -> dict[str, Any]:
+    """运行时创建新行业模板（动态 Schema 扩展）"""
+    try:
+        template = create_template(body)
+        return {"status": "created", "industry": template.industry, "version": template.version}
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+
+@router.patch("/templates/{industry}", tags=["templates"])
+async def update_existing_template(industry: str, body: dict[str, Any]) -> dict[str, Any]:
+    """运行时更新行业模板（增量合并，自动版本升级）"""
+    try:
+        template = update_template(industry, body)
+        return {"status": "updated", "industry": template.industry, "version": template.version}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.delete("/templates/{industry}", tags=["templates"])
+async def delete_existing_template(industry: str) -> dict[str, str]:
+    """删除行业模板"""
+    try:
+        delete_template(industry)
+        return {"status": "deleted", "industry": industry}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.get("/templates/compare/{industry_a}/{industry_b}", tags=["templates"])
+async def compare_two_templates(industry_a: str, industry_b: str) -> dict[str, Any]:
+    """对比两个行业模板的字段差异与相似度"""
+    try:
+        return compare_templates(industry_a, industry_b)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.get("/schema/changelog", tags=["templates"])
+async def schema_changelog(limit: int = Query(50, ge=1, le=200)) -> list[dict[str, Any]]:
+    """查看 Schema 变更历史（演化追踪）"""
+    return get_changelog(limit)
+
+
 @router.post("/{task_id}/intervene")
 async def intervene_task(task_id: str, req: InterveneRequest) -> dict[str, str]:
     """人工介入 - 强制通过/继续迭代/终止任务"""
@@ -119,6 +183,103 @@ async def intervene_task(task_id: str, req: InterveneRequest) -> dict[str, str]:
         return {"status": "ok", "message": "Task aborted by human"}
 
     raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
+
+
+@router.get("/{task_id}/metrics")
+async def get_task_metrics(task_id: str) -> dict[str, Any]:
+    """聚合指标面板 - 准确率/覆盖率/修订率/Token消耗/Agent耗时"""
+    task_info = _tasks.get(task_id)
+    result = None
+    if task_info and task_info.get("result"):
+        result = task_info["result"]
+    else:
+        from storage.crud import get_run
+        run = await get_run(task_id)
+        if run and run.get("result"):
+            result = run["result"]
+
+    if not result or not result.get("agent_traces"):
+        raise HTTPException(status_code=404, detail="Task not completed or not found")
+
+    traces: list[dict] = result.get("agent_traces", [])
+    feedback: list[dict] = result.get("feedback_history", [])
+    qa_score = result.get("qa_score", 0.0)
+
+    # Per-agent aggregation
+    agent_stats: dict[str, dict] = {}
+    for t in traces:
+        name = t.get("agent", "unknown")
+        if name not in agent_stats:
+            agent_stats[name] = {"duration_ms": 0, "input_tokens": 0, "output_tokens": 0, "calls": 0}
+        agent_stats[name]["duration_ms"] += t.get("duration_ms", 0)
+        agent_stats[name]["input_tokens"] += t.get("input_tokens", 0)
+        agent_stats[name]["output_tokens"] += t.get("output_tokens", 0)
+        agent_stats[name]["calls"] += 1
+
+    total_tokens = sum(s["input_tokens"] + s["output_tokens"] for s in agent_stats.values())
+    total_duration_ms = sum(s["duration_ms"] for s in agent_stats.values())
+
+    # Coverage: ratio of dimensions that passed QA without issues
+    expected_dims = result.get("expected_dimensions", [])
+    missing_dims = result.get("missing_dimensions", [])
+    coverage_rate = (len(expected_dims) - len(missing_dims)) / max(len(expected_dims), 1)
+
+    # Revision rate: how many iterations were "revise" vs total
+    total_rounds = len(feedback)
+    revise_rounds = sum(1 for f in feedback if f.get("verdict") == "revise")
+    revision_rate = revise_rounds / max(total_rounds, 1)
+
+    # QA score trend across iterations
+    qa_trend = [{"iteration": f.get("iteration", i + 1), "score": f.get("score", 0)} for i, f in enumerate(feedback)]
+
+    # Sources fetched count
+    sources_count = len(result.get("claims", []))
+    if not sources_count:
+        sources_count = sum(1 for t in traces if t.get("agent") == "collector") * 4
+
+    # Baseline comparison: AI system vs manual human analysis
+    baseline = {
+        "time": {
+            "human": 14400,
+            "ai": total_duration_ms,
+            "unit": "ms",
+            "human_label": "~4h",
+            "ai_label": f"{total_duration_ms / 1000:.0f}s",
+            "speedup": round(14400000 / max(total_duration_ms, 1), 1),
+        },
+        "sources": {
+            "human": 5,
+            "ai": sources_count,
+            "improvement": f"{sources_count / 5:.1f}x",
+        },
+        "structure": {
+            "human": "非结构化 Word/PPT",
+            "ai": "Schema 强约束 JSON → Markdown",
+            "score": 1.0,
+        },
+        "traceability": {
+            "human": "无溯源",
+            "ai": "每条结论标注来源URL",
+            "score": 1.0,
+        },
+        "consistency": {
+            "human": "因人而异",
+            "ai": "Pydantic Schema 保证字段一致",
+            "score": 1.0,
+        },
+    }
+
+    return {
+        "accuracy_rate": qa_score,
+        "coverage_rate": round(coverage_rate, 3),
+        "revision_rate": round(revision_rate, 3),
+        "total_tokens": total_tokens,
+        "total_duration_ms": total_duration_ms,
+        "total_iterations": total_rounds,
+        "agent_breakdown": agent_stats,
+        "qa_trend": qa_trend,
+        "baseline_comparison": baseline,
+    }
 
 
 @router.get("/{task_id}/stream")
@@ -147,6 +308,18 @@ async def get_task_status(task_id: str) -> TaskStatus:
     """查询任务状态和结果（内存优先，PG兜底）"""
     task_info = _tasks.get(task_id)
     if task_info:
+        # 检查任务是否超时（仅对running状态的任务）
+        if task_info["status"] == "running":
+            created_at = task_info.get("created_at", 0)
+            if created_at and (time.time() - created_at) > TASK_TIMEOUT_SECONDS:
+                # 任务超时，标记为失败
+                task_info["status"] = "failed"
+                task_info["result"] = {"error": "任务执行超时，请重试"}
+                # 取消异步任务
+                asyncio_task = task_info.get("asyncio_task")
+                if asyncio_task and not asyncio_task.done():
+                    asyncio_task.cancel()
+
         return TaskStatus(
             task_id=task_id,
             status=task_info["status"],

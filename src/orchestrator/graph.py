@@ -124,6 +124,8 @@ async def run_pipeline(
     max_iterations: int = 3,
     checkpointer: Any = None,
     thread_id: str | None = None,
+    discovery_strategy: str = "official_only",
+    trusted_domains: list[str] | None = None,
 ) -> dict[str, Any]:
     """运行完整pipeline - 一站式入口
 
@@ -135,6 +137,8 @@ async def run_pipeline(
         max_iterations: 最大反馈循环次数，默认3
         checkpointer: 持久化器，传None则不持久化
         thread_id: 会话ID，用于checkpoint恢复，不传则新建
+        discovery_strategy: Discovery策略 - official_only / open_search
+        trusted_domains: open_search策略下的权威媒体白名单
 
     Returns:
         最终GraphState（dict）
@@ -146,6 +150,8 @@ async def run_pipeline(
         "collect_scope": collect_scope or ["pricing", "features"],
         "target_urls": target_urls or [],
         "expected_dimensions": expected_dimensions or (collect_scope or ["pricing", "features"]),
+        "discovery_strategy": discovery_strategy,
+        "trusted_domains": trusted_domains or [],
         "iteration": 1,
         "max_iterations": max_iterations,
         "feedback_history": [],
