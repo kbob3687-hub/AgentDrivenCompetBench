@@ -54,10 +54,10 @@ onMounted(() => {
 
       <!-- DAG + Logs -->
       <div v-if="state.status !== 'idle'" class="grid grid-cols-5 gap-4 h-[350px]">
-        <div class="col-span-3">
+        <div class="col-span-3 min-h-0 overflow-hidden">
           <DagView :node-states="state.nodeStates" :sub-agents="state.subAgents" />
         </div>
-        <div class="col-span-2">
+        <div class="col-span-2 min-h-0 overflow-hidden">
           <LogStream :logs="state.logs" />
         </div>
       </div>
@@ -65,6 +65,7 @@ onMounted(() => {
       <!-- Iteration Timeline -->
       <IterationTimeline
         v-if="state.status !== 'idle' && (state.iterations.length > 0 || state.currentIteration > 0)"
+        class="relative z-10"
         :iterations="state.iterations"
         :current-iteration="state.currentIteration"
         :is-running="isRunning"
