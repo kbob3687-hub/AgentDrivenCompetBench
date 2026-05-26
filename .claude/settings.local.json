@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(docker pull *)"
+      "PowerShell(docker pull *)",
+      "Bash(python -m pytest tests/ -v --tb=short)",
+      "Bash(python -m uvicorn src.api.app:app --reload --host 0.0.0.0 --port 8000)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":8000\")",
+      "Bash(findstr \"LISTENING\")",
+      "PowerShell(Get-NetTCPConnection *)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('src/api/routes/analyze.py'\\).read\\(\\)\\); print\\('OK'\\)\")"
     ]
   }
 }

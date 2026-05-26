@@ -25,6 +25,7 @@ function formatTime(ts: number): string {
 
 function agentColor(agent?: AgentName): string {
   switch (agent) {
+    case 'discovery': return 'bg-indigo-600'
     case 'collector': return 'bg-purple-600'
     case 'analyst': return 'bg-cyan-600'
     case 'writer': return 'bg-emerald-600'
@@ -46,9 +47,9 @@ function typeColor(type: LogEntry['type']): string {
 <template>
   <div
     ref="container"
-    class="h-full overflow-y-auto bg-slate-900 rounded-lg border border-slate-700 p-3 font-mono text-xs space-y-1"
+    class="h-full overflow-y-auto bg-white rounded-lg border border-slate-200 p-3 font-mono text-xs space-y-1 shadow-sm"
   >
-    <div v-if="logs.length === 0" class="text-slate-500 text-center py-8">
+    <div v-if="logs.length === 0" class="text-slate-400 text-center py-8">
       等待分析开始...
     </div>
     <div
@@ -56,7 +57,7 @@ function typeColor(type: LogEntry['type']): string {
       :key="idx"
       class="flex items-start gap-2 py-0.5"
     >
-      <span class="text-slate-500 shrink-0">{{ formatTime(log.timestamp) }}</span>
+      <span class="text-slate-400 shrink-0">{{ formatTime(log.timestamp) }}</span>
       <span
         v-if="log.agent"
         :class="['px-1.5 py-0.5 rounded text-[10px] font-bold text-white shrink-0', agentColor(log.agent)]"

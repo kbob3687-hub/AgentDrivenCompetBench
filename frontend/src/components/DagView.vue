@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { VueFlow, Position } from '@vue-flow/core'
-import { Background } from '@vue-flow/background'
+import { Background, BackgroundVariant } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
 import type { AgentName, NodeStatus, SubAgentState } from '../types'
 import DagNode from './DagNode.vue'
@@ -18,9 +18,17 @@ function getHostname(url: string): string {
 
 const agentNodes = computed(() => [
   {
-    id: 'collector',
+    id: 'discovery',
     type: 'agent',
     position: { x: 50, y: 100 },
+    data: { label: 'Discovery', status: props.nodeStates.discovery },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left
+  },
+  {
+    id: 'collector',
+    type: 'agent',
+    position: { x: 220, y: 100 },
     data: { label: 'Collector', status: props.nodeStates.collector },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -28,7 +36,7 @@ const agentNodes = computed(() => [
   {
     id: 'analyst',
     type: 'agent',
-    position: { x: 250, y: 100 },
+    position: { x: 390, y: 100 },
     data: { label: 'Analyst', status: props.nodeStates.analyst },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -36,7 +44,7 @@ const agentNodes = computed(() => [
   {
     id: 'writer',
     type: 'agent',
-    position: { x: 450, y: 100 },
+    position: { x: 560, y: 100 },
     data: { label: 'Writer', status: props.nodeStates.writer },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -44,7 +52,7 @@ const agentNodes = computed(() => [
   {
     id: 'qa',
     type: 'agent',
-    position: { x: 650, y: 100 },
+    position: { x: 730, y: 100 },
     data: { label: 'QA', status: props.nodeStates.qa },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -65,6 +73,12 @@ const subNodes = computed(() =>
 const nodes = computed(() => [...agentNodes.value, ...subNodes.value])
 
 const mainEdges = computed(() => [
+  {
+    id: 'e-discovery-collector',
+    source: 'discovery',
+    target: 'collector',
+    animated: props.nodeStates.discovery === 'running'
+  },
   {
     id: 'e-collector-analyst',
     source: 'collector',
@@ -111,7 +125,7 @@ const edges = computed(() => [...mainEdges.value, ...subEdges.value])
 </script>
 
 <template>
-  <div class="h-full bg-slate-900 rounded-lg border border-slate-700 overflow-hidden">
+  <div class="h-full bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
     <VueFlow
       :nodes="nodes"
       :edges="edges"
@@ -120,18 +134,18 @@ const edges = computed(() => [...mainEdges.value, ...subEdges.value])
       :nodes-connectable="false"
       :zoom-on-scroll="false"
       :pan-on-drag="false"
-      class="vue-flow-dark"
+      class="vue-flow-light"
     >
       <template #node-agent="nodeProps">
         <DagNode :data="nodeProps.data" />
       </template>
       <template #node-sub-agent="nodeProps">
         <div
-          class="px-2 py-1.5 rounded border text-center text-[10px] min-w-[70px]"
+          class="px-2 py-1.5 rounded border text-center text-[10px] min-w-[70px] shadow-sm"
           :class="[
-            nodeProps.data.status === 'running' ? 'bg-purple-900/80 border-purple-500 animate-pulse text-purple-100' :
-            nodeProps.data.status === 'done' ? 'bg-green-900/80 border-green-600 text-green-100' :
-            'bg-red-900/80 border-red-600 text-red-100'
+            nodeProps.data.status === 'running' ? 'bg-purple-50 border-purple-400 animate-pulse text-purple-700' :
+            nodeProps.data.status === 'done' ? 'bg-emerald-50 border-emerald-400 text-emerald-700' :
+            'bg-red-50 border-red-400 text-red-700'
           ]"
         >
           <div class="truncate font-medium">{{ nodeProps.data.label }}</div>
@@ -140,32 +154,33 @@ const edges = computed(() => [...mainEdges.value, ...subEdges.value])
           </div>
         </div>
       </template>
-      <Background />
+      <Background :variant="BackgroundVariant.Lines" :gap="24" :size="0.4" color="#e2e8f0" />
       <Controls />
     </VueFlow>
   </div>
 </template>
 
 <style>
-.vue-flow-dark {
+.vue-flow-light {
   --vf-node-bg: transparent;
-  --vf-node-text: #e2e8f0;
+  --vf-node-text: #334155;
 }
 .vue-flow__edge-path {
-  stroke: #64748b;
+  stroke: #94a3b8;
   stroke-width: 2;
 }
 .vue-flow__controls {
-  background: #1e293b;
-  border: 1px solid #334155;
+  background: #fff;
+  border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 .vue-flow__controls-button {
-  background: #1e293b;
-  border-bottom: 1px solid #334155;
-  fill: #94a3b8;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  fill: #64748b;
 }
 .vue-flow__controls-button:hover {
-  background: #334155;
+  background: #f1f5f9;
 }
 </style>

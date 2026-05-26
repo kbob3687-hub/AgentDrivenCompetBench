@@ -14,12 +14,23 @@ export type SSEEvent =
   | { type: 'complete'; data: SSEComplete }
   | { type: 'error'; data: { message: string } }
 
+const MAX_RECONNECT_ATTEMPTS = 5
+
 export function useSSE(onEvent: (event: SSEEvent) => void) {
   const connected = ref(false)
   let eventSource: EventSource | null = null
+  let currentTaskId: string | null = null
+  let reconnectTimer: ReturnType<typeof setTimeout> | null = null
+  let reconnectAttempts = 0
 
   function connect(taskId: string) {
     close()
+    currentTaskId = taskId
+    reconnectAttempts = 0
+    _open(taskId)
+  }
+
+  function _open(taskId: string) {
     const url = `/api/analyze/${taskId}/stream`
     eventSource = new EventSource(url)
     connected.value = true
@@ -73,11 +84,40 @@ export function useSSE(onEvent: (event: SSEEvent) => void) {
     })
 
     eventSource.onerror = () => {
-      close()
+      if (eventSource) {
+        eventSource.close()
+        eventSource = null
+        connected.value = false
+      }
+
+      reconnectAttempts++
+
+      // Stop reconnecting after max attempts
+      if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        onEvent({
+          type: 'error',
+          data: { message: `SSE连接失败，已重试${MAX_RECONNECT_ATTEMPTS}次` }
+        })
+        currentTaskId = null
+        return
+      }
+
+      // Auto-reconnect after 2s if not explicitly closed
+      if (currentTaskId) {
+        reconnectTimer = setTimeout(() => {
+          if (currentTaskId) _open(currentTaskId)
+        }, 2000)
+      }
     }
   }
 
   function close() {
+    currentTaskId = null
+    reconnectAttempts = 0
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer)
+      reconnectTimer = null
+    }
     if (eventSource) {
       eventSource.close()
       eventSource = null
