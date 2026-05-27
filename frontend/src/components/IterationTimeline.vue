@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { marked } from 'marked'
 import type { FeedbackRecord, PauseContext, QAIssueDetail } from '../types'
 
 const props = defineProps<{
@@ -16,7 +17,13 @@ const emit = defineEmits<{
 }>()
 
 const submitting = ref(false)
-const reportExpanded = ref(false)
+const reportExpanded = ref(true)
+
+const renderedReport = computed(() => {
+  const md = props.pauseContext?.report_preview || ''
+  if (!md) return ''
+  return marked.parse(md) as string
+})
 
 function handleIntervene(action: 'force_pass' | 'abort' | 'continue') {
   if (submitting.value) return
@@ -301,16 +308,20 @@ const forcePassHint = computed(() => {
           </ul>
         </div>
 
-        <!-- 报告预览（折叠） -->
+        <!-- 报告预览（默认展开，完整 markdown 渲染） -->
         <div v-if="pauseContext.report_preview" class="border border-slate-200 rounded bg-white">
           <button
             @click="reportExpanded = !reportExpanded"
             class="w-full px-3 py-1.5 bg-slate-50 border-b border-slate-200 text-xs text-slate-600 font-medium flex items-center justify-between hover:bg-slate-100"
           >
-            <span>报告预览（前 800 字）</span>
-            <span class="text-slate-400">{{ reportExpanded ? '▲ 收起' : '▼ 展开' }}</span>
+            <span>当前报告预览（用于决定是否发布）</span>
+            <span class="text-slate-500">{{ reportExpanded ? '▲ 收起' : '▼ 展开' }}</span>
           </button>
-          <pre v-if="reportExpanded" class="px-3 py-2 text-xs text-slate-700 whitespace-pre-wrap max-h-[200px] overflow-y-auto leading-relaxed">{{ pauseContext.report_preview }}</pre>
+          <div
+            v-if="reportExpanded"
+            class="px-4 py-3 max-h-[420px] overflow-y-auto prose prose-sm max-w-none prose-headings:text-slate-800 prose-headings:font-semibold prose-h1:text-lg prose-h2:text-base prose-h3:text-sm prose-p:text-slate-600 prose-p:leading-relaxed prose-strong:text-slate-800 prose-code:text-blue-600 prose-table:text-xs prose-th:bg-slate-100 prose-th:px-2 prose-th:py-1 prose-td:px-2 prose-td:py-1 prose-li:text-slate-600 prose-a:text-blue-600 prose-hr:border-slate-200 hitl-report-preview"
+            v-html="renderedReport"
+          ></div>
         </div>
       </div>
 
@@ -384,3 +395,29 @@ const forcePassHint = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.hitl-report-preview :deep(table) {
+  border-collapse: collapse;
+  width: 100%;
+}
+.hitl-report-preview :deep(th),
+.hitl-report-preview :deep(td) {
+  border: 1px solid rgb(226 232 240);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+.hitl-report-preview :deep(h1) {
+  border-bottom: 1px solid rgb(226 232 240);
+  padding-bottom: 0.4rem;
+}
+.hitl-report-preview :deep(h2) {
+  margin-top: 1.2rem;
+  border-bottom: 1px solid rgb(241 245 249);
+  padding-bottom: 0.3rem;
+}
+.hitl-report-preview :deep(hr) {
+  border-color: rgb(226 232 240);
+  margin: 1rem 0;
+}
+</style>

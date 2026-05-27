@@ -639,7 +639,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
 
     # 构造 HITL 决策依据：让人工审核时不用盲选（qa_issues_list 在前文已提取）
     score_trend = [r.get("score", 0.0) for r in history if isinstance(r, dict)]
-    report_preview = (state.get("report_markdown") or "")[:800]
+    report_preview = state.get("report_markdown") or ""
     iterations_left = max(0, max_iter - iteration)
 
     def _hitl_payload(msg: str) -> dict[str, Any]:
