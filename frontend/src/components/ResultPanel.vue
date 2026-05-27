@@ -188,7 +188,7 @@ onBeforeUnmount(() => {
             <div class="flex items-center gap-2">
               <span :class="['w-2.5 h-2.5 rounded-full', agentDotColor(trace.agent)]"></span>
               <span class="text-sm font-medium text-slate-700 capitalize">{{ trace.agent }}</span>
-              <span class="text-xs text-slate-400">iter {{ trace.iteration }}</span>
+              <span class="text-xs text-slate-500">iter {{ trace.iteration }}</span>
             </div>
             <div class="flex items-center gap-3 text-xs text-slate-500">
               <span>{{ trace.model }}</span>
@@ -199,10 +199,10 @@ onBeforeUnmount(() => {
             <span>Input: <span class="text-slate-700 font-mono">{{ trace.input_tokens.toLocaleString() }}</span> tokens</span>
             <span>Output: <span class="text-slate-700 font-mono">{{ trace.output_tokens.toLocaleString() }}</span> tokens</span>
           </div>
-          <div v-if="trace.prompt_preview" class="text-xs text-slate-400 mb-1">
+          <div v-if="trace.prompt_preview" class="text-xs text-slate-600 mb-1">
             <span class="text-slate-500">Prompt:</span> {{ trace.prompt_preview }}
           </div>
-          <div v-if="trace.output_preview" class="text-xs text-slate-400">
+          <div v-if="trace.output_preview" class="text-xs text-slate-600">
             <span class="text-slate-500">Output:</span> {{ trace.output_preview }}
           </div>
         </div>
@@ -260,7 +260,7 @@ onBeforeUnmount(() => {
             <td class="py-2 px-3 font-mono">{{ record.issues_count }}</td>
             <td class="py-2 px-3 font-mono">{{ record.critical_issues }}</td>
             <td class="py-2 px-3">{{ record.action_taken }}</td>
-            <td class="py-2 px-3 text-xs text-slate-400 max-w-[200px] truncate">
+            <td class="py-2 px-3 text-xs text-slate-500 max-w-[200px] truncate">
               {{ record.feedback_summary }}
             </td>
           </tr>

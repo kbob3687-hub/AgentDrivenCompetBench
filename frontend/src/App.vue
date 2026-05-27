@@ -41,7 +41,7 @@ onMounted(() => {
             ]"
           ></span>
           <span>{{ state.status === 'idle' ? '就绪' : state.status === 'running' ? '分析中...' : state.status === 'paused' ? '等待审核' : state.status === 'completed' ? '已完成' : '失败' }}</span>
-          <span v-if="state.currentIteration > 0" class="text-slate-400">
+          <span v-if="state.currentIteration > 0" class="text-slate-500">
             | 第 {{ state.currentIteration }} 轮
           </span>
         </div>

@@ -50,9 +50,9 @@ function deltaText(delta: number): string {
 }
 
 function deltaColor(delta: number): string {
-  if (delta > 0) return 'text-green-400'
-  if (delta < 0) return 'text-red-400'
-  return 'text-slate-400'
+  if (delta > 0) return 'text-emerald-600'
+  if (delta < 0) return 'text-red-600'
+  return 'text-slate-500'
 }
 
 function issuesDelta(index: number): number | null {
@@ -69,13 +69,13 @@ function issuesDelta(index: number): number | null {
       <template v-for="(iter, idx) in iterations" :key="iter.iteration">
         <!-- Delta arrow between cards -->
         <div v-if="idx > 0" class="flex-shrink-0 flex flex-col items-center justify-center w-[48px] self-center">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
           </svg>
           <span :class="['text-[11px] font-bold', deltaColor(scoreDelta(idx)!)]">
             {{ deltaText(scoreDelta(idx)!) }}%
           </span>
-          <span v-if="issuesDelta(idx) !== null && issuesDelta(idx)! < 0" class="text-[10px] text-green-400">
+          <span v-if="issuesDelta(idx) !== null && issuesDelta(idx)! < 0" class="text-[10px] text-emerald-600">
             {{ issuesDelta(idx) }} 问题
           </span>
         </div>
@@ -139,12 +139,12 @@ function issuesDelta(index: number): number | null {
         → {{ (iterations[iterations.length - 1].score * 100).toFixed(0) }}%
         ({{ deltaText(iterations[iterations.length - 1].score - iterations[0].score) }}%)
       </span>
-      <span class="text-xs text-slate-400">|</span>
-      <span class="text-xs text-slate-600">
+      <span class="text-xs text-slate-300">|</span>
+      <span class="text-xs text-slate-700">
         问题数 {{ iterations[0].issues_count }} → {{ iterations[iterations.length - 1].issues_count }}
       </span>
-      <span class="text-xs text-slate-400">|</span>
-      <span class="text-xs text-slate-600">
+      <span class="text-xs text-slate-300">|</span>
+      <span class="text-xs text-slate-700">
         共 {{ iterations.length }} 轮迭代
       </span>
     </div>
