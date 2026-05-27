@@ -688,17 +688,18 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             update["final_status"] = "completed"
         update["completed_at"] = datetime.now().isoformat()
 
-    elif verdict == "reject":
-        update["final_status"] = f"rejected(score={score:.2f})"
-        update["completed_at"] = datetime.now().isoformat()
     elif iteration >= max_iter:
         update["final_status"] = f"max_iterations_reached(last_verdict={verdict})"
         update["completed_at"] = datetime.now().isoformat()
-    elif verdict == "revise":
+    elif verdict in ("revise", "reject"):
         # HITL: pause and wait for human decision
-        await _publish(task_id, EventType.HITL_PAUSE, _hitl_payload(
-            "QA打回，等待人工审核决策..."
-        ))
+        # reject 也必须经过人工审核，不能直接终止任务
+        pause_msg = (
+            f"QA 严重不达标(score={score:.2f})，等待人工决策..."
+            if verdict == "reject"
+            else "QA打回，等待人工审核决策..."
+        )
+        await _publish(task_id, EventType.HITL_PAUSE, _hitl_payload(pause_msg))
         gate = asyncio.Event()
         _hitl_gates[task_id] = gate
         _hitl_decisions.pop(task_id, None)
