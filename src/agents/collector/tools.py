@@ -19,6 +19,8 @@ class FetchResult(BaseModel):
     snapshot_hash: str = ""
     success: bool = True
     error: str | None = None
+    robots_status: str = ""
+    pii_redactions: dict[str, int] = Field(default_factory=dict)
 
 
 async def jina_reader(url: str, timeout: float = 45.0, max_retries: int = 2) -> FetchResult:

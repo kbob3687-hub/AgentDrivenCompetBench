@@ -244,6 +244,11 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
 
             if not fetch_result.success:
                 fetch_errors.append(f"{url}: {fetch_result.error}")
+                if fetch_result.robots_status == "disallowed":
+                    await _publish(task_id, EventType.LOG, {
+                        "message": f"⛔ robots.txt 禁止抓取: {url}（已跳过）",
+                        "agent": "collector",
+                    })
                 await _publish(task_id, EventType.SUB_AGENT_END, {
                     "parent": "collector", "sub_id": sub_id, "url": url,
                     "iteration": iteration, "success": False,
@@ -251,6 +256,15 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
                     "claims_count": 0,
                 })
                 return []
+
+            if fetch_result.pii_redactions:
+                redact_summary = "、".join(
+                    f"{k.strip('[]')}×{v}" for k, v in fetch_result.pii_redactions.items()
+                )
+                await _publish(task_id, EventType.LOG, {
+                    "message": f"🔒 PII 脱敏: {url} 已掩码 {redact_summary}",
+                    "agent": "collector",
+                })
 
             content = agent._truncate_content(fetch_result.content, max_chars=12000)
             extracted = await agent._extract_info(
