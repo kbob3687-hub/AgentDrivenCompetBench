@@ -22,6 +22,41 @@ from orchestrator.state import FeedbackRecord, GraphState
 from schemas.message import AgentMessage, MessageContext, MessageType
 
 
+def _extract_qa_issues(feedback: Any) -> list[dict[str, Any]]:
+    """从 QA feedback 里抽取 field 级 issue 明细"""
+    if not isinstance(feedback, dict):
+        return []
+    out: list[dict[str, Any]] = []
+    for issue in feedback.get("issues", []):
+        if isinstance(issue, dict):
+            out.append({
+                "field_path": issue.get("field_path", ""),
+                "severity": issue.get("severity", "minor"),
+                "issue_type": issue.get("issue_type", ""),
+                "description": issue.get("description", ""),
+                "suggestion": issue.get("suggestion") or "",
+            })
+    return out
+
+
+def _diff_fields(prev_history: list[Any], curr_feedback: Any) -> dict[str, list[str]]:
+    """与上一轮 feedback_history 做 field_path 级 diff"""
+    prev_fields: set[str] = set()
+    if prev_history:
+        last = prev_history[-1]
+        if isinstance(last, dict):
+            for it in last.get("issues", []):
+                if isinstance(it, dict) and it.get("field_path"):
+                    prev_fields.add(it["field_path"])
+    curr_issues = _extract_qa_issues(curr_feedback)
+    curr_fields = {i["field_path"] for i in curr_issues if i.get("field_path")}
+    return {
+        "resolved_fields": sorted(prev_fields - curr_fields),
+        "regressed_fields": sorted(curr_fields - prev_fields),
+        "persisted_fields": sorted(curr_fields & prev_fields),
+    }
+
+
 def _make_message(
     to_agent: str,
     function_name: str,
@@ -325,6 +360,8 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         critical_issues=critical_issues,
         action_taken=action,
         feedback_summary=summary,
+        issues=_extract_qa_issues(feedback),
+        **_diff_fields(state.get("feedback_history", []), feedback),
     )
 
     history = list(state.get("feedback_history", []))

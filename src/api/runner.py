@@ -558,6 +558,33 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     else:
         action = f"打回{target_agent}重做"
 
+    # 抽取本轮 issue 明细（field 级），供 FeedbackRecord 与 HITL payload 复用
+    qa_issues_list: list[dict[str, Any]] = []
+    if isinstance(feedback, dict):
+        for issue in feedback.get("issues", []):
+            if isinstance(issue, dict):
+                qa_issues_list.append({
+                    "field_path": issue.get("field_path", ""),
+                    "severity": issue.get("severity", "minor"),
+                    "issue_type": issue.get("issue_type", ""),
+                    "description": issue.get("description", ""),
+                    "suggestion": issue.get("suggestion") or "",
+                })
+
+    # 与上一轮做 field_path 级 diff，标记 resolved / regressed / persisted
+    prev_history = state.get("feedback_history", [])
+    prev_fields: set[str] = set()
+    if prev_history:
+        last = prev_history[-1]
+        if isinstance(last, dict):
+            for it in last.get("issues", []):
+                if isinstance(it, dict) and it.get("field_path"):
+                    prev_fields.add(it["field_path"])
+    curr_fields = {i["field_path"] for i in qa_issues_list if i.get("field_path")}
+    resolved_fields = sorted(prev_fields - curr_fields)
+    regressed_fields = sorted(curr_fields - prev_fields)
+    persisted_fields = sorted(curr_fields & prev_fields)
+
     record = FeedbackRecord(
         iteration=iteration,
         verdict=verdict,
@@ -566,6 +593,10 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         critical_issues=critical_issues,
         action_taken=action,
         feedback_summary=summary,
+        issues=qa_issues_list,
+        resolved_fields=resolved_fields,
+        regressed_fields=regressed_fields,
+        persisted_fields=persisted_fields,
     )
 
     history = list(state.get("feedback_history", []))
@@ -605,15 +636,35 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     ))
 
     max_iter = state.get("max_iterations", 3)
-    if verdict == "pass":
-        # HITL: pause for human confirmation before completing
-        await _publish(task_id, EventType.HITL_PAUSE, {
+
+    # 构造 HITL 决策依据：让人工审核时不用盲选（qa_issues_list 在前文已提取）
+    score_trend = [r.get("score", 0.0) for r in history if isinstance(r, dict)]
+    report_preview = (state.get("report_markdown") or "")[:800]
+    iterations_left = max(0, max_iter - iteration)
+
+    def _hitl_payload(msg: str) -> dict[str, Any]:
+        return {
             "iteration": iteration,
             "score": score,
             "verdict": verdict,
-            "missing_dimensions": [],
-            "message": f"QA通过(score={score:.2f})，等待人工确认发布...",
-        })
+            "missing_dimensions": missing_dims if verdict != "pass" else [],
+            "message": msg,
+            "issues": qa_issues_list,
+            "score_trend": score_trend,
+            "suggested_strategy": suggested_strategy,
+            "current_strategy": current_strategy,
+            "report_preview": report_preview,
+            "iterations_left": iterations_left,
+            "target_agent": target_agent,
+            "resolved_fields": resolved_fields,
+            "regressed_fields": regressed_fields,
+        }
+
+    if verdict == "pass":
+        # HITL: pause for human confirmation before completing
+        await _publish(task_id, EventType.HITL_PAUSE, _hitl_payload(
+            f"QA通过(score={score:.2f})，等待人工确认发布..."
+        ))
         gate = asyncio.Event()
         _hitl_gates[task_id] = gate
         _hitl_decisions.pop(task_id, None)
@@ -645,13 +696,9 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         update["completed_at"] = datetime.now().isoformat()
     elif verdict == "revise":
         # HITL: pause and wait for human decision
-        await _publish(task_id, EventType.HITL_PAUSE, {
-            "iteration": iteration,
-            "score": score,
-            "verdict": verdict,
-            "missing_dimensions": missing_dims,
-            "message": "QA打回，等待人工审核决策...",
-        })
+        await _publish(task_id, EventType.HITL_PAUSE, _hitl_payload(
+            "QA打回，等待人工审核决策..."
+        ))
         gate = asyncio.Event()
         _hitl_gates[task_id] = gate
         _hitl_decisions.pop(task_id, None)

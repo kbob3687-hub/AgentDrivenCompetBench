@@ -24,6 +24,21 @@ class FeedbackRecord(BaseModel):
     feedback_summary: str = Field(default="", description="反馈摘要")
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
 
+    # 闭环改善追踪：本轮 QA 给出的字段级 issue 明细 + 与上一轮的 diff
+    issues: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description="字段级 issue 明细：[{field_path, severity, issue_type, description, suggestion}]",
+    )
+    resolved_fields: list[str] = Field(
+        default_factory=list, description="本轮相比上一轮 已解决 的 field_path 列表"
+    )
+    regressed_fields: list[str] = Field(
+        default_factory=list, description="本轮相比上一轮 新出现 的 field_path 列表"
+    )
+    persisted_fields: list[str] = Field(
+        default_factory=list, description="本轮与上一轮 仍未解决 的 field_path 列表"
+    )
+
 
 class GraphState(TypedDict, total=False):
     """LangGraph StateGraph的状态定义
