@@ -9,7 +9,7 @@ const props = defineProps<{
   taskId?: string | null
 }>()
 
-const activeTab = ref<'report' | 'feedback' | 'trace' | 'metrics'>('report')
+const activeTab = ref<'report' | 'feedback' | 'trace' | 'metrics' | 'loop'>('report')
 
 const renderedMarkdown = computed(() => {
   return marked.parse(props.result.report_markdown || '') as string
@@ -84,6 +84,81 @@ onMounted(() => {
 onBeforeUnmount(() => {
   reportEl.value?.removeEventListener('click', handleLinkClick)
 })
+
+interface LoopRow {
+  field_path: string
+  severity: string
+  description: string
+  introduced_at: number  // 第一次出现的轮次
+  resolved_at: number | null  // 解决的轮次（null = 仍未解决）
+  routed_to: string  // 被路由到的 agent
+}
+
+const loopRows = computed<LoopRow[]>(() => {
+  const history = props.result.feedback_history || []
+  if (!history.length) return []
+
+  const seen = new Map<string, LoopRow>()
+  for (let i = 0; i < history.length; i++) {
+    const rec = history[i] as any
+    const issues = (rec.issues || []) as Array<{ field_path: string; severity: string; description: string }>
+    const routedTo = rec.action_taken?.includes('collector') ? 'collector'
+      : rec.action_taken?.includes('analyst') ? 'analyst'
+      : rec.action_taken?.includes('writer') ? 'writer'
+      : '—'
+    const currentFields = new Set<string>()
+    for (const issue of issues) {
+      const key = issue.field_path || '(全局)'
+      currentFields.add(key)
+      if (!seen.has(key)) {
+        seen.set(key, {
+          field_path: key,
+          severity: issue.severity,
+          description: issue.description,
+          introduced_at: rec.iteration,
+          resolved_at: null,
+          routed_to: routedTo,
+        })
+      }
+    }
+    // 标记上一轮存在但本轮消失的字段为 resolved
+    for (const [key, row] of seen) {
+      if (row.resolved_at !== null) continue
+      if (row.introduced_at < rec.iteration && !currentFields.has(key)) {
+        row.resolved_at = rec.iteration
+      }
+    }
+  }
+  // 按是否已解决 + 严重程度排序
+  const sevOrder: Record<string, number> = { critical: 0, major: 1, minor: 2 }
+  return [...seen.values()].sort((a, b) => {
+    const ra = a.resolved_at !== null ? 0 : 1
+    const rb = b.resolved_at !== null ? 0 : 1
+    if (ra !== rb) return rb - ra  // 未解决的优先靠前
+    return (sevOrder[a.severity] ?? 9) - (sevOrder[b.severity] ?? 9)
+  })
+})
+
+const loopStats = computed(() => {
+  const rows = loopRows.value
+  return {
+    total: rows.length,
+    resolved: rows.filter(r => r.resolved_at !== null).length,
+    pending: rows.filter(r => r.resolved_at === null).length,
+  }
+})
+
+function severityBadge(severity: string): string {
+  if (severity === 'critical') return 'bg-red-100 text-red-700'
+  if (severity === 'major') return 'bg-orange-100 text-orange-700'
+  return 'bg-slate-100 text-slate-600'
+}
+
+function severityShortLabel(severity: string): string {
+  if (severity === 'critical') return '严重'
+  if (severity === 'major') return '主要'
+  return '次要'
+}
 </script>
 
 <template>
@@ -122,6 +197,17 @@ onBeforeUnmount(() => {
         @click="activeTab = 'feedback'"
       >
         反馈历史 ({{ result.feedback_history?.length || 0 }} 轮)
+      </button>
+      <button
+        :class="[
+          'px-6 py-3 text-sm font-medium transition-colors',
+          activeTab === 'loop'
+            ? 'text-blue-600 border-b-2 border-blue-500 bg-white'
+            : 'text-slate-500 hover:text-slate-700'
+        ]"
+        @click="activeTab = 'loop'"
+      >
+        闭环追踪 ({{ loopStats.resolved }}/{{ loopStats.total }})
       </button>
       <button
         v-if="taskId"
@@ -266,6 +352,97 @@ onBeforeUnmount(() => {
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Closed-Loop Tracking Tab -->
+    <div v-if="activeTab === 'loop'" class="p-6 max-h-[700px] overflow-y-auto">
+      <div class="mb-4 flex items-center gap-4 text-sm">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500">QA 提出问题总计:</span>
+          <span class="font-mono text-slate-800">{{ loopStats.total }}</span>
+        </div>
+        <span class="text-slate-300">|</span>
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500">闭环已解决:</span>
+          <span class="font-mono text-emerald-700 font-bold">{{ loopStats.resolved }}</span>
+        </div>
+        <span class="text-slate-300">|</span>
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500">仍未解决:</span>
+          <span class="font-mono text-red-700">{{ loopStats.pending }}</span>
+        </div>
+        <span class="text-slate-300">|</span>
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500">闭环修复率:</span>
+          <span class="font-mono text-slate-800">
+            {{ loopStats.total ? ((loopStats.resolved / loopStats.total) * 100).toFixed(0) : 0 }}%
+          </span>
+        </div>
+      </div>
+
+      <div v-if="!loopRows.length" class="text-sm text-slate-500 text-center py-8">
+        本次任务 QA 未提出任何字段级问题（一次通过）
+      </div>
+
+      <table v-else class="w-full text-sm text-left">
+        <thead class="text-slate-500 border-b border-slate-200">
+          <tr>
+            <th class="py-2 px-3">字段</th>
+            <th class="py-2 px-3">严重度</th>
+            <th class="py-2 px-3">问题描述</th>
+            <th class="py-2 px-3">提出轮次</th>
+            <th class="py-2 px-3">路由到</th>
+            <th class="py-2 px-3">解决轮次</th>
+            <th class="py-2 px-3">状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(row, idx) in loopRows"
+            :key="idx"
+            class="border-b border-slate-100 text-slate-700"
+          >
+            <td class="py-2 px-3 font-mono text-xs">{{ row.field_path }}</td>
+            <td class="py-2 px-3">
+              <span :class="['px-2 py-0.5 rounded text-xs font-medium', severityBadge(row.severity)]">
+                {{ severityShortLabel(row.severity) }}
+              </span>
+            </td>
+            <td class="py-2 px-3 text-xs text-slate-600 max-w-[280px] truncate" :title="row.description">
+              {{ row.description }}
+            </td>
+            <td class="py-2 px-3 font-mono text-xs">第 {{ row.introduced_at }} 轮</td>
+            <td class="py-2 px-3">
+              <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-mono">
+                {{ row.routed_to }}
+              </span>
+            </td>
+            <td class="py-2 px-3 font-mono text-xs">
+              {{ row.resolved_at !== null ? `第 ${row.resolved_at} 轮` : '—' }}
+            </td>
+            <td class="py-2 px-3">
+              <span
+                v-if="row.resolved_at !== null"
+                class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-xs font-medium"
+              >
+                ✓ 已解决
+              </span>
+              <span
+                v-else
+                class="px-2 py-0.5 rounded bg-orange-100 text-orange-700 text-xs font-medium"
+              >
+                ⚠ 未解决
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mt-4 text-xs text-slate-500 leading-relaxed">
+        说明：QA 在每轮检查中给出的字段级 issue，会被打回到对应 Agent（collector/analyst/writer）。
+        后续轮次中若 QA 不再对该字段提出问题，则视为「已解决」。这张表证明 QA 反馈不仅触发了重做，
+        且重做后输出确实有改善（非伪闭环）。
+      </div>
     </div>
 
     <!-- Metrics Tab -->

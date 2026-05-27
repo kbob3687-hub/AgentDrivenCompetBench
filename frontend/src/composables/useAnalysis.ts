@@ -107,6 +107,15 @@ export function useAnalysis() {
           iteration: event.data.iteration,
           missing_dimensions: event.data.missing_dimensions || [],
           message: event.data.message || '',
+          issues: event.data.issues || [],
+          score_trend: event.data.score_trend || [],
+          suggested_strategy: event.data.suggested_strategy || '',
+          current_strategy: event.data.current_strategy || '',
+          report_preview: event.data.report_preview || '',
+          iterations_left: event.data.iterations_left ?? 0,
+          target_agent: event.data.target_agent || '',
+          resolved_fields: event.data.resolved_fields || [],
+          regressed_fields: event.data.regressed_fields || [],
         }
         addLog(`Pipeline paused: ${event.data.message} (score: ${event.data.score})`, 'warning', 'qa')
         break

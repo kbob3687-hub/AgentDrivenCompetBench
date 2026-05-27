@@ -1,5 +1,5 @@
 import { ref, onUnmounted } from 'vue'
-import type { SSEAgentStart, SSEAgentEnd, SSELog, SSEQaVerdict, SSEComplete, SSESubAgentStart, SSESubAgentEnd, FeedbackRecord } from '../types'
+import type { SSEAgentStart, SSEAgentEnd, SSELog, SSEQaVerdict, SSEComplete, SSESubAgentStart, SSESubAgentEnd, FeedbackRecord, PauseContext } from '../types'
 
 export type SSEEvent =
   | { type: 'agent_start'; data: SSEAgentStart }
@@ -9,7 +9,7 @@ export type SSEEvent =
   | { type: 'iteration_summary'; data: FeedbackRecord }
   | { type: 'sub_agent_start'; data: SSESubAgentStart }
   | { type: 'sub_agent_end'; data: SSESubAgentEnd }
-  | { type: 'hitl_pause'; data: { iteration: number; score: number; verdict: string; missing_dimensions: string[]; message: string } }
+  | { type: 'hitl_pause'; data: PauseContext & { verdict: string } }
   | { type: 'hitl_resume'; data: { decision: string; iteration: number } }
   | { type: 'complete'; data: SSEComplete }
   | { type: 'error'; data: { message: string } }
