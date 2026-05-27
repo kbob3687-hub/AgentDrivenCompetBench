@@ -60,6 +60,12 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
     strategy = state.get("discovery_strategy", "official_only")
     trusted_domains = state.get("trusted_domains", [])
 
+    # QA 自适应降级：上一轮 QA 建议切换策略
+    suggested = state.get("suggested_strategy", "")
+    if suggested and suggested != strategy:
+        print(f"\n[Discovery] QA 反馈触发策略切换: {strategy} → {suggested}")
+        strategy = suggested
+
     # 如果用户指定了URL，跳过discovery
     if target_urls:
         print(f"\n[Discovery] 用户指定了 {len(target_urls)} 个URL，跳过自动发现")
@@ -68,6 +74,8 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
             "discovery_path": "user_specified",
             "discovery_domain": "",
             "discovery_queries": [],
+            "discovery_strategy": strategy,
+            "suggested_strategy": "",
         }
 
     print(f"\n[Discovery] 发现 {target} 的数据源URL (策略: {strategy})...")
@@ -83,6 +91,8 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
         "discovery_path": path,
         "discovery_domain": result["domain"],
         "discovery_queries": result.get("search_queries", []),
+        "discovery_strategy": strategy,
+        "suggested_strategy": "",  # 消费完清空
     }
 
 
@@ -91,6 +101,7 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     iteration = state.get("iteration", 1)
     scope = state.get("collect_scope", ["pricing"])
     missing = state.get("missing_dimensions", [])
+    suggested = state.get("suggested_strategy", "")
 
     if missing:
         expanded = list(set(scope + missing))
@@ -98,6 +109,23 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         scope = expanded
     else:
         print(f"\n[Collector] 第{iteration}轮 - 开始采集 {state['competitor_name']}，scope: {scope}")
+
+    target_urls = state.get("discovered_urls", state.get("target_urls", []))
+    new_strategy = state.get("discovery_strategy", "official_only")
+
+    # QA 自适应降级：上一轮建议切换策略，这里重新走一次 Discovery 拿新数据源
+    if suggested and suggested != new_strategy and not state.get("target_urls"):
+        print(f"  [Collector] 触发 Discovery 重发现 (策略: {new_strategy} → {suggested})")
+        from agents.discovery.agent import DiscoveryAgent
+        new_strategy = suggested
+        rediscover = DiscoveryAgent()
+        result = await rediscover.discover(
+            state["competitor_name"], scope,
+            strategy=new_strategy,
+            trusted_domains=state.get("trusted_domains", []),
+        )
+        target_urls = result["urls"]
+        print(f"  [Collector] 新数据源: {result['path']} path, {len(target_urls)} 个URL")
 
     agent = CollectorAgent()
 
@@ -110,7 +138,7 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
             "scope": scope,
             "depth": "standard",
             "max_sources": 10,
-            "target_urls": state.get("discovered_urls", state.get("target_urls", [])),
+            "target_urls": target_urls,
             "language": "zh",
         },
         state=state,
@@ -129,6 +157,9 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         "collect_errors": args.get("errors", []),
         "collect_scope": scope,
         "missing_dimensions": [],
+        "discovered_urls": target_urls,
+        "discovery_strategy": new_strategy,
+        "suggested_strategy": "",  # 消费完清空
     }
 
 
@@ -249,6 +280,9 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             "report_markdown": report_markdown,
             "original_claims": state.get("claims", []),
             "expected_dimensions": state.get("expected_dimensions", []),
+            "industry": state.get("industry", ""),
+            "discovery_strategy": state.get("discovery_strategy", "official_only"),
+            "iteration": iteration,
         },
         state=state,
     )
@@ -306,6 +340,12 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         "missing_dimensions": missing_dims,
         "qa_target_agent": target_agent,
     }
+
+    # 自适应策略降级：QA 建议下一轮换数据源
+    suggested_strategy = args.get("suggested_strategy", "")
+    if suggested_strategy and suggested_strategy != state.get("discovery_strategy"):
+        update["suggested_strategy"] = suggested_strategy
+        print(f"  [QA] 触发策略降级: {state.get('discovery_strategy')} → {suggested_strategy}")
 
     # 如果通过、reject、或达到最大迭代次数，标记完成
     max_iter = state.get("max_iterations", 3)

@@ -6,6 +6,20 @@ version: "1.0"
 
 discovery_strategy: official_only
 
+# QA 自适应降级时使用：当官网采不到核心维度（典型 SPA 渲染产品如飞书）
+# 系统自动切到 open_search 策略，从下面这些权威媒体补采
+trusted_domains:
+  - 36kr.com
+  - geekpark.net
+  - infoq.cn
+  - sohu.com
+  - cnblogs.com
+  - csdn.net
+  - zhihu.com
+  - tmtpost.com
+  - leiphone.com
+  - pingwest.com
+
 recommended_sources:
   - official_doc
   - web_page

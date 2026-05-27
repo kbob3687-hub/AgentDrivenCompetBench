@@ -51,6 +51,8 @@ class QAAgent(BaseAgent):
         original_claims = args.get("original_claims", [])
         expected_dimensions = args.get("expected_dimensions", [])
         industry = args.get("industry", "")
+        current_strategy = args.get("discovery_strategy", "official_only")
+        iteration = args.get("iteration", 1)
 
         if not profile:
             return self.build_message(
@@ -98,13 +100,27 @@ class QAAgent(BaseAgent):
             all_issues, missing_dimensions, verdict,
         )
 
+        # 自适应策略降级：核心维度（pricing/features）缺失且当前在官网模式
+        # 第 1 轮就建议切到 open_search，让第 2 轮换数据源
+        suggested_strategy = ""
+        if (
+            verdict == "revise"
+            and current_strategy == "official_only"
+            and any(d in missing_dimensions for d in ("pricing", "features"))
+            and iteration >= 1
+        ):
+            suggested_strategy = "open_search"
+
         # 构造QAFeedback
+        summary = self._build_summary(verdict, all_issues, overall_score, missing_dimensions)
+        if suggested_strategy:
+            summary += f" 已建议策略降级 → {suggested_strategy}（下一轮换数据源）。"
         feedback = QAFeedback(
             target_agent=target_agent,
             issues=all_issues,
             overall_score=overall_score,
             verdict=verdict,
-            summary=self._build_summary(verdict, all_issues, overall_score, missing_dimensions),
+            summary=summary,
             checked_claims_count=checked,
             verified_claims_count=verified,
         )
@@ -120,6 +136,7 @@ class QAAgent(BaseAgent):
                 "issues_count": len(all_issues),
                 "critical_issues": sum(1 for i in all_issues if i.severity == "critical"),
                 "missing_dimensions": missing_dimensions,
+                "suggested_strategy": suggested_strategy,
             },
             trace_id=message.trace_id,
             message_type=MessageType.FEEDBACK if verdict != "pass" else MessageType.TASK_RESULT,

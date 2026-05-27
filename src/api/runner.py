@@ -127,6 +127,16 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
     agent = DiscoveryAgent()
     strategy = state.get("discovery_strategy", "official_only")
     trusted_domains = state.get("trusted_domains", [])
+
+    # QA 自适应降级：上一轮 QA 建议切换策略
+    suggested = state.get("suggested_strategy", "")
+    if suggested and suggested != strategy:
+        await _publish(task_id, EventType.LOG, {
+            "message": f"QA 反馈触发策略切换: {strategy} → {suggested}",
+            "agent": "discovery",
+        })
+        strategy = suggested
+
     result = await agent.discover(target, scope, strategy=strategy, trusted_domains=trusted_domains)
 
     path = result["path"]
@@ -147,7 +157,7 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
         iteration=1,
         duration_ms=round(duration * 1000),
         model="none (logic + search API)",
-        prompt_preview=f"发现 {target} 的数据源，scope: {scope}",
+        prompt_preview=f"发现 {target} 的数据源，scope: {scope}, strategy: {strategy}",
         output_preview=f"path={path}, domain={domain}, urls={len(urls)}",
     ))
 
@@ -156,6 +166,8 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
         "discovery_path": path,
         "discovery_domain": domain,
         "discovery_queries": result.get("search_queries", []),
+        "discovery_strategy": strategy,
+        "suggested_strategy": "",
     }
 
 
@@ -165,6 +177,7 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     iteration = state.get("iteration", 1)
     scope = state.get("collect_scope", ["pricing"])
     missing = state.get("missing_dimensions", [])
+    suggested = state.get("suggested_strategy", "")
 
     if missing:
         scope = list(set(scope + missing))
@@ -179,7 +192,27 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     # 使用 Discovery 节点已发现的 URL（首轮），或补采时重新发现
     target = state["competitor_name"]
     discovered = state.get("discovered_urls", [])
-    if discovered and not missing:
+    new_strategy = state.get("discovery_strategy", "official_only")
+
+    # QA 自适应降级：上一轮建议切换策略 → 重跑 Discovery 拿新数据源
+    if suggested and suggested != new_strategy and not state.get("target_urls"):
+        await _publish(task_id, EventType.LOG, {
+            "message": f"QA 反馈触发策略降级: {new_strategy} → {suggested}，重新发现数据源",
+            "agent": "collector",
+        })
+        new_strategy = suggested
+        rediscover = DiscoveryAgent()
+        rediscover_result = await rediscover.discover(
+            target, scope,
+            strategy=new_strategy,
+            trusted_domains=state.get("trusted_domains", []),
+        )
+        urls = rediscover_result["urls"][:10]
+        await _publish(task_id, EventType.LOG, {
+            "message": f"新数据源 [{rediscover_result['path']}]: {len(urls)} 个URL",
+            "agent": "collector",
+        })
+    elif discovered and not missing:
         urls = discovered[:10]
     else:
         # QA打回补采时，对缺失维度重新生成URL
@@ -271,6 +304,9 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         "collect_errors": fetch_errors,
         "collect_scope": scope,
         "missing_dimensions": [],
+        "discovered_urls": urls,
+        "discovery_strategy": new_strategy,
+        "suggested_strategy": "",  # 消费完清空
     }
 
 
@@ -470,6 +506,8 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             "original_claims": state.get("claims", []),
             "expected_dimensions": state.get("expected_dimensions", []),
             "industry": state.get("industry", ""),
+            "discovery_strategy": state.get("discovery_strategy", "official_only"),
+            "iteration": iteration,
         },
         state=state,
     )
@@ -530,6 +568,16 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         "missing_dimensions": missing_dims,
         "qa_target_agent": target_agent,
     }
+
+    # 自适应策略降级：QA 建议下一轮换数据源
+    suggested_strategy = args.get("suggested_strategy", "")
+    current_strategy = state.get("discovery_strategy", "official_only")
+    if suggested_strategy and suggested_strategy != current_strategy:
+        update["suggested_strategy"] = suggested_strategy
+        await _publish(task_id, EventType.LOG, {
+            "message": f"QA 触发策略降级建议: {current_strategy} → {suggested_strategy}（下一轮 Collector 重新发现数据源）",
+            "agent": "qa",
+        })
 
     _task_traces.setdefault(task_id, []).append(_build_trace_entry(
         agent="qa",

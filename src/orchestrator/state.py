@@ -73,6 +73,7 @@ class GraphState(TypedDict, total=False):
     qa_feedback_summary: str
     missing_dimensions: list[str]
     qa_target_agent: str
+    suggested_strategy: str  # QA 建议的下一轮 discovery 策略: "" | "open_search"
 
     # ---- 迭代控制 ----
     iteration: int
