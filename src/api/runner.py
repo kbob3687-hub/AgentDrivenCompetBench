@@ -212,11 +212,29 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
             "message": f"新数据源 [{rediscover_result['path']}]: {len(urls)} 个URL",
             "agent": "collector",
         })
-    elif discovered and not missing:
+    elif discovered:
+        # Discovery 已发现 URL（首轮或补采），直接复用
         urls = discovered[:10]
     else:
-        # QA打回补采时，对缺失维度重新生成URL
+        # 未知竞品 + Discovery 未给出 URL → 走 warm-path 兜底（仅已知竞品有效）
         urls = agent._get_default_urls(target, scope)[:10]
+        if urls:
+            await _publish(task_id, EventType.LOG, {
+                "message": f"Warm-path 兜底: 命中已知竞品库，使用 {len(urls)} 个 URL",
+                "agent": "collector",
+            })
+        else:
+            # 未知竞品 + Discovery 无结果 → 不再自拼搜索端点，明确报错
+            await _publish(task_id, EventType.LOG, {
+                "message": (
+                    f"⚠ Discovery 未发现可采集的 URL，"
+                    f"且 {target!r} 不在已知竞品库中。"
+                    f"建议：1) 切换 discovery_strategy 重试；"
+                    f"2) 通过 target_urls 提供候选 URL；"
+                    f"3) 该领域信息源可能不足以自动分析。"
+                ),
+                "agent": "collector",
+            })
 
     # 行业模板扩展字段注入采集指令
     industry_fields = state.get("industry_fields", [])
@@ -230,7 +248,6 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
 
     # Fan-out: 并行 fetch + extract
     semaphore = asyncio.Semaphore(4)
-    all_claims: list[dict] = []
     fetch_errors: list[str] = []
 
     async def process_url(url: str, sub_id: str) -> list[dict]:
@@ -249,11 +266,18 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
                         "message": f"⛔ robots.txt 禁止抓取: {url}（已跳过）",
                         "agent": "collector",
                     })
+                else:
+                    # 抓取失败的真实错误也发到流，便于前端定位 quota / 网络 / 鉴权
+                    await _publish(task_id, EventType.LOG, {
+                        "message": f"❌ 抓取失败: {url} — {fetch_result.error}",
+                        "agent": "collector",
+                    })
                 await _publish(task_id, EventType.SUB_AGENT_END, {
                     "parent": "collector", "sub_id": sub_id, "url": url,
                     "iteration": iteration, "success": False,
                     "duration_ms": round((time.time() - sub_start) * 1000),
                     "claims_count": 0,
+                    "error": fetch_result.error or "",
                 })
                 return []
 
@@ -288,12 +312,44 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     tasks = [process_url(url, f"fetch-{i}") for i, url in enumerate(urls)]
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
+    new_claims_this_iter: list[dict] = []
     for r in results:
         if isinstance(r, list):
-            all_claims.extend(r)
+            new_claims_this_iter.extend(r)
         elif isinstance(r, Exception):
             fetch_errors.append(str(r))
 
+    # 累积模式：保留上一轮 claims 作为 grounding，新 claims 增量合并并去重
+    # 防止迭代时 LLM 抽取随机性导致字段证据丢失，使分数倒退
+    prev_claims = list(state.get("claims", []))
+
+    def _claim_key(c: dict) -> tuple[str, str]:
+        sources = c.get("sources") or []
+        first_url = (sources[0].get("url") if sources else "") or ""
+        claim_text = c.get("claim") or ""
+        return (claim_text.strip(), first_url)
+
+    seen: set[tuple[str, str]] = {_claim_key(c) for c in prev_claims}
+    merged_claims: list[dict] = list(prev_claims)
+    added = 0
+    for c in new_claims_this_iter:
+        key = _claim_key(c)
+        if key in seen:
+            continue
+        seen.add(key)
+        merged_claims.append(c)
+        added += 1
+
+    if iteration > 1:
+        await _publish(task_id, EventType.LOG, {
+            "message": (
+                f"增量累积: 旧证据 {len(prev_claims)} 条保留 + 本轮新增 {added} 条 "
+                f"(本轮抽到 {len(new_claims_this_iter)} 条，去重 {len(new_claims_this_iter) - added} 条)"
+            ),
+            "agent": "collector",
+        })
+
+    all_claims = merged_claims
     duration = time.time() - start
 
     await _publish(task_id, EventType.AGENT_END, {
@@ -308,7 +364,9 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         input_tokens=len(all_claims) * 800,
         output_tokens=len(all_claims) * 200,
         prompt_preview=f"采集 {target} 的 {scope} 维度数据，共 {len(urls)} 个URL",
-        output_preview=f"提取 {len(all_claims)} 条claims，失败 {len(fetch_errors)} 个源",
+        output_preview=(
+            f"累计 {len(all_claims)} 条claims（本轮 +{added}），失败 {len(fetch_errors)} 个源"
+        ),
     ))
 
     return {
@@ -493,22 +551,58 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         })
 
         max_iter = state.get("max_iterations", 3)
-        final = {}
-        if iteration >= max_iter:
-            final = {
-                "final_status": "max_iterations_reached(last_verdict=reject)",
-                "completed_at": datetime.now().isoformat(),
-            }
-
-        return {
+        update: dict[str, Any] = {
             "qa_verdict": "reject",
             "qa_score": 0.0,
             "qa_issues": [],
             "qa_feedback_summary": "no profile to check",
             "feedback_history": history,
             "iteration": iteration + 1,
-            **final,
         }
+
+        # 即使没有 profile，也必须经过人工审核（不能静默终止）
+        score_trend = [r.get("score", 0.0) for r in history]
+        await _publish(task_id, EventType.HITL_PAUSE, {
+            "verdict": "reject",
+            "score": 0.0,
+            "iteration": iteration,
+            "missing_dimensions": state.get("collect_scope", []),
+            "message": (
+                f"采集 0 条数据，无法生成报告（第 {iteration}/{max_iter} 轮）。"
+                "可能原因：Discovery 未发现可用 URL / 该领域信源不足 / Jina 配额耗尽。"
+                "请决定是终止任务还是继续重试。"
+            ),
+            "issues": [],
+            "score_trend": score_trend,
+            "suggested_strategy": "",
+            "current_strategy": state.get("discovery_strategy", "official_only"),
+            "report_preview": "",
+            "iterations_left": max(0, max_iter - iteration),
+            "target_agent": "discovery",
+            "resolved_fields": [],
+            "regressed_fields": [],
+        })
+        gate = asyncio.Event()
+        _hitl_gates[task_id] = gate
+        _hitl_decisions.pop(task_id, None)
+        await gate.wait()
+        _hitl_gates.pop(task_id, None)
+
+        decision = _hitl_decisions.pop(task_id, "abort")
+        await _publish(task_id, EventType.HITL_RESUME, {
+            "decision": decision, "iteration": iteration,
+        })
+
+        if decision == "abort" or iteration >= max_iter:
+            update["final_status"] = "human_abort" if decision == "abort" else "max_iterations_reached(no_profile)"
+            update["completed_at"] = datetime.now().isoformat()
+        elif decision == "force_pass":
+            # 强制通过 + 空 profile 没意义，按 abort 处理
+            update["final_status"] = "human_abort"
+            update["completed_at"] = datetime.now().isoformat()
+        # else continue → 流程继续
+
+        return update
 
     message = _make_message(
         to_agent="qa",
@@ -689,7 +783,26 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         update["completed_at"] = datetime.now().isoformat()
 
     elif iteration >= max_iter:
-        update["final_status"] = f"max_iterations_reached(last_verdict={verdict})"
+        # 达到最大迭代次数，仍需人工审核（不能静默终止）
+        await _publish(task_id, EventType.HITL_PAUSE, _hitl_payload(
+            f"已达最大迭代次数({max_iter}轮)，最终 score={score:.2f}，等待人工决策..."
+        ))
+        gate = asyncio.Event()
+        _hitl_gates[task_id] = gate
+        _hitl_decisions.pop(task_id, None)
+        await gate.wait()
+        _hitl_gates.pop(task_id, None)
+
+        decision = _hitl_decisions.pop(task_id, "abort")
+        await _publish(task_id, EventType.HITL_RESUME, {
+            "decision": decision, "iteration": iteration,
+        })
+
+        if decision == "force_pass":
+            update["qa_verdict"] = "pass"
+            update["final_status"] = "human_force_pass"
+        else:
+            update["final_status"] = f"max_iterations_reached(last_verdict={verdict})"
         update["completed_at"] = datetime.now().isoformat()
     elif verdict in ("revise", "reject"):
         # HITL: pause and wait for human decision

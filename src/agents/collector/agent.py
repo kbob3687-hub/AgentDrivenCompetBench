@@ -232,9 +232,11 @@ class CollectorAgent(BaseAgent):
         )
 
     def _get_default_urls(self, target: str, scope: list[str]) -> list[str]:
-        """根据竞品名称和采集维度生成默认URL列表
+        """已知竞品的 warm-path URL 兜底（warm-path map）。
 
-        对已知竞品使用精确URL，对未知竞品使用Jina搜索自动发现。
+        未知竞品**不再自动拼装**搜索端点 URL —— 那是 Discovery 的职责。
+        Discovery 0 URL 时由上层 (runner) 触发明确错误 / HITL，而不是让 collector
+        盲目去抓 `s.jina.ai/xxx` 这种搜索端点（会被 robots.txt 直接拒）。
         """
         url_map: dict[str, dict[str, list[str]]] = {
             "notion": {
@@ -260,7 +262,6 @@ class CollectorAgent(BaseAgent):
             },
         }
 
-        # Aliases: 中文名/变体 → 标准key
         aliases: dict[str, str] = {
             "飞书": "feishu",
             "lark": "feishu",
@@ -270,23 +271,14 @@ class CollectorAgent(BaseAgent):
         key = target.lower().strip()
         key = aliases.get(key, key)
 
-        urls: list[str] = []
         target_urls = url_map.get(key, {})
+        if not target_urls:
+            # 未知竞品：返回空 → 由上层路由到 Discovery 或 HITL
+            return []
 
-        # 已知竞品：始终注入 user_personas 维度（客户案例页）
-        if target_urls:
-            for dim in scope:
-                urls.extend(target_urls.get(dim, []))
-            # 无论 scope 是否包含 user_personas，都加入客户案例页
-            if "user_personas" not in scope:
-                urls.extend(target_urls.get("user_personas", []))
-        else:
-            # 未知竞品：使用 Jina 搜索 URL 自动发现
-            search_base = "https://s.jina.ai/"
-            for dim in scope:
-                query = f"{target} {dim}".replace("_", " ")
-                urls.append(f"{search_base}{query}")
-            # 补充客户案例搜索
-            urls.append(f"{search_base}{target} customer stories case studies")
-
+        urls: list[str] = []
+        for dim in scope:
+            urls.extend(target_urls.get(dim, []))
+        if "user_personas" not in scope:
+            urls.extend(target_urls.get("user_personas", []))
         return urls

@@ -48,15 +48,17 @@ async def jina_reader(url: str, timeout: float = 45.0, max_retries: int = 2) -> 
         "Accept": "text/markdown",
         "X-Return-Format": "markdown",
     }
+    api_key = os.getenv("JINA_API_KEY", "")
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
 
     proxy = os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
 
     last_error = ""
     for attempt in range(max_retries):
         try:
-            use_proxy = proxy if attempt > 0 else None
             async with httpx.AsyncClient(
-                timeout=timeout, follow_redirects=True, proxy=use_proxy
+                timeout=timeout, follow_redirects=True, proxy=proxy
             ) as client:
                 response = await client.get(jina_url, headers=headers)
                 response.raise_for_status()
@@ -77,7 +79,13 @@ async def jina_reader(url: str, timeout: float = 45.0, max_retries: int = 2) -> 
         except httpx.TimeoutException:
             last_error = f"Timeout after {timeout}s"
         except httpx.HTTPStatusError as e:
-            last_error = f"HTTP {e.response.status_code}: {e.response.reason_phrase}"
+            last_error = (
+                f"HTTP {e.response.status_code} {e.response.reason_phrase}: "
+                f"{e.response.text[:200]}"
+            )
+            # 4xx 通常重试无意义（401/403/429 配额或鉴权）
+            if 400 <= e.response.status_code < 500 and e.response.status_code != 429:
+                break
         except Exception as e:
             last_error = f"{type(e).__name__}: {str(e)}"
 
