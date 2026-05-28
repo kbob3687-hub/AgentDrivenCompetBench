@@ -36,10 +36,10 @@ function agentColor(agent?: AgentName): string {
 
 function typeColor(type: LogEntry['type']): string {
   switch (type) {
-    case 'success': return 'text-green-400'
-    case 'warning': return 'text-yellow-400'
-    case 'error': return 'text-red-400'
-    default: return 'text-slate-300'
+    case 'success': return 'text-emerald-600'
+    case 'warning': return 'text-amber-600'
+    case 'error': return 'text-red-600'
+    default: return 'text-slate-700'
   }
 }
 </script>
@@ -49,7 +49,7 @@ function typeColor(type: LogEntry['type']): string {
     ref="container"
     class="h-full overflow-y-auto bg-white rounded-lg border border-slate-200 p-3 font-mono text-xs space-y-1 shadow-sm"
   >
-    <div v-if="logs.length === 0" class="text-slate-400 text-center py-8">
+    <div v-if="logs.length === 0" class="text-slate-500 text-center py-8">
       等待分析开始...
     </div>
     <div
@@ -57,7 +57,7 @@ function typeColor(type: LogEntry['type']): string {
       :key="idx"
       class="flex items-start gap-2 py-0.5"
     >
-      <span class="text-slate-400 shrink-0">{{ formatTime(log.timestamp) }}</span>
+      <span class="text-slate-500 shrink-0">{{ formatTime(log.timestamp) }}</span>
       <span
         v-if="log.agent"
         :class="['px-1.5 py-0.5 rounded text-[10px] font-bold text-white shrink-0', agentColor(log.agent)]"

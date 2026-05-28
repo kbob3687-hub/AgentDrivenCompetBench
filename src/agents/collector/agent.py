@@ -13,6 +13,7 @@ from datetime import datetime
 from typing import Any
 
 from agents.base import BaseAgent, AgentConfig
+from agents.collector.compliance import is_allowed_by_robots, redact_pii
 from agents.collector.prompts import COLLECTOR_SYSTEM_PROMPT, COLLECT_USER_PROMPT_TEMPLATE
 from agents.collector.tools import FetchResult, jina_reader, playwright_fetch
 from schemas.competitor import EvidencedClaim, SourceReference, SourceType
@@ -105,10 +106,27 @@ class CollectorAgent(BaseAgent):
         )
 
     async def _fetch_url(self, url: str) -> FetchResult:
-        """获取URL内容，Jina Reader优先，失败时降级到Playwright"""
+        """获取URL内容，先做 robots.txt 合规检查，再 Jina/Playwright 抓取，最后 PII 脱敏。"""
+        allowed, reason = await is_allowed_by_robots(url)
+        if not allowed:
+            return FetchResult(
+                url=url,
+                success=False,
+                error=f"robots.txt disallowed: {reason}",
+                robots_status="disallowed",
+            )
+
         result = await jina_reader(url)
         if not result.success:
             result = await playwright_fetch(url)
+
+        result.robots_status = reason
+
+        if result.success and result.content:
+            redacted, counts = redact_pii(result.content)
+            result.content = redacted
+            result.pii_redactions = counts
+
         return result
 
     async def _extract_info(

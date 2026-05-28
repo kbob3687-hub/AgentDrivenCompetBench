@@ -52,6 +52,18 @@ export interface FeedbackRecord {
   critical_issues: number
   action_taken: string
   feedback_summary: string
+  issues?: QAIssueDetail[]
+  resolved_fields?: string[]
+  regressed_fields?: string[]
+  persisted_fields?: string[]
+}
+
+export interface QAIssueDetail {
+  field_path: string
+  severity: 'critical' | 'major' | 'minor' | string
+  issue_type: string
+  description: string
+  suggestion: string
 }
 
 export interface AnalysisState {
@@ -72,6 +84,15 @@ export interface PauseContext {
   iteration: number
   missing_dimensions: string[]
   message: string
+  issues: QAIssueDetail[]
+  score_trend: number[]
+  suggested_strategy: string
+  current_strategy: string
+  report_preview: string
+  iterations_left: number
+  target_agent: string
+  resolved_fields: string[]
+  regressed_fields: string[]
 }
 
 export interface LogEntry {

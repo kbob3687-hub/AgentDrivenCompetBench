@@ -134,7 +134,7 @@ function handleSubmit() {
           class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           placeholder="每行一个URL，例如：&#10;https://notion.so/pricing&#10;https://notion.so/product"
         ></textarea>
-        <p class="text-xs text-slate-400 mt-1">人工指定数据源，Agent将优先采集这些页面</p>
+        <p class="text-xs text-slate-500 mt-1">人工指定数据源，Agent将优先采集这些页面</p>
       </div>
     </div>
   </div>

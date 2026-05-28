@@ -169,7 +169,7 @@ const svgDots = computed(() => {
             fill="#3b82f6"
           />
         </svg>
-        <div class="flex justify-between text-xs text-slate-400 mt-1">
+        <div class="flex justify-between text-xs text-slate-500 mt-1">
           <span v-for="p in metrics.qa_trend" :key="p.iteration">
             R{{ p.iteration }}: {{ (p.score * 100).toFixed(0) }}%
           </span>
@@ -183,27 +183,27 @@ const svgDots = computed(() => {
           <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-200 text-center">
             <div class="text-xs text-slate-500 mb-1">耗时</div>
             <div class="text-lg font-bold text-emerald-600">{{ metrics.baseline_comparison.time.speedup }}x</div>
-            <div class="text-xs text-slate-400 mt-1">{{ metrics.baseline_comparison.time.human_label }} → {{ metrics.baseline_comparison.time.ai_label }}</div>
+            <div class="text-xs text-slate-500 mt-1">{{ metrics.baseline_comparison.time.human_label }} → {{ metrics.baseline_comparison.time.ai_label }}</div>
           </div>
           <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-200 text-center">
             <div class="text-xs text-slate-500 mb-1">信息源</div>
             <div class="text-lg font-bold text-emerald-600">{{ metrics.baseline_comparison.sources.improvement }}</div>
-            <div class="text-xs text-slate-400 mt-1">{{ metrics.baseline_comparison.sources.human }}个 → {{ metrics.baseline_comparison.sources.ai }}个</div>
+            <div class="text-xs text-slate-500 mt-1">{{ metrics.baseline_comparison.sources.human }}个 → {{ metrics.baseline_comparison.sources.ai }}个</div>
           </div>
           <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-200 text-center">
             <div class="text-xs text-slate-500 mb-1">结构化</div>
             <div class="text-lg font-bold text-emerald-600">Schema</div>
-            <div class="text-xs text-slate-400 mt-1">Word → JSON</div>
+            <div class="text-xs text-slate-500 mt-1">Word → JSON</div>
           </div>
           <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-200 text-center">
             <div class="text-xs text-slate-500 mb-1">溯源</div>
             <div class="text-lg font-bold text-emerald-600">100%</div>
-            <div class="text-xs text-slate-400 mt-1">无 → 逐条URL</div>
+            <div class="text-xs text-slate-500 mt-1">无 → 逐条URL</div>
           </div>
           <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-200 text-center">
             <div class="text-xs text-slate-500 mb-1">一致性</div>
             <div class="text-lg font-bold text-emerald-600">100%</div>
-            <div class="text-xs text-slate-400 mt-1">因人而异 → Schema约束</div>
+            <div class="text-xs text-slate-500 mt-1">因人而异 → Schema约束</div>
           </div>
         </div>
       </div>
