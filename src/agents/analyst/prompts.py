@@ -89,6 +89,7 @@ ANALYST_SYSTEM_PROMPT = """你是一个专业的竞品分析Agent。你的职责
 - feature_tree 按功能类别分组，每个类别下可有sub_features
 - SWOT中weaknesses/opportunities/threats如果claims中没有直接证据，confidence应低于0.6
 - 如果某个维度的claims不足以得出结论，在该字段标注null并说明原因
+- **user_personas 溯源规则**：用户画像必须基于来自客户案例页（URL含/customers或/customer-stories）的claims。每个persona的evidence_claim_indices必须指向这类claims。如果没有客户案例类claims，user_personas输出空列表[]，严禁凭空臆测。
 """
 
 ANALYZE_USER_PROMPT_TEMPLATE = """请分析以下关于 **{competitor_name}** 的采集数据，生成结构化竞品档案。
@@ -107,5 +108,5 @@ ANALYZE_USER_PROMPT_TEMPLATE = """请分析以下关于 **{competitor_name}** �
 2. feature_tree按功能类别分组
 3. 每条结论都通过evidence_claim_indices引用原始claims
 4. SWOT分析基于claims推理得出
-5. user_personas基于claims推断2-3个核心用户画像（角色/痛点/使用场景）
+5. user_personas必须且仅能基于来源URL含"/customers"或"/customer-stories"的claims提取，每个segment/pain_point/usage_scenario都必须有对应的evidence_claim_indices。如果没有客户案例类claims则输出空列表[]
 """

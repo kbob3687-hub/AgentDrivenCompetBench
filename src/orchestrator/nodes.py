@@ -15,6 +15,7 @@ from typing import Any
 
 from agents.analyst.agent import AnalystAgent
 from agents.collector.agent import CollectorAgent
+from agents.discovery.agent import DiscoveryAgent
 from agents.qa.agent import QAAgent
 from agents.writer.agent import WriterAgent
 from orchestrator.state import FeedbackRecord, GraphState
@@ -51,6 +52,40 @@ def _make_message(
     )
 
 
+async def discovery_node(state: GraphState) -> dict[str, Any]:
+    """Discovery节点 - URL发现与路由（Warm/Cold/Open Search Path）"""
+    target = state["competitor_name"]
+    scope = state.get("collect_scope", ["pricing", "features"])
+    target_urls = state.get("target_urls", [])
+    strategy = state.get("discovery_strategy", "official_only")
+    trusted_domains = state.get("trusted_domains", [])
+
+    # 如果用户指定了URL，跳过discovery
+    if target_urls:
+        print(f"\n[Discovery] 用户指定了 {len(target_urls)} 个URL，跳过自动发现")
+        return {
+            "discovered_urls": target_urls,
+            "discovery_path": "user_specified",
+            "discovery_domain": "",
+            "discovery_queries": [],
+        }
+
+    print(f"\n[Discovery] 发现 {target} 的数据源URL (策略: {strategy})...")
+    agent = DiscoveryAgent()
+    result = await agent.discover(target, scope, strategy=strategy, trusted_domains=trusted_domains)
+
+    path = result["path"]
+    urls = result["urls"]
+    print(f"  [Discovery] {path} path → 发现 {len(urls)} 个URL (domain: {result['domain']})")
+
+    return {
+        "discovered_urls": urls,
+        "discovery_path": path,
+        "discovery_domain": result["domain"],
+        "discovery_queries": result.get("search_queries", []),
+    }
+
+
 async def collector_node(state: GraphState) -> dict[str, Any]:
     """Collector节点 - 采集竞品数据"""
     iteration = state.get("iteration", 1)
@@ -75,7 +110,7 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
             "scope": scope,
             "depth": "standard",
             "max_sources": 10,
-            "target_urls": state.get("target_urls", []),
+            "target_urls": state.get("discovered_urls", state.get("target_urls", [])),
             "language": "zh",
         },
         state=state,
@@ -114,6 +149,7 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             "competitor_name": state["competitor_name"],
             "claims": claims,
             "dimensions_requested": state.get("collect_scope", ["pricing", "features"]),
+            "industry": state.get("industry", ""),
         },
         state=state,
     )
@@ -232,20 +268,20 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     feedback = args.get("feedback", {})
     summary = feedback.get("summary", "") if isinstance(feedback, dict) else ""
     missing_dims = args.get("missing_dimensions", [])
+    target_agent = (feedback.get("target_agent", "collector") if isinstance(feedback, dict) else "collector")
 
-    print(f"  [QA] verdict={verdict}, score={score:.2f}, issues={issues_count}, missing_dims={missing_dims}")
+    print(f"  [QA] verdict={verdict}, score={score:.2f}, issues={issues_count}, target={target_agent}, missing_dims={missing_dims}")
 
     # 记录FeedbackRecord
     iteration = state.get("iteration", 1)
     if missing_dims:
-        action = f"打回Collector补采{missing_dims}"
+        action = f"打回collector补采{missing_dims}"
+    elif verdict == "pass":
+        action = "通过"
+    elif verdict == "reject":
+        action = f"打回{target_agent}重做（质量不达标）"
     else:
-        action_map = {
-            "reject": "终止流程（质量不达标）",
-            "revise": "打回Collector重采",
-            "pass": "通过",
-        }
-        action = action_map.get(verdict, "未知")
+        action = f"打回{target_agent}重做"
 
     record = FeedbackRecord(
         iteration=iteration,
@@ -268,6 +304,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         "feedback_history": history,
         "iteration": iteration + 1,
         "missing_dimensions": missing_dims,
+        "qa_target_agent": target_agent,
     }
 
     # 如果通过、reject、或达到最大迭代次数，标记完成

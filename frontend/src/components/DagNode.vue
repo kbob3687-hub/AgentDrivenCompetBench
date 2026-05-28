@@ -10,15 +10,15 @@ const props = defineProps<{
 const statusClasses = computed(() => {
   switch (props.data.status) {
     case 'running':
-      return 'bg-blue-600 border-blue-400 animate-pulse'
+      return 'bg-blue-50 border-blue-400 animate-pulse shadow-blue-100'
     case 'done':
-      return 'bg-green-700 border-green-500'
+      return 'bg-emerald-50 border-emerald-400 shadow-emerald-100'
     case 'error':
-      return 'bg-red-700 border-red-500'
+      return 'bg-red-50 border-red-400 shadow-red-100'
     case 'revise':
-      return 'bg-orange-600 border-orange-400'
+      return 'bg-orange-50 border-orange-400 shadow-orange-100'
     default:
-      return 'bg-slate-700 border-slate-500'
+      return 'bg-white border-slate-300 shadow-slate-100'
   }
 })
 
@@ -36,14 +36,14 @@ const statusIcon = computed(() => {
 <template>
   <div
     :class="[
-      'w-[120px] px-3 py-3 rounded-lg border-2 text-center transition-all duration-300',
+      'w-[120px] px-3 py-3 rounded-lg border-2 text-center transition-all duration-300 shadow-sm',
       statusClasses
     ]"
   >
-    <Handle type="target" :position="Position.Left" class="!bg-slate-400" />
+    <Handle type="target" :position="Position.Left" class="!bg-slate-300" />
     <div class="text-lg mb-1">{{ statusIcon }}</div>
-    <div class="text-sm font-semibold text-white">{{ data.label }}</div>
-    <div class="text-xs text-slate-200 mt-1 capitalize">{{ data.status }}</div>
-    <Handle type="source" :position="Position.Right" class="!bg-slate-400" />
+    <div class="text-sm font-semibold text-slate-700">{{ data.label }}</div>
+    <div class="text-xs text-slate-500 mt-1 capitalize">{{ data.status }}</div>
+    <Handle type="source" :position="Position.Right" class="!bg-slate-300" />
   </div>
 </template>

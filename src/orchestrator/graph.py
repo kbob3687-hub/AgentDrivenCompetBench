@@ -1,12 +1,22 @@
-"""StateGraph组装 - 串联四个Agent节点 + QA反馈循环
+"""StateGraph组装 - 串联五个Agent节点 + QA反馈循环
 
 核心架构：
-  Collector → Analyst → Writer → QA
-                ↑                  │
-                └── revise ────────┤
-  Collector ←── reject ───────────┘
-                                   │
-  END ←──── pass ─────────────────┘
+  Discovery → Collector → Analyst → Writer → QA
+                  ↑           ↑           ↑     │
+                  │           │           │     │
+                  └───────────┴───────────┘     │
+                   revise → 按问题类型路由       │
+                                                │
+  END ←──── pass ──────────────────────────────┘
+
+QA反馈路由规则：
+  - 数据问题（missing_source/factual_error/outdated）→ Collector
+  - 分析问题（low_confidence/inconsistency）→ Analyst
+  - 报告问题（schema_violation）→ Writer
+
+Discovery节点（双路径）：
+  - Warm Path: 已知竞品从缓存直接返回精确URL
+  - Cold Path: 未知竞品通过Jina Search发现官网域名 + 构造维度URL
 
 支持PostgresSaver做Checkpointer，实现断点续跑。
 """
@@ -21,7 +31,7 @@ from typing import Any
 from langgraph.graph import END, StateGraph
 
 from orchestrator.edges import qa_routing
-from orchestrator.nodes import analyst_node, collector_node, qa_node, writer_node
+from orchestrator.nodes import analyst_node, collector_node, discovery_node, qa_node, writer_node
 from orchestrator.state import GraphState
 
 
@@ -44,28 +54,32 @@ def build_graph(checkpointer: Any = None) -> StateGraph:
     graph = StateGraph(GraphState)
 
     # 添加节点
+    graph.add_node("discovery", discovery_node)
     graph.add_node("collector", collector_node)
     graph.add_node("analyst", analyst_node)
     graph.add_node("writer", writer_node)
     graph.add_node("qa", qa_node)
 
-    # 线性边：collector → analyst → writer → qa
+    # 线性边：discovery → collector → analyst → writer → qa
+    graph.add_edge("discovery", "collector")
     graph.add_edge("collector", "analyst")
     graph.add_edge("analyst", "writer")
     graph.add_edge("writer", "qa")
 
-    # QA后的条件边：根据verdict路由
+    # QA后的条件边：根据verdict和target_agent路由
     graph.add_conditional_edges(
         "qa",
         qa_routing,
         {
             "end": END,
             "collector": "collector",
+            "analyst": "analyst",
+            "writer": "writer",
         },
     )
 
     # 入口
-    graph.set_entry_point("collector")
+    graph.set_entry_point("discovery")
 
     # 编译
     compile_kwargs: dict[str, Any] = {}
@@ -110,6 +124,8 @@ async def run_pipeline(
     max_iterations: int = 3,
     checkpointer: Any = None,
     thread_id: str | None = None,
+    discovery_strategy: str = "official_only",
+    trusted_domains: list[str] | None = None,
 ) -> dict[str, Any]:
     """运行完整pipeline - 一站式入口
 
@@ -121,6 +137,8 @@ async def run_pipeline(
         max_iterations: 最大反馈循环次数，默认3
         checkpointer: 持久化器，传None则不持久化
         thread_id: 会话ID，用于checkpoint恢复，不传则新建
+        discovery_strategy: Discovery策略 - official_only / open_search
+        trusted_domains: open_search策略下的权威媒体白名单
 
     Returns:
         最终GraphState（dict）
@@ -132,6 +150,8 @@ async def run_pipeline(
         "collect_scope": collect_scope or ["pricing", "features"],
         "target_urls": target_urls or [],
         "expected_dimensions": expected_dimensions or (collect_scope or ["pricing", "features"]),
+        "discovery_strategy": discovery_strategy,
+        "trusted_domains": trusted_domains or [],
         "iteration": 1,
         "max_iterations": max_iterations,
         "feedback_history": [],
@@ -144,7 +164,7 @@ async def run_pipeline(
     config: dict[str, Any] = {}
     if checkpointer:
         config["configurable"] = {"thread_id": thread_id or str(uuid.uuid4())}
-    config["recursion_limit"] = max_iterations * 5  # 每轮4个节点 + 余量
+    config["recursion_limit"] = max_iterations * 6  # 每轮5个节点 + 余量
 
     final_state = await app.ainvoke(initial_state, config=config)
 

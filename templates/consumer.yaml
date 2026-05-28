@@ -1,0 +1,83 @@
+template_id: consumer_v1
+industry: consumer
+display_name: "消费品模板"
+description: "适用于消费电子、快消品、零售、DTC品牌类产品"
+version: "1.0"
+
+discovery_strategy: open_search
+trusted_domains:
+  - "36kr.com"
+  - "latepost.com"
+  - "jiemian.com"
+  - "idc.com"
+  - "canalys.com"
+  - "counterpoint.com"
+  - "zhihu.com"
+  - "xiaohongshu.com"
+  - "tmall.com"
+  - "jd.com"
+  - "weibo.com"
+  - "ithome.com"
+  - "pingwest.com"
+  - "sspai.com"
+
+recommended_sources:
+  - web_page
+  - news_article
+  - social_media
+  - app_store_review
+
+fields:
+  - field_name: distribution_channels
+    field_type: list
+    description: "销售渠道分布: online_direct/marketplace/retail/wholesale"
+    required: true
+    example: ["天猫旗舰店", "京东自营", "线下专柜", "品牌官网"]
+
+  - field_name: brand_sentiment
+    field_type: evidenced_claim
+    description: "品牌舆情与口碑（社交媒体声量、NPS、用户评价趋势）"
+    required: true
+    example: "小红书品牌声量月均10万+笔记，正面情感占比72%"
+
+  - field_name: market_share
+    field_type: evidenced_claim
+    description: "市场份额数据（需标注数据来源和统计口径）"
+    required: false
+    example: "2025年Q4中国市场份额23.5%（数据来源：IDC）"
+
+  - field_name: supply_chain_model
+    field_type: string
+    description: "供应链模式: dtc/franchise/distributor/hybrid/oem"
+    required: true
+    example: "hybrid"
+
+  - field_name: price_range
+    field_type: string
+    description: "价格带定位: budget/mid_range/premium/luxury"
+    required: true
+    example: "mid_range"
+
+  - field_name: target_demographics
+    field_type: evidenced_claim
+    description: "核心目标人群画像（年龄、性别、城市线级、消费能力）"
+    required: true
+    example: "25-35岁女性，一二线城市，月可支配收入8000+"
+
+  - field_name: marketing_channels
+    field_type: list
+    description: "主要营销渠道: social_media/kol/tv/outdoor/search"
+    required: false
+    example: ["小红书种草", "抖音直播", "微信私域"]
+
+  - field_name: product_line_breadth
+    field_type: number
+    description: "产品线SKU数量"
+    required: false
+    example: 45
+
+  - field_name: sustainability_initiatives
+    field_type: evidenced_claim
+    description: "ESG/可持续发展举措"
+    required: false
+    example: "2025年实现包装100%可回收，碳中和认证"

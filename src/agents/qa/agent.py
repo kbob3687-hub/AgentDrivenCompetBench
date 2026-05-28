@@ -30,7 +30,7 @@ class QAAgent(BaseAgent):
         return AgentConfig(
             provider="openai_compat",
             model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
-            max_tokens=8192,
+            max_tokens=16384,
             temperature=0.0,
         )
 
@@ -50,6 +50,7 @@ class QAAgent(BaseAgent):
         report_markdown = args.get("report_markdown", "")
         original_claims = args.get("original_claims", [])
         expected_dimensions = args.get("expected_dimensions", [])
+        industry = args.get("industry", "")
 
         if not profile:
             return self.build_message(
@@ -64,7 +65,7 @@ class QAAgent(BaseAgent):
 
         # ====== 第一轮：规则验证器（快速、免费） ======
         rule_issues, avg_confidence, checked, verified, missing_dimensions = run_all_validators(
-            profile, original_claims or None, expected_dimensions or None
+            profile, original_claims or None, expected_dimensions or None, industry=industry
         )
 
         # ====== 第二轮：LLM深度审查 ======
@@ -92,11 +93,14 @@ class QAAgent(BaseAgent):
         else:
             verdict = "reject"
 
+        # 根据问题类型决定打回给谁
+        target_agent = self._determine_target_agent(
+            all_issues, missing_dimensions, verdict,
+        )
+
         # 构造QAFeedback
         feedback = QAFeedback(
-            target_agent="collector" if missing_dimensions else (
-                "analyst" if verdict == "reject" else "writer"
-            ),
+            target_agent=target_agent,
             issues=all_issues,
             overall_score=overall_score,
             verdict=verdict,
@@ -233,6 +237,54 @@ class QAAgent(BaseAgent):
         score -= total_penalty
 
         return max(0.0, min(1.0, round(score, 2)))
+
+    def _determine_target_agent(
+        self,
+        issues: list[QAIssue],
+        missing_dimensions: list[str],
+        verdict: str,
+    ) -> str:
+        """根据问题类型决定打回给哪个Agent
+
+        路由规则：
+        - 缺失维度 → collector（数据没采到）
+        - 数据相关问题（missing_source/factual_error/outdated）→ collector
+        - 分析相关问题（low_confidence/inconsistency）→ analyst
+        - 报告相关问题（schema_violation/结构问题）→ writer
+        - 混合问题 → 按严重程度最高的issue决定
+        """
+        if verdict == "pass":
+            return "collector"
+
+        if missing_dimensions:
+            return "collector"
+
+        # 按问题类型分类
+        data_issue_types = {"missing_source", "factual_error", "outdated"}
+        analysis_issue_types = {"low_confidence", "inconsistency"}
+        report_issue_types = {"schema_violation"}
+
+        data_issues = [i for i in issues if i.issue_type in data_issue_types]
+        analysis_issues = [i for i in issues if i.issue_type in analysis_issue_types]
+        report_issues = [i for i in issues if i.issue_type in report_issue_types]
+
+        # 按严重程度加权计分
+        severity_weight = {"critical": 3, "major": 2, "minor": 1}
+        data_score = sum(severity_weight.get(i.severity, 1) for i in data_issues)
+        analysis_score = sum(severity_weight.get(i.severity, 1) for i in analysis_issues)
+        report_score = sum(severity_weight.get(i.severity, 1) for i in report_issues)
+
+        # 路由到得分最高的类别对应Agent
+        if data_score == 0 and analysis_score == 0 and report_score == 0:
+            # 无法分类的问题，按verdict默认路由
+            return "analyst" if verdict == "reject" else "collector"
+
+        scores = {
+            "collector": data_score,
+            "analyst": analysis_score,
+            "writer": report_score,
+        }
+        return max(scores, key=scores.get)
 
     def _build_summary(
         self, verdict: str, issues: list[QAIssue], score: float,

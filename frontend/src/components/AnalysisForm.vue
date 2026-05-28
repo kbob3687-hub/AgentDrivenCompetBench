@@ -56,20 +56,20 @@ function handleSubmit() {
 </script>
 
 <template>
-  <div class="bg-slate-800 rounded-lg p-6 border border-slate-700">
+  <div class="bg-white rounded-lg p-6 border border-slate-200 shadow-sm">
     <div class="flex flex-wrap items-end gap-4">
       <div class="flex-1 min-w-[200px]">
-        <label class="block text-sm font-medium text-slate-300 mb-1">竞品名称</label>
+        <label class="block text-sm font-medium text-slate-600 mb-1">竞品名称</label>
         <input
           v-model="competitorName"
           type="text"
           :disabled="disabled"
-          class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-md text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+          class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
           placeholder="输入竞品名称..."
         />
       </div>
       <div class="min-w-[160px]">
-        <label class="block text-sm font-medium text-slate-300 mb-1">行业模板</label>
+        <label class="block text-sm font-medium text-slate-600 mb-1">行业模板</label>
         <div class="flex gap-1.5">
           <button
             v-for="ind in industries"
@@ -80,7 +80,7 @@ function handleSubmit() {
               'px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors',
               selectedIndustry === ind.id
                 ? 'bg-purple-600 text-white'
-                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             ]"
             @click="selectedIndustry = ind.id"
           >
@@ -89,7 +89,7 @@ function handleSubmit() {
         </div>
       </div>
       <div class="flex-1 min-w-[300px]">
-        <label class="block text-sm font-medium text-slate-300 mb-1">分析维度</label>
+        <label class="block text-sm font-medium text-slate-600 mb-1">分析维度</label>
         <div class="flex flex-wrap gap-2">
           <button
             v-for="dim in allDimensions"
@@ -100,7 +100,7 @@ function handleSubmit() {
               'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
               selectedDimensions.includes(dim.id)
                 ? 'bg-blue-600 text-white'
-                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             ]"
             @click="toggleDimension(dim.id)"
           >
@@ -118,10 +118,10 @@ function handleSubmit() {
     </div>
 
     <!-- 种子URL输入（人工介入） -->
-    <div class="mt-4 border-t border-slate-700 pt-3">
+    <div class="mt-4 border-t border-slate-200 pt-3">
       <button
         type="button"
-        class="text-xs text-slate-400 hover:text-slate-200 transition-colors"
+        class="text-xs text-slate-500 hover:text-slate-700 transition-colors"
         @click="showUrlInput = !showUrlInput"
       >
         {{ showUrlInput ? '收起' : '指定采集URL（可选）' }}
@@ -131,10 +131,10 @@ function handleSubmit() {
           v-model="targetUrlsInput"
           :disabled="disabled"
           rows="3"
-          class="w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-md text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           placeholder="每行一个URL，例如：&#10;https://notion.so/pricing&#10;https://notion.so/product"
         ></textarea>
-        <p class="text-xs text-slate-500 mt-1">人工指定数据源，Agent将优先采集这些页面</p>
+        <p class="text-xs text-slate-400 mt-1">人工指定数据源，Agent将优先采集这些页面</p>
       </div>
     </div>
   </div>

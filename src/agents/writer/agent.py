@@ -30,7 +30,7 @@ class WriterAgent(BaseAgent):
         return AgentConfig(
             provider="openai_compat",
             model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
-            max_tokens=8192,
+            max_tokens=16384,
             temperature=0.2,
         )
 
@@ -48,11 +48,12 @@ class WriterAgent(BaseAgent):
         competitor_name = args.get("competitor_name", "")
         profile = args.get("profile", {})
 
-        if not profile:
+        if not profile or not profile.get("company_name"):
+            print(f"  [Writer] Profile is empty or missing company_name. Keys: {list(profile.keys()) if profile else 'None'}")
             return self.build_message(
                 to_agent="orchestrator",
                 function_name="write_result",
-                arguments={"error": "no profile data to write report"},
+                arguments={"error": "no profile data to write report", "profile_keys": list(profile.keys()) if profile else []},
                 trace_id=message.trace_id,
                 message_type=MessageType.TASK_RESULT,
                 parent_message_id=message.message_id,
@@ -108,6 +109,7 @@ class WriterAgent(BaseAgent):
             "one_liner": profile.get("one_liner"),
             "pricing": profile.get("pricing"),
             "feature_tree": profile.get("feature_tree"),
+            "user_personas": profile.get("user_personas"),
             "swot": profile.get("swot"),
         }
         return json.dumps(compact, ensure_ascii=False, indent=2)

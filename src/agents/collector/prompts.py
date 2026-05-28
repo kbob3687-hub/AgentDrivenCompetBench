@@ -53,7 +53,7 @@ COLLECT_USER_PROMPT_TEMPLATE = """请从以下网页内容中提取关于 **{com
 ## 网页来源
 URL: {url}
 标题: {title}
-
+{industry_fields_section}
 ## 网页内容
 {content}
 

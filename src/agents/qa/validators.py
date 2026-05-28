@@ -63,6 +63,98 @@ def check_dimension_coverage(
     return issues, missing
 
 
+def check_extensions_coverage(
+    profile: dict[str, Any],
+    industry: str,
+) -> tuple[list[QAIssue], list[str]]:
+    """检查6：行业模板扩展字段填充完整性
+
+    根据行业模板定义的 required 字段，检查 profile.extensions 是否已填充。
+    未填充的必填字段会触发 revise 补采。
+
+    Returns:
+        (issues, missing_extension_fields)
+    """
+    issues: list[QAIssue] = []
+    missing: list[str] = []
+
+    if not industry:
+        return issues, missing
+
+    try:
+        from schemas.extensions import load_template
+        template = load_template(industry)
+    except (ValueError, ImportError):
+        return issues, missing
+
+    extensions = profile.get("extensions", {})
+    missing = template.validate_extensions(extensions)
+
+    for field_name in missing:
+        field_def = next((f for f in template.fields if f.field_name == field_name), None)
+        desc = field_def.description if field_def else field_name
+        issues.append(QAIssue(
+            field_path=f"extensions.{field_name}",
+            issue_type="missing_source",
+            severity="major",
+            description=f"行业模板必填扩展字段'{field_name}'未填充: {desc}",
+            suggestion=f"补充采集'{field_name}'相关数据并在分析时填充该字段",
+            evidence=f"industry={industry}, field={field_name}, required=True",
+        ))
+
+    return issues, missing
+
+
+def check_user_persona_sourcing(
+    profile: dict[str, Any],
+    original_claims: list[dict[str, Any]] | None = None,
+) -> list[QAIssue]:
+    """检查7：UserPersona 必须有客户案例来源支撑
+
+    每个 persona 的 pain_points 必须有 sources，且 source URL 应来自客户案例页。
+    """
+    issues: list[QAIssue] = []
+    personas = profile.get("user_personas", [])
+
+    if not personas:
+        return issues
+
+    for i, persona in enumerate(personas):
+        segment = persona.get("segment", f"persona_{i}")
+        pain_points = persona.get("pain_points", [])
+
+        if not pain_points:
+            issues.append(QAIssue(
+                field_path=f"user_personas[{i}].pain_points",
+                issue_type="missing_source",
+                severity="major",
+                description=f"用户画像'{segment}'缺少痛点数据",
+                suggestion="从客户案例页补充该用户群体的痛点信息",
+                evidence=f"segment={segment}, pain_points=[]",
+            ))
+            continue
+
+        has_source = False
+        for pp in pain_points:
+            if isinstance(pp, dict):
+                sources = pp.get("sources", [])
+                if sources:
+                    has_source = True
+                    break
+
+        if not has_source:
+            issues.append(QAIssue(
+                field_path=f"user_personas[{i}].pain_points",
+                issue_type="missing_source",
+                severity="minor",
+                description=f"用户画像'{segment}'的痛点缺少溯源来源",
+                suggestion="确保痛点数据引用了客户案例页的原始内容",
+                evidence=f"segment={segment}, no sources found in pain_points",
+            ))
+
+    return issues
+
+
 def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
     """检查1：每条claim的sources数量>=1，不够则记录问题
 
@@ -288,6 +380,7 @@ def run_all_validators(
     profile: dict[str, Any],
     original_claims: list[dict[str, Any]] | None = None,
     expected_dimensions: list[str] | None = None,
+    industry: str | None = None,
 ) -> tuple[list[QAIssue], float, int, int, list[str]]:
     """运行所有验证器，返回(issues, avg_confidence, checked_count, verified_count, missing_dimensions)"""
     all_issues: list[QAIssue] = []
@@ -300,8 +393,17 @@ def run_all_validators(
         )
         all_issues.extend(dim_issues)
 
+    # 检查6：行业模板扩展字段填充（只影响分数，不强制打回）
+    if industry:
+        ext_issues, _missing_ext = check_extensions_coverage(profile, industry)
+        all_issues.extend(ext_issues)
+        # 扩展字段缺失不加入 missing_dimensions，避免强制 revise
+
     # 检查1：来源覆盖
     all_issues.extend(check_source_coverage(profile))
+
+    # 检查7：UserPersona溯源
+    all_issues.extend(check_user_persona_sourcing(profile, original_claims))
 
     # 检查2：snippet真实性
     if original_claims:

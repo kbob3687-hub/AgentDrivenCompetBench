@@ -45,14 +45,17 @@ class EventBus:
     def __init__(self) -> None:
         self._queues: dict[str, asyncio.Queue[SSEEvent | None]] = {}
         self._history: dict[str, list[SSEEvent]] = {}
+        self._closed: set[str] = set()
 
     def create_task(self, task_id: str) -> None:
         self._queues[task_id] = asyncio.Queue()
         self._history[task_id] = []
+        self._closed.discard(task_id)
 
     def remove_task(self, task_id: str) -> None:
         self._queues.pop(task_id, None)
         self._history.pop(task_id, None)
+        self._closed.discard(task_id)
 
     async def publish(self, task_id: str, event: SSEEvent) -> None:
         queue = self._queues.get(task_id)
@@ -66,7 +69,15 @@ class EventBus:
         return self._history.get(task_id, [])
 
     async def subscribe(self, task_id: str):
-        """异步生成器 - SSE endpoint用此方法消费事件"""
+        """异步生成器 - 先回放历史事件，再实时消费新事件"""
+        # 回放历史（客户端晚连也能收到之前的事件）
+        for event in self.get_history(task_id):
+            yield event
+
+        # 如果任务已结束，不再等待新事件
+        if task_id in self._closed:
+            return
+
         queue = self._queues.get(task_id)
         if not queue:
             return
@@ -78,13 +89,14 @@ class EventBus:
             yield event
 
     async def close(self, task_id: str) -> None:
-        """发送终止信号，让subscriber退出"""
+        """标记任务结束，发送终止信号让subscriber退出"""
+        self._closed.add(task_id)
         queue = self._queues.get(task_id)
         if queue:
             await queue.put(None)
 
     def has_task(self, task_id: str) -> bool:
-        return task_id in self._queues
+        return task_id in self._queues or task_id in self._closed
 
 
 event_bus = EventBus()

@@ -28,9 +28,9 @@ class SourceReference(BaseModel):
 
     source_type: SourceType
     url: str | None = None
-    title: str = Field(description="来源标题")
-    snippet: str = Field(description="原文摘录，用于溯源核查")
-    accessed_at: datetime = Field(description="访问时间")
+    title: str = Field(default="", description="来源标题")
+    snippet: str = Field(default="", description="原文摘录，用于溯源核查")
+    accessed_at: datetime = Field(default_factory=datetime.now, description="访问时间")
     snapshot_hash: str | None = Field(
         default=None, description="网页快照SHA256 hash，防止源头篡改后无法验证"
     )

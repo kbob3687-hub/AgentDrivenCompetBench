@@ -1,10 +1,10 @@
-export type AgentName = 'collector' | 'analyst' | 'writer' | 'qa'
+export type AgentName = 'discovery' | 'collector' | 'analyst' | 'writer' | 'qa'
 export type NodeStatus = 'idle' | 'running' | 'done' | 'error' | 'revise'
 
 export interface SSEAgentStart { agent: AgentName; iteration: number }
 export interface SSEAgentEnd { agent: AgentName; iteration: number; duration_ms: number }
 export interface SSELog { message: string; agent?: AgentName; iteration?: number }
-export interface SSEQaVerdict { verdict: string; score: number; missing_dims: string[]; iteration: number; issues_count?: number; missing_dimensions?: string[] }
+export interface SSEQaVerdict { verdict: string; score: number; missing_dimensions: string[]; iteration: number; issues_count?: number }
 export interface SSEComplete { final_status: string; qa_score: number; report_markdown: string; feedback_history: FeedbackRecord[]; agent_traces: AgentTrace[]; trace_id: string }
 
 export interface AgentTrace {
@@ -58,12 +58,20 @@ export interface AnalysisState {
   taskId: string | null
   status: 'idle' | 'running' | 'completed' | 'failed' | 'paused'
   pauseVerdict: 'pass' | 'revise' | null
+  pauseContext: PauseContext | null
   nodeStates: Record<AgentName, NodeStatus>
   logs: LogEntry[]
   result: SSEComplete | null
   currentIteration: number
   iterations: FeedbackRecord[]
   subAgents: SubAgentState[]
+}
+
+export interface PauseContext {
+  score: number
+  iteration: number
+  missing_dimensions: string[]
+  message: string
 }
 
 export interface LogEntry {

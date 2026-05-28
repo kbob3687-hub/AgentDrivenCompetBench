@@ -1,8 +1,8 @@
 """Conditional Edge路由逻辑
 
-QA节点输出后，根据verdict决定下一步：
+QA节点输出后，根据verdict和target_agent决定下一步：
 - pass → END（流程完成）
-- revise → collector（数据不完整，补采缺失维度）
+- revise → collector/analyst/writer（根据问题类型路由到对应Agent）
 - reject → END（严重质量问题，达到上限后终止）
 - 达到max_iterations → END（强制结束，防止死循环）
 """
@@ -22,8 +22,8 @@ def qa_routing(state: GraphState) -> str:
     - final_status == "running" → collector（人工打回重跑）
     - 达到最大迭代 → end
     - pass → end
-    - revise → collector（补采缺失维度后重走全流程）
-    - reject → end（质量太差，不再重试）
+    - revise/reject → 根据QA返回的target_agent路由到对应Agent
+    - target_agent无效时降级到collector
 
     Returns:
         下一个node的名称，或"end"表示流程结束
@@ -37,6 +37,10 @@ def qa_routing(state: GraphState) -> str:
     if final_status in ("human_force_pass", "human_abort", "completed"):
         return "end"
 
+    # Reject verdict sets final_status like "rejected(score=0.50)" — terminate
+    if final_status.startswith("rejected"):
+        return "end"
+
     # Human requested re-run after pass
     if final_status == "running":
         return "collector"
@@ -46,9 +50,12 @@ def qa_routing(state: GraphState) -> str:
 
     if verdict == "pass":
         return "end"
-    elif verdict == "revise":
-        return "collector"
-    elif verdict == "reject":
-        return "end"
-    else:
-        return "end"
+
+    # revise 或 reject 都可以打回重做（reject在未达上限时也允许重做）
+    if verdict in ("revise", "reject"):
+        target_agent = state.get("qa_target_agent", "collector")
+        if target_agent not in ("collector", "analyst", "writer"):
+            target_agent = "collector"
+        return target_agent
+
+    return "end"
