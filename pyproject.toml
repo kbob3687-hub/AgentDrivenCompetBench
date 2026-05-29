@@ -7,6 +7,7 @@ dependencies = [
     "langgraph>=0.2",
     "langchain-anthropic>=0.3",
     "anthropic>=0.40",
+    "openai>=1.0",
     "langfuse>=4.0",
     "fastapi>=0.115",
     "uvicorn>=0.30",
