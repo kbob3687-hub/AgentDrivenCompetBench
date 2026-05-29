@@ -172,7 +172,7 @@
 │                     Infrastructure                                │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────────┐  │
 │  │PostgreSQL│  │Qdrant    │  │Redis     │  │Langfuse        │  │
-│  │(持久化)  │  │(向量检索) │  │(缓存/队列)│  │(可观测性)      │  │
+│  │(持久化)  │  │(规划中)   │  │(缓存/队列)│  │(可观测性)      │  │
 │  └──────────┘  └──────────┘  └──────────┘  └────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -236,7 +236,7 @@
 | Agent | 职责 | 输入 | 输出 | 工具集 |
 |-------|------|------|------|--------|
 | Collector | 公开信息采集 | CollectRequest(target, scope) | 结构化原始数据 + SourceReference列表 | Jina Reader, Playwright, 网页快照 |
-| Analyst | 结构化分析 | 原始数据 + CompetitorProfile Schema | 填充完整的CompetitorProfile | 向量检索(Qdrant), 对比矩阵生成 |
+| Analyst | 结构化分析 | 原始数据 + CompetitorProfile Schema | 填充完整的CompetitorProfile | claims 聚合, 来源映射, 完整度评分 |
 | Writer | 报告撰写 | CompetitorProfile列表 + 报告模板 | Markdown格式竞品报告 | 模板引擎, 图表生成 |
 | QA | 质量检验 | 前序Agent的所有输出 | QAFeedback(verdict + issues) | Schema校验器, URL可达性检查, 事实核查 |
 
@@ -421,7 +421,7 @@ class FeedbackRecord(BaseModel):
 | 爬虫（补充） | Playwright | 仅用于JS渲染页面（SaaS定价页等） |
 | 可观测性 | Langfuse (Docker本地) | 开源免费，trace/span/generation原生支持，UI开箱即用 |
 | 结构化输出 | Pydantic v2 | Schema定义+校验一体，与Claude structured output无缝配合 |
-| 向量库 | Qdrant (Docker) | 轻量、性能好、Python SDK友好 |
+| 向量库 | Qdrant (规划中) | 轻量、性能好、Python SDK友好；用于后续 RAG 增强，当前版本未启用 |
 | 数据库 | PostgreSQL | 竞品档案持久化，JSON字段支持extensions |
 | 缓存/队列 | Redis | 中间结果缓存 + 去重 + 简单任务队列 |
 | 后端 | FastAPI | 异步原生、自动文档、Pydantic深度集成 |
@@ -494,7 +494,7 @@ competitive-analysis-agents/
 │   ├── storage/                       # 存储层
 │   │   ├── __init__.py
 │   │   ├── postgres.py               # 竞品档案CRUD
-│   │   ├── vector.py                 # Qdrant语义检索
+│   │   ├── vector.py                 # Qdrant语义检索（规划中，未实现）
 │   │   ├── cache.py                  # Redis缓存
 │   │   └── snapshot.py              # 网页快照存储（溯源用）
 │   │
@@ -750,7 +750,6 @@ dependencies = [
     "sqlalchemy>=2.0",
     "asyncpg>=0.30",
     "redis>=5.0",
-    "qdrant-client>=1.12",
     "playwright>=1.48",
     "python-multipart>=0.0.12",
 ]
@@ -772,7 +771,6 @@ dev = [
 services:
   postgres:     # 端口 5432，竞品档案+任务记录持久化
   redis:        # 端口 6379，缓存+简单队列
-  qdrant:       # 端口 6333，向量语义检索
   langfuse-db:  # Langfuse专用PostgreSQL
   langfuse:     # 端口 3000，可观测性dashboard
 ```

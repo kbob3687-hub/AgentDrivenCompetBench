@@ -110,7 +110,7 @@ cd AgentDrivenCompetBench
 cp .env.example .env   # 填入 API 密钥
 
 pip install -e ".[dev]"
-docker compose up -d   # 启动 PostgreSQL + Qdrant
+docker compose up -d   # 启动 PostgreSQL
 
 # 启动后端
 uvicorn src.api.app:app --host 0.0.0.0 --port 8001
