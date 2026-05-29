@@ -15,7 +15,7 @@ from typing import Any
 from agents.base import BaseAgent, AgentConfig
 from agents.collector.compliance import is_allowed_by_robots, redact_pii
 from agents.collector.prompts import COLLECTOR_SYSTEM_PROMPT, COLLECT_USER_PROMPT_TEMPLATE
-from agents.collector.tools import FetchResult, jina_reader, playwright_fetch
+from agents.collector.tools import FetchResult, jina_reader, playwright_fetch, direct_http_fetch
 from schemas.competitor import EvidencedClaim, SourceReference, SourceType
 from schemas.message import AgentMessage, CollectRequest, MessageType
 
@@ -106,7 +106,11 @@ class CollectorAgent(BaseAgent):
         )
 
     async def _fetch_url(self, url: str) -> FetchResult:
-        """获取URL内容，先做 robots.txt 合规检查，再 Jina/Playwright 抓取，最后 PII 脱敏。"""
+        """获取URL内容，降级链：Jina Reader → 直接HTTP抓取 → Playwright。
+
+        每一步都记录失败原因，便于诊断。
+        最后做 PII 脱敏。
+        """
         allowed, reason = await is_allowed_by_robots(url)
         if not allowed:
             return FetchResult(
@@ -114,18 +118,49 @@ class CollectorAgent(BaseAgent):
                 success=False,
                 error=f"robots.txt disallowed: {reason}",
                 robots_status="disallowed",
+                fetch_method="blocked",
             )
 
+        # 第1级：Jina Reader（主力，自动去噪）
         result = await jina_reader(url)
-        if not result.success:
-            result = await playwright_fetch(url)
+        if result.success:
+            result.robots_status = reason
+            if result.content:
+                redacted, counts = redact_pii(result.content)
+                result.content = redacted
+                result.pii_redactions = counts
+            return result
 
+        jina_error = result.error or "unknown"
+        print(f"  [Collector] Jina Reader 失败 ({url[:50]}): {jina_error}，降级到直接HTTP抓取")
+
+        # 第2级：直接HTTP抓取（不依赖外部API）
+        result = await direct_http_fetch(url)
+        if result.success:
+            result.robots_status = reason
+            if result.content:
+                redacted, counts = redact_pii(result.content)
+                result.content = redacted
+                result.pii_redactions = counts
+            return result
+
+        http_error = result.error or "unknown"
+        print(f"  [Collector] 直接HTTP抓取失败 ({url[:50]}): {http_error}，降级到Playwright")
+
+        # 第3级：Playwright（JS渲染页面，最后手段）
+        result = await playwright_fetch(url)
         result.robots_status = reason
 
         if result.success and result.content:
             redacted, counts = redact_pii(result.content)
             result.content = redacted
             result.pii_redactions = counts
+        elif not result.success:
+            # 所有方法都失败，汇总错误信息
+            result.error = (
+                f"所有抓取方法均失败: "
+                f"Jina({jina_error}) | HTTP({http_error}) | Playwright({result.error})"
+            )
 
         return result
 
