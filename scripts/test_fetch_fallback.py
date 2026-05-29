@@ -2,8 +2,9 @@
 
 Tests the collector's fetch fallback chain:
 1. Jina Reader
-2. Direct HTTP fetch
-3. Playwright
+2. Firecrawl
+3. Direct HTTP fetch
+4. Playwright
 
 Usage:
     python scripts/test_fetch_fallback.py
@@ -16,7 +17,11 @@ import sys
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from src.agents.collector.tools import jina_reader, direct_http_fetch, playwright_fetch
+# Load .env
+from dotenv import load_dotenv
+load_dotenv()
+
+from src.agents.collector.tools import jina_reader, firecrawl_fetch, direct_http_fetch, playwright_fetch
 
 
 async def test_url(url: str):
@@ -33,8 +38,16 @@ async def test_url(url: str):
     else:
         print(f"  FAILED: {result.error}")
 
+    # Test Firecrawl
+    print("\n[2] Testing Firecrawl...")
+    result = await firecrawl_fetch(url, timeout=30.0)
+    if result.success:
+        print(f"  SUCCESS: {len(result.content)} chars, title: {result.title[:50]}")
+    else:
+        print(f"  FAILED: {result.error}")
+
     # Test Direct HTTP
-    print("\n[2] Testing Direct HTTP fetch...")
+    print("\n[3] Testing Direct HTTP fetch...")
     result = await direct_http_fetch(url, timeout=15.0)
     if result.success:
         print(f"  SUCCESS: {len(result.content)} chars, title: {result.title[:50]}")
@@ -42,7 +55,7 @@ async def test_url(url: str):
         print(f"  FAILED: {result.error}")
 
     # Test Playwright
-    print("\n[3] Testing Playwright...")
+    print("\n[4] Testing Playwright...")
     result = await playwright_fetch(url, timeout=15000)
     if result.success:
         print(f"  SUCCESS: {len(result.content)} chars, title: {result.title[:50]}")

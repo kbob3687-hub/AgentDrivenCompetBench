@@ -15,7 +15,7 @@ from typing import Any
 from agents.base import BaseAgent, AgentConfig
 from agents.collector.compliance import is_allowed_by_robots, redact_pii
 from agents.collector.prompts import COLLECTOR_SYSTEM_PROMPT, COLLECT_USER_PROMPT_TEMPLATE
-from agents.collector.tools import FetchResult, jina_reader, playwright_fetch, direct_http_fetch
+from agents.collector.tools import FetchResult, jina_reader, firecrawl_fetch, playwright_fetch, direct_http_fetch
 from schemas.competitor import EvidencedClaim, SourceReference, SourceType
 from schemas.message import AgentMessage, CollectRequest, MessageType
 
@@ -106,7 +106,7 @@ class CollectorAgent(BaseAgent):
         )
 
     async def _fetch_url(self, url: str) -> FetchResult:
-        """获取URL内容，降级链：Jina Reader → 直接HTTP抓取 → Playwright。
+        """获取URL内容，降级链：Jina Reader → Firecrawl → 直接HTTP抓取 → Playwright。
 
         每一步都记录失败原因，便于诊断。
         最后做 PII 脱敏。
@@ -132,9 +132,22 @@ class CollectorAgent(BaseAgent):
             return result
 
         jina_error = result.error or "unknown"
-        print(f"  [Collector] Jina Reader 失败 ({url[:50]}): {jina_error}，降级到直接HTTP抓取")
+        print(f"  [Collector] Jina Reader 失败 ({url[:50]}): {jina_error}，降级到Firecrawl")
 
-        # 第2级：直接HTTP抓取（不依赖外部API）
+        # 第2级：Firecrawl（Jina的替代方案，支持JS渲染）
+        result = await firecrawl_fetch(url)
+        if result.success:
+            result.robots_status = reason
+            if result.content:
+                redacted, counts = redact_pii(result.content)
+                result.content = redacted
+                result.pii_redactions = counts
+            return result
+
+        firecrawl_error = result.error or "unknown"
+        print(f"  [Collector] Firecrawl 失败 ({url[:50]}): {firecrawl_error}，降级到直接HTTP抓取")
+
+        # 第3级：直接HTTP抓取（不依赖外部API）
         result = await direct_http_fetch(url)
         if result.success:
             result.robots_status = reason
@@ -147,7 +160,7 @@ class CollectorAgent(BaseAgent):
         http_error = result.error or "unknown"
         print(f"  [Collector] 直接HTTP抓取失败 ({url[:50]}): {http_error}，降级到Playwright")
 
-        # 第3级：Playwright（JS渲染页面，最后手段）
+        # 第4级：Playwright（JS渲染页面，最后手段）
         result = await playwright_fetch(url)
         result.robots_status = reason
 
@@ -159,7 +172,8 @@ class CollectorAgent(BaseAgent):
             # 所有方法都失败，汇总错误信息
             result.error = (
                 f"所有抓取方法均失败: "
-                f"Jina({jina_error}) | HTTP({http_error}) | Playwright({result.error})"
+                f"Jina({jina_error}) | Firecrawl({firecrawl_error}) | "
+                f"HTTP({http_error}) | Playwright({result.error})"
             )
 
         return result

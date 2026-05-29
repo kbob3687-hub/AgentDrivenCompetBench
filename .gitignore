@@ -43,3 +43,9 @@ Thumbs.db
 
 # 本地资料
 templates/architecture.png
+
+# Playwright browsers
+.playwright-browsers/
+
+# Claude Code
+.claude/

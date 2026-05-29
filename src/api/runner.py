@@ -142,12 +142,37 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
     path = result["path"]
     urls = result["urls"]
     domain = result.get("domain", "")
+    queries = result.get("search_queries", [])
     duration = time.time() - start
 
     await _publish(task_id, EventType.LOG, {
         "message": f"Discovery [{path}]: 发现 {len(urls)} 个URL (domain: {domain})",
         "agent": "discovery",
     })
+
+    # 0 URL 时把搜索 query 和命中明细暴露到 SSE 流，便于定位
+    # （搜索本身没出错但搜不到 vs 配额耗尽 vs 全被排除域名过滤掉）
+    if not urls and queries:
+        trusted_count = result.get("trusted_count", 0)
+        other_count = result.get("other_count", 0)
+        await _publish(task_id, EventType.LOG, {
+            "message": (
+                f"⚠ Discovery 0 URL 详情: 已尝试 {len(queries)} 条 search query, "
+                f"trusted_hits={trusted_count}, other_hits={other_count}. "
+                f"Queries: {queries[:5]}{'...' if len(queries) > 5 else ''}"
+            ),
+            "agent": "discovery",
+        })
+        if path == "open_search" and trusted_count == 0 and other_count == 0:
+            await _publish(task_id, EventType.LOG, {
+                "message": (
+                    "💡 提示: open_search 策略 0 命中。常见原因：1) 中文消费品在 Jina 索引中覆盖差；"
+                    "2) Jina 配额耗尽（检查 JINA_API_KEY）；3) 候选源被 robots.txt 拦截。"
+                    "建议改用 target_urls 手动指定 2-3 个权威源（如百度百科、36氪报道）。"
+                ),
+                "agent": "discovery",
+            })
+
     await _publish(task_id, EventType.AGENT_END, {
         "agent": "discovery", "iteration": 1, "duration_ms": round(duration * 1000),
     })
@@ -900,6 +925,9 @@ async def run_analysis(
         industry_fields = template.get_field_names()
         discovery_strategy = template.discovery_strategy
         trusted_domains = template.trusted_domains
+        # 行业模板的扩展字段也加入 collect_scope，让 Discovery 搜索词匹配行业
+        # 例如消费品模板: distribution_channels, brand_sentiment, market_share 等
+        dims = list(set(dims) | set(industry_fields))
         await _publish(task_id, EventType.LOG, {
             "message": f"已加载行业模板: {template.display_name} ({len(template.fields)}个扩展字段, 策略: {discovery_strategy})",
             "agent": "collector",

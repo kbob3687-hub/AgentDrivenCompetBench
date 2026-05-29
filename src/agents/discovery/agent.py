@@ -80,30 +80,69 @@ DIMENSION_PATH_PATTERNS: dict[str, list[str]] = {
 
 JINA_SEARCH_URL = "https://s.jina.ai/"
 JINA_API_KEY = os.getenv("JINA_API_KEY", "")
+_PROXY = os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY") or None
 
 
 async def _jina_search(client: httpx.AsyncClient, query: str) -> list[dict[str, Any]]:
-    """调用 Jina 搜索 API，统一错误日志。返回 result 列表（每项含 url/title/content）。"""
-    headers = {"Accept": "application/json"}
-    if JINA_API_KEY:
-        headers["Authorization"] = f"Bearer {JINA_API_KEY}"
+    """通过搜狗搜索获取结果 URL 列表。
+
+    不依赖 Jina Search API（付费已耗尽），改用搜狗搜索 HTML 页面提取链接。
+    搜狗对爬虫友好、中文结果质量高、不需要 JS 渲染。
+    """
+    from urllib.parse import quote
+
+    search_url = f"https://www.sogou.com/web?query={quote(query, encoding='utf-8')}"
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        ),
+        "Accept-Language": "zh-CN,zh;q=0.9",
+    }
+
     try:
-        resp = await client.get(f"{JINA_SEARCH_URL}{query}", headers=headers)
+        resp = await client.get(search_url, headers=headers, timeout=15.0, follow_redirects=False)
     except Exception as e:
-        logger.warning("Jina search failed: query=%r error=%s", query, e)
+        logger.warning("Sogou search failed: query=%r error=%s", query, e)
         return []
+
     if resp.status_code != 200:
         logger.warning(
-            "Jina search non-200: query=%r status=%s body=%r",
-            query, resp.status_code, resp.text[:200],
+            "Sogou search non-200: query=%r status=%s",
+            query, resp.status_code,
         )
         return []
-    try:
-        data = resp.json()
-    except Exception:
-        logger.warning("Jina search bad JSON: query=%r body=%r", query, resp.text[:200])
-        return []
-    return data.get("data", []) or []
+
+    # 从 HTML 中提取 href 里的外部链接
+    results: list[dict[str, Any]] = []
+    seen_urls: set[str] = set()
+
+    SKIP_DOMAINS = (
+        "sogou.com", "sogoucdn.com", "go.sohu.com",
+        "baidu.com", "bdstatic.com",
+        "so.html5.qq.com", "ima.qq.com", "newsa.html5.qq.com",
+        "weibo.com/sogou", "login.", "passport.",
+        "miibeian.gov", "book118.com", "docin.com",
+    )
+
+    for match in re.finditer(r'href="(https?://[^"]+)"', resp.text):
+        url = match.group(1).split("&amp;")[0]
+
+        if any(skip in url for skip in SKIP_DOMAINS):
+            continue
+        # 过滤过短或明显非内容页的 URL
+        if len(url) < 20:
+            continue
+        if url in seen_urls:
+            continue
+        seen_urls.add(url)
+
+        results.append({"url": url, "title": "", "content": ""})
+        if len(results) >= 8:
+            break
+
+    logger.info("Sogou search: query=%r found %d URLs", query, len(results))
+    return results
 
 
 class DiscoveryAgent:
@@ -217,7 +256,7 @@ class DiscoveryAgent:
         """通过Jina Search发现竞品官网域名"""
         query = f"{competitor_name} official website"
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
+            async with httpx.AsyncClient(timeout=15.0, proxy=_PROXY) as client:
                 results = await _jina_search(client, query)
                 if not results:
                     logger.info("discover_domain: no results for %r", competitor_name)
@@ -305,7 +344,7 @@ class DiscoveryAgent:
         """用Jina搜索特定维度的页面，限定在官网域名内"""
         urls: list[str] = []
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
+            async with httpx.AsyncClient(timeout=15.0, proxy=_PROXY) as client:
                 for dim in dimensions[:4]:
                     query = f"site:{domain} {dim.replace('_', ' ')}"
                     results = await _jina_search(client, query)
@@ -353,8 +392,9 @@ class DiscoveryAgent:
             return count
 
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                for dim in dimensions:
+            async with httpx.AsyncClient(timeout=15.0, proxy=_PROXY) as client:
+                # 限制搜索次数：最多搜 6 个维度，避免 API 配额浪费
+                for dim in dimensions[:6]:
                     dim_cn = self._dimension_to_chinese(dim)
                     query = f"{competitor_name} {dim_cn}"
                     search_queries.append(query)
@@ -402,11 +442,13 @@ class DiscoveryAgent:
             "brand_sentiment": "口碑 评价 舆情",
             "market_share": "市场份额",
             "supply_chain": "供应链 代工",
+            "supply_chain_model": "供应链 代工模式",
             "price_range": "价格区间 定位",
             "target_demographics": "目标用户 人群画像",
             "marketing_channels": "营销渠道 推广",
             "product_line_breadth": "产品线 SKU",
             "sustainability": "ESG 可持续发展",
+            "sustainability_initiatives": "ESG 可持续发展",
         }
         return mapping.get(dim, dim.replace("_", " "))
 
@@ -429,8 +471,8 @@ class DiscoveryAgent:
         search_queries: list[str] = []
 
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                for dim in dimensions:
+            async with httpx.AsyncClient(timeout=15.0, proxy=_PROXY) as client:
+                for dim in dimensions[:6]:
                     query = f"{competitor_name} {dim.replace('_', ' ')}"
                     search_queries.append(query)
                     results = await _jina_search(client, query)

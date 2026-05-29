@@ -125,6 +125,97 @@ async def jina_reader(url: str, timeout: float = 45.0, max_retries: int = 2) -> 
     )
 
 
+async def firecrawl_fetch(url: str, timeout: float = 60.0) -> FetchResult:
+    """通过 Firecrawl 获取网页的干净 Markdown 内容
+
+    Firecrawl 是 Jina Reader 的替代方案：
+    - 自动去广告、导航等噪音
+    - 返回干净的 Markdown
+    - 支持 JS 渲染页面
+    - 可自托管（开源）
+
+    Args:
+        url: 目标网页URL
+        timeout: 请求超时时间（秒）
+
+    Returns:
+        FetchResult包含干净的Markdown内容
+    """
+    import os
+
+    api_key = os.getenv("FIRECRAWL_API_KEY", "")
+    if not api_key:
+        logger.warning("FIRECRAWL_API_KEY 未配置，跳过 Firecrawl")
+        return FetchResult(
+            url=url,
+            success=False,
+            error="FIRECRAWL_API_KEY 未配置",
+            fetch_method="firecrawl",
+        )
+
+    try:
+        from firecrawl import FirecrawlApp
+
+        app = FirecrawlApp(api_key=api_key)
+
+        # 同步调用包装为异步
+        import asyncio
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(
+            None,
+            lambda: app.scrape_url(url)
+        )
+
+        # Firecrawl v4 返回 Document 对象，不是字典
+        if not result or not hasattr(result, 'markdown') or not result.markdown:
+            logger.warning("Firecrawl 返回空内容: url=%s", url)
+            return FetchResult(
+                url=url,
+                success=False,
+                error="Firecrawl 返回空内容",
+                fetch_method="firecrawl",
+            )
+
+        content = result.markdown
+        # 获取 metadata 中的 title
+        title = ""
+        if hasattr(result, 'metadata') and result.metadata:
+            title = getattr(result.metadata, 'title', '') or ""
+        if not title:
+            title = _extract_title(content)
+
+        snapshot_hash = hashlib.sha256(content.encode()).hexdigest()[:16]
+
+        logger.info("Firecrawl 抓取成功: url=%s, len=%d", url, len(content))
+        return FetchResult(
+            url=url,
+            title=title,
+            content=content,
+            accessed_at=datetime.now(),
+            snapshot_hash=snapshot_hash,
+            success=True,
+            fetch_method="firecrawl",
+        )
+
+    except ImportError:
+        logger.warning("firecrawl-py 未安装，跳过 Firecrawl")
+        return FetchResult(
+            url=url,
+            success=False,
+            error="firecrawl-py 未安装 (pip install firecrawl-py)",
+            fetch_method="firecrawl",
+        )
+    except Exception as e:
+        error_msg = f"{type(e).__name__}: {str(e)}"
+        logger.warning("Firecrawl 抓取失败: url=%s, error=%s", url, error_msg)
+        return FetchResult(
+            url=url,
+            success=False,
+            error=error_msg,
+            fetch_method="firecrawl",
+        )
+
+
 async def direct_http_fetch(url: str, timeout: float = 30.0) -> FetchResult:
     """直接HTTP抓取网页内容（不依赖Jina或Playwright）
 

@@ -24,16 +24,15 @@ Windows 用户名包含中文字符"小米"，Playwright 无法正确处理该�
 
 ## 修复方案
 
-### 1. 新增直接HTTP抓取降级方案（核心修复）
+### 1. 新增 Firecrawl + 直接HTTP抓取降级方案（核心修复）
 
-在 `src/agents/collector/tools.py` 中新增 `direct_http_fetch()` 函数：
-- 使用 httpx 直接获取 HTML，不依赖外部 API
-- 简单的 HTML → 文本转换（去除 script/style/标签）
-- 作为 Jina Reader 和 Playwright 之间的降级方案
+在 `src/agents/collector/tools.py` 中新增：
+- `firecrawl_fetch()` - Firecrawl API 抓取（Jina 的替代方案）
+- `direct_http_fetch()` - 直接HTTP抓取（不依赖外部API）
 
 **降级链变为：**
 ```
-Jina Reader → 直接HTTP抓取 → Playwright（JS渲染页面）
+Jina Reader → Firecrawl → 直接HTTP抓取 → Playwright
 ```
 
 ### 2. 改进错误日志
@@ -65,6 +64,7 @@ Jina Reader → 直接HTTP抓取 → Playwright（JS渲染页面）
 ## 修改的文件
 
 1. `src/agents/collector/tools.py`
+   - 新增 `firecrawl_fetch()` 函数
    - 新增 `direct_http_fetch()` 函数
    - 新增 `_html_to_text()` 和 `_extract_title_from_html()` 辅助函数
    - 改进 `jina_reader()` 的错误日志
@@ -72,10 +72,11 @@ Jina Reader → 直接HTTP抓取 → Playwright（JS渲染页面）
    - `FetchResult` 新增 `fetch_method` 字段
 
 2. `src/agents/collector/agent.py`
-   - 更新 `_fetch_url()` 实现三级降级链
+   - 更新 `_fetch_url()` 实现四级降级链
    - 每一级记录失败原因，便于诊断
 
 3. `.env`
+   - 添加 Firecrawl API Key 配置
    - 添加 Playwright 路径配置说明
 
 4. 新增文件
@@ -84,6 +85,6 @@ Jina Reader → 直接HTTP抓取 → Playwright（JS渲染页面）
 
 ## 后续改进建议
 
-1. **Jina API 充值或更换**：如果需要高质量的网页内容提取，考虑充值 Jina API 或使用其他服务
+1. **配置 Firecrawl API Key**：在 `.env` 中填写 `FIRECRAWL_API_KEY`
 2. **Playwright 安装**：运行 `python scripts/setup_playwright.py` 安装浏览器到纯英文路径
 3. **URL 质量优化**：改进 Discovery Agent 的搜索策略，返回更多可抓取的 URL
