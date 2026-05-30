@@ -237,6 +237,34 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
             "message": f"新数据源 [{rediscover_result['path']}]: {len(urls)} 个URL",
             "agent": "collector",
         })
+    elif iteration > 1 and not state.get("claims"):
+        # 上一轮无任何证据（URL全失败或Discovery找到0个URL）→ 重跑 Discovery
+        failed_urls = set()
+        for err in state.get("collect_errors", []):
+            if ": " in err:
+                failed_urls.add(err.split(": ", 1)[0])
+        await _publish(task_id, EventType.LOG, {
+            "message": (
+                f"上轮 0 条证据（失败URL: {len(failed_urls)}），"
+                f"重新搜索数据源"
+            ),
+            "agent": "collector",
+        })
+        rediscover = DiscoveryAgent()
+        rediscover_result = await rediscover.discover(
+            target, scope,
+            strategy=new_strategy,
+            trusted_domains=state.get("trusted_domains", []),
+        )
+        new_urls = [u for u in rediscover_result.get("urls", []) if u not in failed_urls]
+        urls = new_urls[:10]
+        await _publish(task_id, EventType.LOG, {
+            "message": (
+                f"重新发现 [{rediscover_result['path']}]: "
+                f"{len(urls)} 个URL（排除 {len(failed_urls)} 个死链）"
+            ),
+            "agent": "collector",
+        })
     elif discovered:
         # Discovery 已发现 URL（首轮或补采），直接复用
         urls = discovered[:10]
@@ -324,6 +352,7 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
                 content=content,
                 snapshot_hash=fetch_result.snapshot_hash,
                 industry_fields=industry_fields,
+                priority_dimensions=missing if iteration > 1 else None,
             )
 
             await _publish(task_id, EventType.SUB_AGENT_END, {
@@ -912,7 +941,7 @@ async def run_analysis(
     Returns:
         Final GraphState dict
     """
-    from schemas.extensions import load_template, TEMPLATE_REGISTRY
+    from schemas.extensions import TEMPLATE_REGISTRY, load_template
 
     dims = dimensions or ["pricing", "features"]
 

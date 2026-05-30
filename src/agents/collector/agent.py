@@ -174,6 +174,7 @@ class CollectorAgent(BaseAgent):
         content: str,
         snapshot_hash: str,
         industry_fields: list[str] | None = None,
+        priority_dimensions: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         """调用LLM从网页内容中提取结构化信息"""
         # 构建行业扩展字段提示段
@@ -186,6 +187,15 @@ class CollectorAgent(BaseAgent):
             )
         else:
             industry_fields_section = "\n"
+
+        # 补采维度强调段
+        if priority_dimensions:
+            dims_str = "、".join(priority_dimensions)
+            industry_fields_section += (
+                f"## 重点补采维度\n"
+                f"以下维度数据不足，请从本页面尽可能多地提取相关claim：{dims_str}\n"
+                f"每个重点维度至少提取3条独立的claim（不同角度/不同事实）。\n\n"
+            )
 
         user_prompt = COLLECT_USER_PROMPT_TEMPLATE.format(
             competitor_name=competitor_name,

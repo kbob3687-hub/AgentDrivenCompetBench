@@ -2,16 +2,16 @@
 
 双路径架构：
 - Warm Path: 已知竞品从缓存直接返回精确URL
-- Cold Path: 未知竞品通过Jina Search发现官网域名，再构造维度URL
+- Cold Path: 未知竞品通过 Firecrawl Search 发现官网域名，再构造维度URL
 
 输出: discovered_urls 列表，供 Collector 直接采集
 """
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
-import re
 from typing import Any
 from urllib.parse import urlparse
 
@@ -80,66 +80,69 @@ DIMENSION_PATH_PATTERNS: dict[str, list[str]] = {
 
 _PROXY = os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY") or None
 
+# 已知不可抓取的域名（robots.txt 禁止或需要登录）
+_UNFETCHABLE_DOMAINS = (
+    "mp.weixin.qq.com", "weixin.qq.com",
+    "login.", "passport.",
+    "book118.com", "docin.com",
+)
+
 
 async def _web_search(client: httpx.AsyncClient, query: str) -> list[dict[str, Any]]:
-    """通过搜狗搜索获取结果 URL 列表。
+    """通过 Firecrawl Search API 获取结果 URL 列表。
 
-    使用搜狗搜索 HTML 页面提取链接，中文结果质量高、不需要 JS 渲染。
+    返回结构化搜索结果，无需解析 HTML。
     """
-    from urllib.parse import quote
-
-    search_url = f"https://www.sogou.com/web?query={quote(query, encoding='utf-8')}"
-    headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        ),
-        "Accept-Language": "zh-CN,zh;q=0.9",
-    }
+    api_key = os.getenv("FIRECRAWL_API_KEY", "")
+    if not api_key:
+        logger.warning("FIRECRAWL_API_KEY 未配置，搜索不可用")
+        return []
 
     try:
-        resp = await client.get(search_url, headers=headers, timeout=15.0, follow_redirects=True)
-    except Exception as e:
-        logger.warning("web_search failed: query=%r error=%s", query, e)
-        return []
+        from firecrawl import FirecrawlApp
 
-    if resp.status_code != 200:
-        logger.warning(
-            "web_search non-200: query=%r status=%s",
-            query, resp.status_code,
+        app = FirecrawlApp(api_key=api_key)
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            None,
+            lambda: app.search(query=query, limit=8)
         )
+
+        results: list[dict[str, Any]] = []
+
+        # SearchData 对象: 结果在 response.web 列表里
+        items: list[Any] = []
+        if hasattr(response, "web") and response.web:
+            items = response.web
+        elif isinstance(response, list):
+            items = response
+
+        for item in items:
+            url = ""
+            title = ""
+            if isinstance(item, dict):
+                url = item.get("url", "")
+                title = item.get("title", "")
+            elif hasattr(item, "url"):
+                url = getattr(item, "url", "")
+                title = getattr(item, "title", "") or ""
+
+            if not url:
+                continue
+            if any(skip in url for skip in _UNFETCHABLE_DOMAINS):
+                continue
+
+            results.append({"url": url, "title": title, "content": ""})
+
+        logger.info("firecrawl_search: query=%r found %d URLs", query, len(results))
+        return results
+
+    except ImportError:
+        logger.warning("firecrawl-py 未安装，搜索不可用")
         return []
-
-    # 从 HTML 中提取 href 里的外部链接
-    results: list[dict[str, Any]] = []
-    seen_urls: set[str] = set()
-
-    SKIP_DOMAINS = (
-        "sogou.com", "sogoucdn.com", "go.sohu.com",
-        "baidu.com", "bdstatic.com",
-        "so.html5.qq.com", "ima.qq.com", "newsa.html5.qq.com",
-        "weibo.com/sogou", "login.", "passport.",
-        "miibeian.gov", "book118.com", "docin.com",
-    )
-
-    for match in re.finditer(r'href="(https?://[^"]+)"', resp.text):
-        url = match.group(1).split("&amp;")[0]
-
-        if any(skip in url for skip in SKIP_DOMAINS):
-            continue
-        # 过滤过短或明显非内容页的 URL
-        if len(url) < 20:
-            continue
-        if url in seen_urls:
-            continue
-        seen_urls.add(url)
-
-        results.append({"url": url, "title": "", "content": ""})
-        if len(results) >= 8:
-            break
-
-    logger.info("web_search: query=%r found %d URLs", query, len(results))
-    return results
+    except Exception as e:
+        logger.warning("firecrawl_search failed: query=%r error=%s", query, e)
+        return []
 
 
 class DiscoveryAgent:
@@ -273,7 +276,7 @@ class DiscoveryAgent:
         2. 排除已知聚合站（g2.com, capterra.com等）
         3. 取第一个匹配的结果
         """
-        EXCLUDE_DOMAINS = {
+        exclude_domains = {
             "g2.com", "capterra.com", "trustradius.com",
             "wikipedia.org", "crunchbase.com", "linkedin.com",
             "twitter.com", "x.com", "youtube.com", "github.com",
@@ -290,7 +293,7 @@ class DiscoveryAgent:
             parsed = urlparse(url)
             domain = parsed.netloc.replace("www.", "")
 
-            if any(excl in domain for excl in EXCLUDE_DOMAINS):
+            if any(excl in domain for excl in exclude_domains):
                 continue
 
             # 域名包含竞品名 → 高置信度
@@ -305,7 +308,7 @@ class DiscoveryAgent:
                 continue
             parsed = urlparse(url)
             domain = parsed.netloc.replace("www.", "")
-            if not any(excl in domain for excl in EXCLUDE_DOMAINS):
+            if not any(excl in domain for excl in exclude_domains):
                 return domain
 
         return None
@@ -375,8 +378,9 @@ class DiscoveryAgent:
                 url = result.get("url", "")
                 if not url:
                     continue
-                # 防御：搜索引擎自身的 URL 一律剔除（属搜索端点不是文章正文）
-                if "sogou.com" in url or "/search?" in url:
+                if "/search?" in url:
+                    continue
+                if any(skip in url for skip in _UNFETCHABLE_DOMAINS):
                     continue
                 if self._is_trusted_domain(url, trusted_domains):
                     if url not in trusted_urls:
@@ -473,7 +477,7 @@ class DiscoveryAgent:
                     results = await _web_search(client, query)
                     for result in results[:2]:
                         url = result.get("url", "")
-                        if url and "sogou.com" not in url:
+                        if url:
                             urls.append(url)
 
                 query = f"{competitor_name} customer stories case studies"
@@ -481,7 +485,7 @@ class DiscoveryAgent:
                 results = await _web_search(client, query)
                 for result in results[:2]:
                     url = result.get("url", "")
-                    if url and "sogou.com" not in url:
+                    if url:
                         urls.append(url)
         except Exception as e:
             logger.warning("fallback_search failed: %r error=%s", competitor_name, e)
