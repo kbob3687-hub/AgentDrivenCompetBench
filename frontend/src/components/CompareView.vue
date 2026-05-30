@@ -156,6 +156,23 @@ function formatScore(score: number | null): string {
 function resetToSelection() {
   compareResult.value = null
 }
+
+function getScenarios(comp: CompareCompetitor): string[] {
+  // 优先从 user_personas.usage_scenarios 聚合
+  const scenarios: string[] = []
+  for (const p of comp.profile.user_personas) {
+    for (const s of p.usage_scenarios) {
+      if (s && !scenarios.includes(s)) scenarios.push(s)
+    }
+  }
+  if (scenarios.length) return scenarios.slice(0, 5)
+  // fallback: 从 feature_tree 的 category 推断
+  const categories = new Set<string>()
+  for (const f of comp.profile.feature_tree) {
+    if (f.category) categories.add(f.category)
+  }
+  return [...categories].slice(0, 5)
+}
 </script>
 
 <template>
@@ -428,22 +445,46 @@ function resetToSelection() {
             </tr>
 
             <!-- Extensions -->
-            <tr v-if="compareResult.competitors.some(c => Object.keys(c.profile.extensions).length > 0)">
-              <td class="py-3 px-4 font-medium text-slate-700 bg-slate-50">扩展字段</td>
+            <!-- 竞争优劣势总结 -->
+            <tr class="border-b border-slate-100">
+              <td class="py-3 px-4 font-medium text-slate-700 bg-slate-50">竞争优劣势</td>
               <td
                 v-for="comp in compareResult.competitors"
                 :key="comp.task_id"
                 class="py-3 px-4 text-slate-600"
               >
-                <div v-if="Object.keys(comp.profile.extensions).length" class="space-y-1 text-xs">
-                  <div v-for="(val, key) in comp.profile.extensions" :key="key">
-                    <span class="font-medium text-slate-700">{{ key }}:</span>
-                    <span class="text-slate-500 ml-1">
-                      {{ typeof val === 'object' ? JSON.stringify(val) : String(val) }}
-                    </span>
+                <div class="space-y-1.5 text-xs">
+                  <div v-if="comp.profile.swot.strength.length">
+                    <span class="inline-block px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-medium mr-1">优势</span>
+                    <span class="text-slate-600">{{ comp.profile.swot.strength.slice(0, 2).join('；') }}</span>
+                  </div>
+                  <div v-if="comp.profile.swot.weakness.length">
+                    <span class="inline-block px-1.5 py-0.5 rounded bg-red-50 text-red-700 font-medium mr-1">短板</span>
+                    <span class="text-slate-600">{{ comp.profile.swot.weakness.slice(0, 2).join('；') }}</span>
+                  </div>
+                  <div v-if="!comp.profile.swot.strength.length && !comp.profile.swot.weakness.length">
+                    <span class="text-slate-400">—</span>
                   </div>
                 </div>
-                <span v-else class="text-slate-400">—</span>
+              </td>
+            </tr>
+
+            <!-- 适用场景推荐 -->
+            <tr>
+              <td class="py-3 px-4 font-medium text-slate-700 bg-slate-50">适用场景</td>
+              <td
+                v-for="comp in compareResult.competitors"
+                :key="comp.task_id"
+                class="py-3 px-4 text-slate-600"
+              >
+                <div v-if="getScenarios(comp).length" class="space-y-1">
+                  <span
+                    v-for="(s, i) in getScenarios(comp)"
+                    :key="i"
+                    class="inline-block mr-1.5 mb-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs"
+                  >{{ s }}</span>
+                </div>
+                <span v-else class="text-slate-400 text-xs">—</span>
               </td>
             </tr>
           </tbody>

@@ -42,7 +42,7 @@ const langfuseUrl = computed(() => {
   const traceId = props.result.trace_id
   if (!traceId) return ''
   const cleanId = traceId.replace(/-/g, '').slice(0, 32)
-  return `https://cloud.langfuse.com/trace/${cleanId}`
+  return `https://cloud.langfuse.com/project/clkpwwm0m000gmm094odg11gi/traces?traceId=${cleanId}`
 })
 
 function agentColor(agent: string): string {

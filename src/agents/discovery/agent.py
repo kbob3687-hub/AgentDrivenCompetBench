@@ -405,6 +405,7 @@ class DiscoveryAgent:
                 for query in (
                     f"{competitor_name} 市场份额 2025",
                     f"{competitor_name} 行业分析报告",
+                    f"{competitor_name} 客户案例 用户评价",
                 ):
                     search_queries.append(query)
                     results = await _web_search(client, query)
