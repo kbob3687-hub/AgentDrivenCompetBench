@@ -15,6 +15,8 @@ from api.runner import run_analysis
 from api.schemas import (
     AnalyzeRequest,
     AnalyzeResponse,
+    CompareRequest,
+    CompareResponse,
     HistoryItem,
     InterveneRequest,
     PaginatedHistory,
@@ -90,16 +92,149 @@ async def list_history(
     competitor_name: str | None = Query(None),
     industry: str | None = Query(None),
 ) -> PaginatedHistory:
-    """查询历史分析记录（分页）"""
+    """查询历史分析记录（PG优先，无PG时从内存兜底）"""
     from storage.crud import list_runs
 
     items, total = await list_runs(page, page_size, competitor_name, industry)
+
+    # PG 不可用或为空时，从内存 _tasks 兜底
+    if not items:
+        mem_items = []
+        for tid, info in _tasks.items():
+            if info["status"] not in ("completed", "failed"):
+                continue
+            result = info.get("result") or {}
+            if competitor_name and competitor_name.lower() not in result.get("competitor_name", "").lower():
+                continue
+            if industry and industry != result.get("industry", "saas"):
+                continue
+            mem_items.append({
+                "task_id": tid,
+                "competitor_name": result.get("competitor_name", "unknown"),
+                "industry": result.get("industry", "saas"),
+                "status": info["status"],
+                "qa_score": result.get("qa_score"),
+                "qa_verdict": result.get("qa_verdict"),
+                "iteration": result.get("iteration", 1),
+                "report_length": len(result.get("report_markdown", "")),
+                "sources_fetched": result.get("sources_fetched", 0),
+                "started_at": None,
+                "completed_at": None,
+            })
+        total = len(mem_items)
+        start = (page - 1) * page_size
+        items = mem_items[start:start + page_size]
+
     return PaginatedHistory(
         items=[HistoryItem(**item) for item in items],
         total=total,
         page=page,
         page_size=page_size,
     )
+
+
+@router.post("/compare", response_model=CompareResponse)
+async def compare_tasks(req: CompareRequest) -> CompareResponse:
+    """多任务竞品对比 - 提取各任务profile进行结构化对比"""
+    from storage.crud import get_run
+
+    competitors = []
+    for task_id in req.task_ids:
+        # In-memory first, PG fallback
+        task_info = _tasks.get(task_id)
+        if task_info and task_info.get("result"):
+            result = task_info["result"]
+        else:
+            run = await get_run(task_id)
+            if not run or not run.get("result"):
+                raise HTTPException(status_code=404, detail=f"Task {task_id} not found or incomplete")
+            result = run["result"]
+
+        profile = result.get("profile")
+        if not profile:
+            raise HTTPException(status_code=422, detail=f"Task {task_id} has no profile data")
+
+        # Extract pricing
+        pricing_data = profile.get("pricing")
+        pricing = None
+        if pricing_data:
+            tiers = [
+                {"name": t.get("name", ""), "price": t.get("price", "")}
+                for t in pricing_data.get("tiers", [])
+            ]
+            pricing = {
+                "model_type": pricing_data.get("model_type", "unknown"),
+                "tiers": tiers,
+                "currency": pricing_data.get("currency", "USD"),
+            }
+
+        # Extract feature_tree
+        feature_tree = [
+            {
+                "name": f.get("name", ""),
+                "category": f.get("category"),
+                "maturity": f.get("maturity"),
+            }
+            for f in profile.get("feature_tree", [])
+        ]
+
+        # Extract SWOT — stored as list of SWOTItem: [{"category": "strength", "items": [...]}]
+        swot_raw = profile.get("swot", [])
+        swot: dict[str, list[str]] = {"strength": [], "weakness": [], "opportunity": [], "threat": []}
+        if isinstance(swot_raw, list):
+            for item in swot_raw:
+                cat = item.get("category", "")
+                for claim_obj in item.get("items", []):
+                    text = claim_obj.get("claim", "") if isinstance(claim_obj, dict) else str(claim_obj)
+                    if text and cat in swot:
+                        swot[cat].append(text)
+        elif isinstance(swot_raw, dict):
+            for cat in swot:
+                swot[cat] = [s.get("claim", s) if isinstance(s, dict) else str(s) for s in swot_raw.get(cat, [])]
+
+        # Extract user_personas
+        user_personas = [
+            {
+                "segment": p.get("segment", ""),
+                "usage_scenarios": p.get("usage_scenarios", []),
+            }
+            for p in profile.get("user_personas", [])
+        ]
+
+        competitors.append({
+            "task_id": task_id,
+            "company_name": result.get("competitor_name", ""),
+            "product_name": profile.get("product_name", result.get("competitor_name", "")),
+            "industry": result.get("industry", ""),
+            "qa_score": result.get("qa_score", 0.0),
+            "profile": {
+                "one_liner": profile.get("one_liner"),
+                "pricing": pricing,
+                "feature_tree": feature_tree,
+                "swot": swot,
+                "user_personas": user_personas,
+                "extensions": profile.get("extensions", {}),
+            },
+        })
+
+    # Determine which dimensions have data across all competitors
+    dimensions = []
+    if any(c["profile"]["pricing"] for c in competitors):
+        dimensions.append("pricing")
+    if any(c["profile"]["feature_tree"] for c in competitors):
+        dimensions.append("features")
+    if any(
+        c["profile"]["swot"]["strength"] or c["profile"]["swot"]["weakness"]
+        or c["profile"]["swot"]["opportunity"] or c["profile"]["swot"]["threat"]
+        for c in competitors
+    ):
+        dimensions.append("swot")
+    if any(c["profile"]["user_personas"] for c in competitors):
+        dimensions.append("user_personas")
+    if any(c["profile"]["extensions"] for c in competitors):
+        dimensions.append("extensions")
+
+    return CompareResponse(competitors=competitors, dimensions=dimensions)
 
 
 @router.get("/templates", tags=["templates"])

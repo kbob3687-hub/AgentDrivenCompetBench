@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import AnalysisForm from './components/AnalysisForm.vue'
 import DagView from './components/DagView.vue'
 import LogStream from './components/LogStream.vue'
 import ResultPanel from './components/ResultPanel.vue'
 import IterationTimeline from './components/IterationTimeline.vue'
+import CompareView from './components/CompareView.vue'
 import { useAnalysis } from './composables/useAnalysis'
 
 const { state, startAnalysis, restoreFromHash, intervene } = useAnalysis()
+
+const viewMode = ref<'analysis' | 'compare'>('analysis')
 
 const isRunning = computed(() => state.status === 'running')
 const isCompleted = computed(() => state.status === 'completed')
@@ -34,6 +37,17 @@ onMounted(() => {
           <h1 class="text-lg font-semibold text-slate-800">竞品分析 Agent</h1>
         </div>
         <div class="flex items-center gap-2 text-sm text-slate-500">
+          <button
+            :class="[
+              'px-3 py-1.5 text-xs font-medium rounded transition-colors',
+              viewMode === 'compare'
+                ? 'bg-indigo-100 text-indigo-700'
+                : 'border border-slate-300 text-slate-600 hover:bg-slate-50'
+            ]"
+            @click="viewMode = viewMode === 'compare' ? 'analysis' : 'compare'"
+          >
+            {{ viewMode === 'compare' ? '返回分析' : '多竞品对比' }}
+          </button>
           <span
             :class="[
               'w-2 h-2 rounded-full',
@@ -49,6 +63,11 @@ onMounted(() => {
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+      <!-- Compare View -->
+      <CompareView v-if="viewMode === 'compare'" @close="viewMode = 'analysis'" />
+
+      <!-- Analysis View -->
+      <template v-else>
       <!-- Analysis Form -->
       <AnalysisForm :disabled="isRunning" @submit="handleSubmit" />
 
@@ -77,6 +96,7 @@ onMounted(() => {
 
       <!-- Result Panel -->
       <ResultPanel v-if="isCompleted && state.result" :result="state.result" :task-id="state.taskId" />
+      </template>
     </main>
   </div>
 </template>
