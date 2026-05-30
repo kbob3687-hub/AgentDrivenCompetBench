@@ -78,16 +78,13 @@ DIMENSION_PATH_PATTERNS: dict[str, list[str]] = {
     "customers": ["/customers", "/customer-stories", "/case-studies"],
 }
 
-JINA_SEARCH_URL = "https://s.jina.ai/"
-JINA_API_KEY = os.getenv("JINA_API_KEY", "")
 _PROXY = os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY") or None
 
 
-async def _jina_search(client: httpx.AsyncClient, query: str) -> list[dict[str, Any]]:
+async def _web_search(client: httpx.AsyncClient, query: str) -> list[dict[str, Any]]:
     """通过搜狗搜索获取结果 URL 列表。
 
-    不依赖 Jina Search API（付费已耗尽），改用搜狗搜索 HTML 页面提取链接。
-    搜狗对爬虫友好、中文结果质量高、不需要 JS 渲染。
+    使用搜狗搜索 HTML 页面提取链接，中文结果质量高、不需要 JS 渲染。
     """
     from urllib.parse import quote
 
@@ -101,14 +98,14 @@ async def _jina_search(client: httpx.AsyncClient, query: str) -> list[dict[str, 
     }
 
     try:
-        resp = await client.get(search_url, headers=headers, timeout=15.0, follow_redirects=False)
+        resp = await client.get(search_url, headers=headers, timeout=15.0, follow_redirects=True)
     except Exception as e:
-        logger.warning("Sogou search failed: query=%r error=%s", query, e)
+        logger.warning("web_search failed: query=%r error=%s", query, e)
         return []
 
     if resp.status_code != 200:
         logger.warning(
-            "Sogou search non-200: query=%r status=%s",
+            "web_search non-200: query=%r status=%s",
             query, resp.status_code,
         )
         return []
@@ -141,7 +138,7 @@ async def _jina_search(client: httpx.AsyncClient, query: str) -> list[dict[str, 
         if len(results) >= 8:
             break
 
-    logger.info("Sogou search: query=%r found %d URLs", query, len(results))
+    logger.info("web_search: query=%r found %d URLs", query, len(results))
     return results
 
 
@@ -257,7 +254,7 @@ class DiscoveryAgent:
         query = f"{competitor_name} official website"
         try:
             async with httpx.AsyncClient(timeout=15.0, proxy=_PROXY) as client:
-                results = await _jina_search(client, query)
+                results = await _web_search(client, query)
                 if not results:
                     logger.info("discover_domain: no results for %r", competitor_name)
                     return None
@@ -347,7 +344,7 @@ class DiscoveryAgent:
             async with httpx.AsyncClient(timeout=15.0, proxy=_PROXY) as client:
                 for dim in dimensions[:4]:
                     query = f"site:{domain} {dim.replace('_', ' ')}"
-                    results = await _jina_search(client, query)
+                    results = await _web_search(client, query)
                     for result in results[:2]:
                         url = result.get("url", "")
                         if url and domain in url:
@@ -379,7 +376,7 @@ class DiscoveryAgent:
                 if not url:
                     continue
                 # 防御：搜索引擎自身的 URL 一律剔除（属搜索端点不是文章正文）
-                if "s.jina.ai" in url or "/search?" in url:
+                if "sogou.com" in url or "/search?" in url:
                     continue
                 if self._is_trusted_domain(url, trusted_domains):
                     if url not in trusted_urls:
@@ -398,7 +395,7 @@ class DiscoveryAgent:
                     dim_cn = self._dimension_to_chinese(dim)
                     query = f"{competitor_name} {dim_cn}"
                     search_queries.append(query)
-                    results = await _jina_search(client, query)
+                    results = await _web_search(client, query)
                     total_hits += _absorb(results[:4])
 
                 for query in (
@@ -406,7 +403,7 @@ class DiscoveryAgent:
                     f"{competitor_name} 行业分析报告",
                 ):
                     search_queries.append(query)
-                    results = await _jina_search(client, query)
+                    results = await _web_search(client, query)
                     total_hits += _absorb(results[:3])
         except Exception as e:
             logger.warning("open_search_path failed: %r error=%s", competitor_name, e)
@@ -415,11 +412,9 @@ class DiscoveryAgent:
 
         if not urls:
             logger.warning(
-                "open_search_path: 0 URLs for %r after %d queries (api_key=%s, total_hits=%d). "
-                "Likely Jina quota exhausted or competitor not indexed in Chinese sources.",
-                competitor_name, len(search_queries),
-                "set" if JINA_API_KEY else "unset",
-                total_hits,
+                "open_search_path: 0 URLs for %r after %d queries (total_hits=%d). "
+                "Likely competitor not indexed in Chinese sources or search blocked.",
+                competitor_name, len(search_queries), total_hits,
             )
 
         return {
@@ -475,27 +470,24 @@ class DiscoveryAgent:
                 for dim in dimensions[:6]:
                     query = f"{competitor_name} {dim.replace('_', ' ')}"
                     search_queries.append(query)
-                    results = await _jina_search(client, query)
+                    results = await _web_search(client, query)
                     for result in results[:2]:
                         url = result.get("url", "")
-                        if url and "s.jina.ai" not in url:
+                        if url and "sogou.com" not in url:
                             urls.append(url)
 
                 query = f"{competitor_name} customer stories case studies"
                 search_queries.append(query)
-                results = await _jina_search(client, query)
+                results = await _web_search(client, query)
                 for result in results[:2]:
                     url = result.get("url", "")
-                    if url and "s.jina.ai" not in url:
+                    if url and "sogou.com" not in url:
                         urls.append(url)
         except Exception as e:
             logger.warning("fallback_search failed: %r error=%s", competitor_name, e)
 
         if not urls:
-            logger.warning(
-                "fallback_search: 0 URLs for %r (api_key=%s)",
-                competitor_name, "set" if JINA_API_KEY else "unset",
-            )
+            logger.warning("fallback_search: 0 URLs for %r", competitor_name)
 
         return {
             "path": "cold",
