@@ -122,6 +122,8 @@ const loopRows = computed<LoopRow[]>(() => {
       : '—'
     const currentFields = new Set<string>()
     for (const issue of issues) {
+      // 只追踪 critical + major，minor 不进闭环表
+      if (issue.severity === 'minor') continue
       const key = issue.field_path || '(全局)'
       currentFields.add(key)
       if (!seen.has(key)) {
@@ -402,7 +404,7 @@ function severityShortLabel(severity: string): string {
       </div>
 
       <div v-if="!loopRows.length" class="text-sm text-slate-500 text-center py-8">
-        本次任务 QA 未提出任何字段级问题（一次通过）
+        本次任务 QA 未提出严重/主要级别问题（一次通过）
       </div>
 
       <table v-else class="w-full text-sm text-left">
@@ -460,9 +462,8 @@ function severityShortLabel(severity: string): string {
       </table>
 
       <div class="mt-4 text-xs text-slate-500 leading-relaxed">
-        说明：QA 在每轮检查中给出的字段级 issue，会被打回到对应 Agent（collector/analyst/writer）。
-        后续轮次中若 QA 不再对该字段提出问题，则视为「已解决」。这张表证明 QA 反馈不仅触发了重做，
-        且重做后输出确实有改善（非伪闭环）。
+        说明：仅追踪严重（critical）和主要（major）级别的 QA 问题。这些问题被打回到对应 Agent 重做，
+        后续轮次中若 QA 不再对该字段提出同级别问题，则视为「已解决」。修复率体现了反馈闭环的实际改善效果。
       </div>
     </div>
 

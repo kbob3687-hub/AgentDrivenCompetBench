@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/badge/Vue-3.5-4FC08D?logo=vue.js&logoColor=white" />
   <img src="https://img.shields.io/badge/LangGraph-0.2+-orange" />
   <img src="https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white" />
-  <img src="https://img.shields.io/badge/测试-49_通过-brightgreen?logo=pytest&logoColor=white" />
+  <img src="https://img.shields.io/badge/测试-81_通过-brightgreen?logo=pytest&logoColor=white" />
   <img src="https://img.shields.io/badge/Langfuse-已接入-purple" />
 </p>
 
@@ -19,15 +19,18 @@
 
 | 能力 | 实现方式 | 状态 |
 |------|---------|------|
-| 四 Agent 协作流水线 | LangGraph StateGraph + 条件路由边 | ✅ |
-| QA 反馈闭环 + 迭代对比 | QA→Collector 自动路由 + 前后轮 delta 可视化 | ✅ |
-| 扇出（Fan-out）并行采集 | asyncio.Semaphore(4) + 子任务 SSE 实时追踪 | ✅ |
+| 五 Agent 协作流水线 | LangGraph StateGraph + 条件路由边 | ✅ |
+| QA 反馈闭环 + 闭环追踪 | QA→Collector 自动路由 + 字段级修复率统计 | ✅ |
+| 并行数据采集 | asyncio.Semaphore(4) + 子任务 SSE 实时追踪 | ✅ |
 | 双 LLM 智能路由 | Claude（高质量推理）+ DeepSeek（高性价比提取） | ✅ |
-| 行业模板热插拔 | SaaS / 消费品 / 硬件 三套模板，运行时注入 | ✅ |
+| 行业模板热插拔 | SaaS / 消费品 / 硬件 三套模板，运行时 CRUD + 版本追踪 | ✅ |
 | Agent 调用链可观测 | 内嵌耗时 / Token / 成本统计 + Langfuse 一键跳转 | ✅ |
 | 全链路证据溯源 | EvidencedClaim 携带 URL + 原文片段 + 快照哈希 | ✅ |
-| 实时 SSE 流式展示 | 9 种事件类型，前端 DAG / 日志 / 进度同步更新 | ✅ |
-| 测试覆盖 | 49 个测试用例（校验器 / Schema / 路由 / 扇出） | ✅ |
+| 实时 SSE 流式展示 | 11 种事件类型，前端 DAG / 日志 / 进度同步更新 | ✅ |
+| 人工介入门控（HITL） | QA 打回时暂停等待人工决策：继续/强制通过/终止 | ✅ |
+| 多竞品横向对比 | 选择已完成任务，按维度生成对比表格 | ✅ |
+| 智能 URL 发现 | Firecrawl Search API + 域名推断 + 路径验证 | ✅ |
+| 测试覆盖 | 81 个测试用例（校验器 / Schema / API / 合规 / 采集） | ✅ |
 
 ---
 
@@ -54,26 +57,26 @@
                              │ SSE（9 种事件类型）
 ┌────────────────────────────▼────────────────────────────────────┐
 │                     FastAPI 后端                                  │
-│  POST /analyze  │  GET /stream  │  GET /templates                │
+│  POST /analyze  │  GET /stream  │  POST /compare  │  GET /history   │
 └────────────────────────────┬────────────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────────┐
 │                 LangGraph 状态图                                  │
 │                                                                  │
-│  ┌───────────┐    ┌──────────┐    ┌────────┐    ┌────┐         │
-│  │ 采集 Agent│───▶│分析 Agent│───▶│写作 ag.│───▶│ QA │         │
-│  │(扇出 ×4)  │    │          │    │        │    │    │         │
-│  └───────────┘    └──────────┘    └────────┘    └──┬─┘         │
-│       ▲                                            │            │
-│       └────────── 打回（缺失维度）─────────────────┘            │
-│                                                    │            │
-│                              通过 / 拒绝 ──────────▶ END        │
+│  ┌───────────┐    ┌──────────┐    ┌──────────┐    ┌────────┐    ┌────┐  │
+│  │ Discovery │───▶│ 采集Agent│───▶│分析 Agent│───▶│写作 ag.│───▶│ QA │  │
+│  │(URL发现)  │    │(并行×4)  │    │          │    │        │    │    │  │
+│  └───────────┘    └──────────┘    └──────────┘    └────────┘    └──┬─┘  │
+│                        ▲                                           │     │
+│                        └────────── 打回（缺失维度）────────────────┘     │
+│                                                                    │     │
+│                                          通过 / 拒绝 ─────────────▶ END  │
 └─────────────────────────────────────────────────────────────────┘
          │                    │                │
     ┌────▼────┐         ┌────▼────┐     ┌────▼────┐
-    │Jina     │         │Claude   │     │Langfuse │
-    │Reader   │         │DeepSeek │     │Cloud    │
-    │+PW 降级 │         │(双路由) │     │(追踪)   │
+    │Firecrawl│         │Claude   │     │Langfuse │
+    │+HTTP+PW │         │DeepSeek │     │Cloud    │
+    │(三级降级)│         │(双路由) │     │(追踪)   │
     └─────────┘         └─────────┘     └─────────┘
 ```
 
@@ -87,10 +90,11 @@
 | LLM 路由 | Claude + DeepSeek | 推理质量与性价比按任务类型分流 |
 | 后端 | FastAPI + SSE | 异步非阻塞 + 原生流式推送 |
 | 前端 | Vue 3 + Vite + Tailwind + Vue Flow | 响应式 DAG 可视化 |
-| 数据采集 | Jina Reader + Playwright 降级 | 轻量优先，JS 渲染兜底 |
+| 数据采集 | Firecrawl + HTTP 直连 + Playwright 降级 | 质量优先，三级降级保证可用性 |
+| URL 发现 | Firecrawl Search API | 陌生竞品自动发现官网 + 维度页面 |
 | 可观测性 | Langfuse v4 | trace → span → generation 三层追踪 |
 | 数据校验 | Pydantic v2 | 结构化输出 + 运行时校验 |
-| 测试 | pytest + pytest-asyncio | 49 个用例，5 秒全量通过 |
+| 测试 | pytest + pytest-asyncio | 81 个用例，2 秒全量通过 |
 
 ---
 
@@ -110,10 +114,10 @@ cd AgentDrivenCompetBench
 cp .env.example .env   # 填入 API 密钥
 
 pip install -e ".[dev]"
-docker compose up -d   # 启动 PostgreSQL
+docker compose up -d   # 启动 PostgreSQL（可选，无 PG 时自动内存兜底）
 
 # 启动后端
-uvicorn src.api.app:app --host 0.0.0.0 --port 8001
+PYTHONPATH=src uvicorn api.app:app --reload --host 0.0.0.0 --port 8000
 
 # 启动前端
 cd frontend && npm install && npm run dev
@@ -139,7 +143,7 @@ QA Agent 采用双阶段审核：
 - **规则校验**：维度覆盖率、来源完整性、置信度阈值、Schema 一致性
 - **LLM 语义审核**：逻辑连贯性、论据充分性、事实准确性
 
-### 二、扇出（Fan-out）并行采集
+### 二、并行数据采集
 
 采集 Agent 对每个 URL 启动独立子任务，`asyncio.Semaphore(4)` 控制并发上限：
 
@@ -179,6 +183,10 @@ template = load_template("hardware")  # → 供应链、认证资质……
 | `POST` | `/api/analyze` | 创建分析任务 |
 | `GET` | `/api/analyze/{task_id}` | 查询任务状态与结果 |
 | `GET` | `/api/analyze/{task_id}/stream` | SSE 实时事件流 |
+| `GET` | `/api/analyze/{task_id}/metrics` | 聚合指标面板 |
+| `POST` | `/api/analyze/compare` | 多竞品横向对比 |
+| `GET` | `/api/analyze/history` | 历史分析记录（分页） |
+| `POST` | `/api/analyze/{task_id}/intervene` | 人工介入（HITL） |
 | `GET` | `/api/analyze/templates` | 列出可用行业模板 |
 | `GET` | `/api/analyze/templates/{industry}` | 获取指定模板 Schema |
 
@@ -204,6 +212,8 @@ template = load_template("hardware")  # → 供应链、认证资质……
 | `log` | `{message, agent}` | 运行日志 |
 | `qa_verdict` | `{verdict, score, missing_dimensions}` | QA 评审结果 |
 | `iteration_summary` | `{iteration, score, issues_count}` | 迭代轮次摘要 |
+| `hitl_pause` | `{score, iteration, message, issues}` | 等待人工介入 |
+| `hitl_resume` | `{decision}` | 人工决策后恢复 |
 | `complete` | `{report_markdown, agent_traces, ...}` | 任务完成 |
 | `error` | `{message}` | 错误信息 |
 
@@ -215,7 +225,8 @@ template = load_template("hardware")  # → 供应链、认证资质……
 src/
 ├── agents/
 │   ├── base.py                 # BaseAgent 基类（Langfuse 追踪 + 重试 + 双 LLM）
-│   ├── collector/              # 数据采集（Jina Reader + Playwright + LLM 抽取）
+│   ├── discovery/              # URL 发现（Firecrawl Search + 域名推断 + 路径验证）
+│   ├── collector/              # 数据采集（Firecrawl + HTTP + Playwright + LLM 抽取）
 │   ├── analyst/                # 结构化分析（claims → CompetitorProfile）
 │   ├── writer/                 # 报告生成（profile → Markdown + 脚注）
 │   └── qa/                     # 质量审核（规则校验器 + LLM 语义审核）
@@ -225,20 +236,27 @@ src/
 │   └── edges.py                # qa_routing() 条件路由
 ├── schemas/
 │   ├── competitor.py           # CompetitorProfile、EvidencedClaim、FeatureNode……
-│   ├── extensions.py           # IndustryTemplate 行业模板系统
+│   ├── extensions.py           # IndustryTemplate 行业模板系统（CRUD + 版本追踪）
 │   └── message.py              # AgentMessage 函数调用协议
+├── storage/
+│   ├── engine.py               # SQLAlchemy async engine（PostgreSQL）
+│   ├── models.py               # AnalysisRun ORM 模型
+│   └── crud.py                 # 持久化 CRUD 操作
 └── api/
-    ├── app.py                  # FastAPI 入口
-    ├── runner.py               # SSE 版流水线（事件发布 + 调用链收集）
+    ├── app.py                  # FastAPI 入口 + 全局错误处理
+    ├── runner.py               # SSE 版流水线（事件发布 + HITL 门控）
     ├── events.py               # EventBus（每任务独立 asyncio.Queue）
-    └── routes/analyze.py       # REST + SSE 路由
+    ├── schemas.py              # 请求/响应 Pydantic 模型
+    └── routes/analyze.py       # REST + SSE + Compare 路由
 
 frontend/src/
 ├── components/
 │   ├── DagView.vue             # Agent DAG 可视化（Vue Flow）
 │   ├── LogStream.vue           # 实时日志流
-│   ├── IterationTimeline.vue   # QA 迭代进度 + 前后对比
-│   ├── ResultPanel.vue         # 报告 + Agent 调用链 + 反馈历史
+│   ├── IterationTimeline.vue   # QA 迭代进度 + HITL 介入面板
+│   ├── ResultPanel.vue         # 报告 + Agent 调用链 + 闭环追踪 + 观测面板
+│   ├── CompareView.vue         # 多竞品横向对比
+│   ├── MetricsPanel.vue        # 指标面板（准确率/覆盖率/Token/基线对比）
 │   └── AnalysisForm.vue        # 输入表单 + 行业模板选择
 ├── composables/
 │   ├── useSSE.ts               # SSE 连接管理
@@ -246,10 +264,14 @@ frontend/src/
 └── types/index.ts              # TypeScript 类型定义
 
 tests/
-├── test_qa_validators.py       # 15 个用例 - QA 规则校验器
-├── test_schemas.py             # 12 个用例 - 数据模型 + 行业模板
-├── test_orchestrator.py        # 9 个用例  - 图路由 + 状态结构
-├── test_fan_out_subagent.py    # 11 个用例 - 并行采集模式
+├── test_qa_validators.py       # QA 规则校验器
+├── test_schemas.py             # 数据模型 + 行业模板
+├── test_orchestrator.py        # 图路由 + 状态结构
+├── test_fan_out_subagent.py    # 并行采集模式
+├── test_api.py                 # API 端点（compare / history / 错误处理）
+├── test_firecrawl_retry.py     # PII 正则精度 + 重试签名
+├── test_compliance.py          # robots.txt + PII 脱敏
+├── test_discovery.py           # URL 发现逻辑
 └── conftest.py                 # 共享 fixtures
 ```
 
@@ -258,7 +280,7 @@ tests/
 ## 测试与开发
 
 ```bash
-pytest tests/ -v          # 49 个用例，约 5 秒
+pytest tests/ -v          # 81 个用例，约 2 秒
 ruff check src/ --fix     # 代码检查
 ruff format src/          # 格式化
 ```
@@ -267,23 +289,30 @@ ruff format src/          # 格式化
 - **QA 校验器**：维度覆盖、来源校验、片段真实性、一致性检查、置信度阈值
 - **Schema**：EvidencedClaim 构造、行业模板加载 / 校验 / 列举
 - **编排器**：qa_routing 五种路径、图结构验证、FeedbackRecord 序列化
-- **扇出采集**：并行执行、失败容错、信号量并发控制、URL 生成
+- **并行采集**：并行执行、失败容错、信号量并发控制、URL 生成
+- **API 路由**：compare 端点、历史查询、全局错误处理
+- **合规**：PII 正则精度（误匹配/漏匹配）、robots.txt 检查
 
 ---
 
 ## 路线图
 
-- [x] 四 Agent 流水线（Collector → Analyst → Writer → QA）
+- [x] 五 Agent 流水线（Discovery → Collector → Analyst → Writer → QA）
 - [x] LangGraph StateGraph + QA 反馈闭环
 - [x] FastAPI + SSE 实时流式接口
 - [x] Vue 3 前端 DAG 可视化
-- [x] 扇出并行采集 + 子任务追踪
-- [x] 行业模板热插拔（SaaS / 消费品 / 硬件）
+- [x] 并行采集 + 子任务追踪
+- [x] 行业模板热插拔（SaaS / 消费品 / 硬件）+ 动态 Schema 演化
 - [x] Agent 调用链面板 + Langfuse 集成
-- [x] QA 迭代前后对比展示
-- [x] 测试套件（49 个用例）
+- [x] QA 迭代闭环追踪（字段级修复率统计）
+- [x] 人工介入门控（HITL）
+- [x] 多竞品横向对比视图
+- [x] 报告 Markdown 导出
+- [x] 智能 URL 发现（Firecrawl Search + 域名推断）
+- [x] PII 脱敏 + robots.txt 合规
+- [x] 全局错误处理 + Firecrawl 重试机制
+- [x] 测试套件（81 个用例）
 - [ ] 向量检索增强（Qdrant RAG）
-- [ ] 多竞品横向对比视图
 - [ ] 导出 PDF / PPT
 
 ---

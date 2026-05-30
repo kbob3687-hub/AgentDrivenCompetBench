@@ -25,7 +25,7 @@ def test_redact_pii_phone():
 
 
 def test_redact_pii_email():
-    text = "support@notion.so 反馈到 user.name+tag@example.co.uk"
+    text = "support@notion.so 反馈到 user.name+tag@company.co.uk"
     out, counts = redact_pii(text)
     assert "@" not in out
     assert counts["[邮箱]"] == 2
