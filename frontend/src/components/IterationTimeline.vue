@@ -32,6 +32,14 @@ function handleIntervene(action: 'force_pass' | 'abort' | 'continue') {
   setTimeout(() => { submitting.value = false }, 5000)
 }
 
+function handleReportLinkClick(e: MouseEvent) {
+  const target = (e.target as HTMLElement).closest('a')
+  if (target && target.href) {
+    e.preventDefault()
+    window.open(target.href, '_blank', 'noopener,noreferrer')
+  }
+}
+
 function scoreColor(score: number): string {
   if (score >= 0.7) return 'bg-emerald-500'
   if (score >= 0.55) return 'bg-orange-400'
@@ -321,6 +329,7 @@ const forcePassHint = computed(() => {
             v-if="reportExpanded"
             class="px-4 py-3 max-h-[420px] overflow-y-auto prose prose-sm max-w-none prose-headings:text-slate-800 prose-headings:font-semibold prose-h1:text-lg prose-h2:text-base prose-h3:text-sm prose-p:text-slate-600 prose-p:leading-relaxed prose-strong:text-slate-800 prose-code:text-blue-600 prose-table:text-xs prose-th:bg-slate-100 prose-th:px-2 prose-th:py-1 prose-td:px-2 prose-td:py-1 prose-li:text-slate-600 prose-a:text-blue-600 prose-hr:border-slate-200 hitl-report-preview"
             v-html="renderedReport"
+            @click.prevent="handleReportLinkClick"
           ></div>
         </div>
       </div>

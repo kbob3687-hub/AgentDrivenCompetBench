@@ -75,6 +75,20 @@ function handleLinkClick(e: MouseEvent) {
   window.open(href, '_blank', 'noopener,noreferrer')
 }
 
+function downloadMarkdown() {
+  const md = props.result.report_markdown || ''
+  if (!md) return
+  const titleMatch = md.match(/^#\s+(.+)/m)
+  const name = titleMatch ? titleMatch[1].replace(/[/\\?%*:|"<>]/g, '') : 'report'
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${name}.md`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 const reportEl = ref<HTMLElement | null>(null)
 
 onMounted(() => {
@@ -234,6 +248,13 @@ function severityShortLabel(severity: string): string {
         <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-sm font-medium">
           {{ (result.qa_score * 100).toFixed(0) }}%
         </span>
+        <span class="flex-1"></span>
+        <button
+          @click="downloadMarkdown"
+          class="px-3 py-1.5 text-xs font-medium rounded border border-slate-300 text-slate-600 hover:bg-slate-50 transition-colors"
+        >
+          ↓ 导出 Markdown
+        </button>
       </div>
       <div
         class="prose max-w-none min-w-0 prose-headings:text-slate-800 prose-headings:font-semibold prose-h1:text-2xl prose-h1:border-b prose-h1:border-slate-200 prose-h1:pb-3 prose-h2:text-xl prose-h2:mt-8 prose-h3:text-base prose-p:text-slate-600 prose-p:leading-relaxed prose-strong:text-slate-800 prose-code:text-blue-600 prose-table:text-sm prose-th:bg-slate-100 prose-th:px-3 prose-th:py-2 prose-td:px-3 prose-td:py-2 prose-td:border-slate-200 prose-tr:border-slate-200 prose-li:text-slate-600 prose-a:text-blue-600 prose-hr:border-slate-200"
