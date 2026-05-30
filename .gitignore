@@ -37,3 +37,15 @@ frontend/dist/
 # 系统
 .DS_Store
 Thumbs.db
+
+# 比赛资源（含共享 APIKEY，禁止提交）
+评分标准.md
+
+# 本地资料
+templates/architecture.png
+
+# Playwright browsers
+.playwright-browsers/
+
+# Claude Code
+.claude/

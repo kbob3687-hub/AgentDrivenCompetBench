@@ -2,18 +2,22 @@
 
 双路径架构：
 - Warm Path: 已知竞品从缓存直接返回精确URL
-- Cold Path: 未知竞品通过Jina Search发现官网域名，再构造维度URL
+- Cold Path: 未知竞品通过 Firecrawl Search 发现官网域名，再构造维度URL
 
 输出: discovered_urls 列表，供 Collector 直接采集
 """
 
 from __future__ import annotations
 
-import re
+import asyncio
+import logging
+import os
 from typing import Any
 from urllib.parse import urlparse
 
 import httpx
+
+logger = logging.getLogger("discovery")
 
 # ---- Warm Path: 已知竞品URL缓存 ----
 # key: 竞品标准名(lowercase), value: {domain, urls_by_dimension}
@@ -74,7 +78,71 @@ DIMENSION_PATH_PATTERNS: dict[str, list[str]] = {
     "customers": ["/customers", "/customer-stories", "/case-studies"],
 }
 
-JINA_SEARCH_URL = "https://s.jina.ai/"
+_PROXY = os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY") or None
+
+# 已知不可抓取的域名（robots.txt 禁止或需要登录）
+_UNFETCHABLE_DOMAINS = (
+    "mp.weixin.qq.com", "weixin.qq.com",
+    "login.", "passport.",
+    "book118.com", "docin.com",
+)
+
+
+async def _web_search(client: httpx.AsyncClient, query: str) -> list[dict[str, Any]]:
+    """通过 Firecrawl Search API 获取结果 URL 列表。
+
+    返回结构化搜索结果，无需解析 HTML。
+    """
+    api_key = os.getenv("FIRECRAWL_API_KEY", "")
+    if not api_key:
+        logger.warning("FIRECRAWL_API_KEY 未配置，搜索不可用")
+        return []
+
+    try:
+        from firecrawl import FirecrawlApp
+
+        app = FirecrawlApp(api_key=api_key)
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            None,
+            lambda: app.search(query=query, limit=8)
+        )
+
+        results: list[dict[str, Any]] = []
+
+        # SearchData 对象: 结果在 response.web 列表里
+        items: list[Any] = []
+        if hasattr(response, "web") and response.web:
+            items = response.web
+        elif isinstance(response, list):
+            items = response
+
+        for item in items:
+            url = ""
+            title = ""
+            if isinstance(item, dict):
+                url = item.get("url", "")
+                title = item.get("title", "")
+            elif hasattr(item, "url"):
+                url = getattr(item, "url", "")
+                title = getattr(item, "title", "") or ""
+
+            if not url:
+                continue
+            if any(skip in url for skip in _UNFETCHABLE_DOMAINS):
+                continue
+
+            results.append({"url": url, "title": title, "content": ""})
+
+        logger.info("firecrawl_search: query=%r found %d URLs", query, len(results))
+        return results
+
+    except ImportError:
+        logger.warning("firecrawl-py 未安装，搜索不可用")
+        return []
+    except Exception as e:
+        logger.warning("firecrawl_search failed: query=%r error=%s", query, e)
+        return []
 
 
 class DiscoveryAgent:
@@ -188,22 +256,14 @@ class DiscoveryAgent:
         """通过Jina Search发现竞品官网域名"""
         query = f"{competitor_name} official website"
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                resp = await client.get(
-                    f"{JINA_SEARCH_URL}{query}",
-                    headers={"Accept": "application/json"},
-                )
-                if resp.status_code != 200:
-                    return None
-
-                data = resp.json()
-                results = data.get("data", [])
+            async with httpx.AsyncClient(timeout=15.0, proxy=_PROXY) as client:
+                results = await _web_search(client, query)
                 if not results:
+                    logger.info("discover_domain: no results for %r", competitor_name)
                     return None
-
-                # 从搜索结果中提取最可能的官网域名
                 return self._extract_official_domain(competitor_name, results)
-        except Exception:
+        except Exception as e:
+            logger.warning("discover_domain failed: %r error=%s", competitor_name, e)
             return None
 
     def _extract_official_domain(
@@ -216,7 +276,7 @@ class DiscoveryAgent:
         2. 排除已知聚合站（g2.com, capterra.com等）
         3. 取第一个匹配的结果
         """
-        EXCLUDE_DOMAINS = {
+        exclude_domains = {
             "g2.com", "capterra.com", "trustradius.com",
             "wikipedia.org", "crunchbase.com", "linkedin.com",
             "twitter.com", "x.com", "youtube.com", "github.com",
@@ -233,7 +293,7 @@ class DiscoveryAgent:
             parsed = urlparse(url)
             domain = parsed.netloc.replace("www.", "")
 
-            if any(excl in domain for excl in EXCLUDE_DOMAINS):
+            if any(excl in domain for excl in exclude_domains):
                 continue
 
             # 域名包含竞品名 → 高置信度
@@ -248,7 +308,7 @@ class DiscoveryAgent:
                 continue
             parsed = urlparse(url)
             domain = parsed.netloc.replace("www.", "")
-            if not any(excl in domain for excl in EXCLUDE_DOMAINS):
+            if not any(excl in domain for excl in exclude_domains):
                 return domain
 
         return None
@@ -283,26 +343,17 @@ class DiscoveryAgent:
     ) -> list[str]:
         """用Jina搜索特定维度的页面，限定在官网域名内"""
         urls: list[str] = []
-
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
+            async with httpx.AsyncClient(timeout=15.0, proxy=_PROXY) as client:
                 for dim in dimensions[:4]:
                     query = f"site:{domain} {dim.replace('_', ' ')}"
-                    resp = await client.get(
-                        f"{JINA_SEARCH_URL}{query}",
-                        headers={"Accept": "application/json"},
-                    )
-                    if resp.status_code != 200:
-                        continue
-
-                    data = resp.json()
-                    for result in data.get("data", [])[:2]:
+                    results = await _web_search(client, query)
+                    for result in results[:2]:
                         url = result.get("url", "")
                         if url and domain in url:
                             urls.append(url)
-        except Exception:
-            pass
-
+        except Exception as e:
+            logger.warning("search_dimension_urls failed: domain=%s error=%s", domain, e)
         return urls
 
     async def _open_search_path(
@@ -316,76 +367,68 @@ class DiscoveryAgent:
         适用于消费品/实体行业，情报分散在第三方行业报告、媒体、社交平台中。
         搜索结果按权威媒体白名单过滤，优先采信白名单内的来源。
         """
-        urls: list[str] = []
         search_queries: list[str] = []
         trusted_urls: list[str] = []
         other_urls: list[str] = []
+        total_hits = 0
+
+        def _absorb(results: list[dict[str, Any]]) -> int:
+            count = 0
+            for result in results:
+                url = result.get("url", "")
+                if not url:
+                    continue
+                if "/search?" in url:
+                    continue
+                if any(skip in url for skip in _UNFETCHABLE_DOMAINS):
+                    continue
+                if self._is_trusted_domain(url, trusted_domains):
+                    if url not in trusted_urls:
+                        trusted_urls.append(url)
+                        count += 1
+                else:
+                    if url not in other_urls:
+                        other_urls.append(url)
+                        count += 1
+            return count
 
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                for dim in dimensions:
-                    # 构造搜索词：竞品名 + 维度 + 补充关键词
+            async with httpx.AsyncClient(timeout=15.0, proxy=_PROXY) as client:
+                # 限制搜索次数：最多搜 6 个维度，避免 API 配额浪费
+                for dim in dimensions[:6]:
                     dim_cn = self._dimension_to_chinese(dim)
                     query = f"{competitor_name} {dim_cn}"
                     search_queries.append(query)
+                    results = await _web_search(client, query)
+                    total_hits += _absorb(results[:4])
 
-                    resp = await client.get(
-                        f"{JINA_SEARCH_URL}{query}",
-                        headers={"Accept": "application/json"},
-                    )
-                    if resp.status_code != 200:
-                        continue
-
-                    data = resp.json()
-                    for result in data.get("data", [])[:4]:
-                        url = result.get("url", "")
-                        if not url:
-                            continue
-                        # 按白名单分桶
-                        if self._is_trusted_domain(url, trusted_domains):
-                            if url not in trusted_urls:
-                                trusted_urls.append(url)
-                        else:
-                            if url not in other_urls:
-                                other_urls.append(url)
-
-                # 补充搜索：市场份额、行业报告
-                extra_queries = [
+                for query in (
                     f"{competitor_name} 市场份额 2025",
                     f"{competitor_name} 行业分析报告",
-                ]
-                for query in extra_queries:
+                    f"{competitor_name} 客户案例 用户评价",
+                ):
                     search_queries.append(query)
-                    resp = await client.get(
-                        f"{JINA_SEARCH_URL}{query}",
-                        headers={"Accept": "application/json"},
-                    )
-                    if resp.status_code != 200:
-                        continue
-                    data = resp.json()
-                    for result in data.get("data", [])[:3]:
-                        url = result.get("url", "")
-                        if not url:
-                            continue
-                        if self._is_trusted_domain(url, trusted_domains):
-                            if url not in trusted_urls:
-                                trusted_urls.append(url)
-                        else:
-                            if url not in other_urls:
-                                other_urls.append(url)
+                    results = await _web_search(client, query)
+                    total_hits += _absorb(results[:3])
+        except Exception as e:
+            logger.warning("open_search_path failed: %r error=%s", competitor_name, e)
 
-        except Exception:
-            pass
+        urls = (trusted_urls + other_urls)[:10]
 
-        # 白名单内的 URL 优先，补充其他 URL，总共最多 10 个
-        urls = trusted_urls + other_urls
-        urls = urls[:10]
+        if not urls:
+            logger.warning(
+                "open_search_path: 0 URLs for %r after %d queries (total_hits=%d). "
+                "Likely competitor not indexed in Chinese sources or search blocked.",
+                competitor_name, len(search_queries), total_hits,
+            )
 
         return {
             "path": "open_search",
             "domain": "",
             "urls": urls,
             "search_queries": search_queries,
+            "trusted_count": len(trusted_urls),
+            "other_count": len(other_urls),
         }
 
     def _dimension_to_chinese(self, dim: str) -> str:
@@ -399,11 +442,13 @@ class DiscoveryAgent:
             "brand_sentiment": "口碑 评价 舆情",
             "market_share": "市场份额",
             "supply_chain": "供应链 代工",
+            "supply_chain_model": "供应链 代工模式",
             "price_range": "价格区间 定位",
             "target_demographics": "目标用户 人群画像",
             "marketing_channels": "营销渠道 推广",
             "product_line_breadth": "产品线 SKU",
             "sustainability": "ESG 可持续发展",
+            "sustainability_initiatives": "ESG 可持续发展",
         }
         return mapping.get(dim, dim.replace("_", " "))
 
@@ -426,38 +471,28 @@ class DiscoveryAgent:
         search_queries: list[str] = []
 
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                for dim in dimensions:
+            async with httpx.AsyncClient(timeout=15.0, proxy=_PROXY) as client:
+                for dim in dimensions[:6]:
                     query = f"{competitor_name} {dim.replace('_', ' ')}"
                     search_queries.append(query)
-                    resp = await client.get(
-                        f"{JINA_SEARCH_URL}{query}",
-                        headers={"Accept": "application/json"},
-                    )
-                    if resp.status_code != 200:
-                        continue
-
-                    data = resp.json()
-                    for result in data.get("data", [])[:2]:
+                    results = await _web_search(client, query)
+                    for result in results[:2]:
                         url = result.get("url", "")
                         if url:
                             urls.append(url)
 
-                # 补充客户案例搜索
                 query = f"{competitor_name} customer stories case studies"
                 search_queries.append(query)
-                resp = await client.get(
-                    f"{JINA_SEARCH_URL}{query}",
-                    headers={"Accept": "application/json"},
-                )
-                if resp.status_code == 200:
-                    data = resp.json()
-                    for result in data.get("data", [])[:2]:
-                        url = result.get("url", "")
-                        if url:
-                            urls.append(url)
-        except Exception:
-            pass
+                results = await _web_search(client, query)
+                for result in results[:2]:
+                    url = result.get("url", "")
+                    if url:
+                        urls.append(url)
+        except Exception as e:
+            logger.warning("fallback_search failed: %r error=%s", competitor_name, e)
+
+        if not urls:
+            logger.warning("fallback_search: 0 URLs for %r", competitor_name)
 
         return {
             "path": "cold",

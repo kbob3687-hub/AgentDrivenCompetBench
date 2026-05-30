@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class SourceType(str, Enum):
@@ -34,6 +34,11 @@ class SourceReference(BaseModel):
     snapshot_hash: str | None = Field(
         default=None, description="网页快照SHA256 hash，防止源头篡改后无法验证"
     )
+
+    @field_validator("snippet", "title", mode="before")
+    @classmethod
+    def none_to_empty_string(cls, v: Any) -> str:
+        return v if isinstance(v, str) else ""
 
     class Config:
         json_schema_extra = {

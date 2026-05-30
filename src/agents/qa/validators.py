@@ -350,6 +350,22 @@ def check_overall_confidence(profile: dict[str, Any]) -> tuple[float, list[QAIss
             if conf:
                 confidences.append(conf)
 
+    for persona in profile.get("user_personas", []):
+        for claim in persona.get("pain_points", []):
+            conf = claim.get("confidence", 0)
+            if conf:
+                confidences.append(conf)
+        for claim in persona.get("satisfaction_signals", []):
+            conf = claim.get("confidence", 0)
+            if conf:
+                confidences.append(conf)
+
+    for _key, val in profile.get("extensions", {}).items():
+        if isinstance(val, dict):
+            conf = val.get("confidence", 0)
+            if conf:
+                confidences.append(conf)
+
     if not confidences:
         issues.append(QAIssue(
             field_path="*",
@@ -433,4 +449,8 @@ def _count_claims(profile: dict[str, Any]) -> int:
     count += len(profile.get("feature_tree", []))
     for swot_item in profile.get("swot", []):
         count += len(swot_item.get("items", []))
-    return count
+    count += len(profile.get("user_personas", []))
+    for _key, val in profile.get("extensions", {}).items():
+        if val is not None:
+            count += 1
+    return max(count, 1) if profile.get("company_name") else count

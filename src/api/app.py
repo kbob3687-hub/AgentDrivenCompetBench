@@ -8,8 +8,9 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from api.routes.analyze import router as analyze_router
 from api.routes.health import router as health_router
@@ -55,3 +56,9 @@ app.add_middleware(
 
 app.include_router(health_router)
 app.include_router(analyze_router)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.exception("Unhandled exception: %s", exc)
+    return JSONResponse(status_code=500, content={"error": "服务内部错误，请重试"})

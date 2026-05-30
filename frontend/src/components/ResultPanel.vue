@@ -42,7 +42,7 @@ const langfuseUrl = computed(() => {
   const traceId = props.result.trace_id
   if (!traceId) return ''
   const cleanId = traceId.replace(/-/g, '').slice(0, 32)
-  return `https://cloud.langfuse.com/trace/${cleanId}`
+  return `https://cloud.langfuse.com/project/clkpwwm0m000gmm094odg11gi/traces?traceId=${cleanId}`
 })
 
 function agentColor(agent: string): string {
@@ -73,6 +73,20 @@ function handleLinkClick(e: MouseEvent) {
   if (!href || href.startsWith('#')) return
   e.preventDefault()
   window.open(href, '_blank', 'noopener,noreferrer')
+}
+
+function downloadMarkdown() {
+  const md = props.result.report_markdown || ''
+  if (!md) return
+  const titleMatch = md.match(/^#\s+(.+)/m)
+  const name = titleMatch ? titleMatch[1].replace(/[/\\?%*:|"<>]/g, '') : 'report'
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${name}.md`
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 const reportEl = ref<HTMLElement | null>(null)
@@ -108,6 +122,8 @@ const loopRows = computed<LoopRow[]>(() => {
       : '—'
     const currentFields = new Set<string>()
     for (const issue of issues) {
+      // 只追踪 critical + major，minor 不进闭环表
+      if (issue.severity === 'minor') continue
       const key = issue.field_path || '(全局)'
       currentFields.add(key)
       if (!seen.has(key)) {
@@ -234,6 +250,13 @@ function severityShortLabel(severity: string): string {
         <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-sm font-medium">
           {{ (result.qa_score * 100).toFixed(0) }}%
         </span>
+        <span class="flex-1"></span>
+        <button
+          @click="downloadMarkdown"
+          class="px-3 py-1.5 text-xs font-medium rounded border border-slate-300 text-slate-600 hover:bg-slate-50 transition-colors"
+        >
+          ↓ 导出 Markdown
+        </button>
       </div>
       <div
         class="prose max-w-none min-w-0 prose-headings:text-slate-800 prose-headings:font-semibold prose-h1:text-2xl prose-h1:border-b prose-h1:border-slate-200 prose-h1:pb-3 prose-h2:text-xl prose-h2:mt-8 prose-h3:text-base prose-p:text-slate-600 prose-p:leading-relaxed prose-strong:text-slate-800 prose-code:text-blue-600 prose-table:text-sm prose-th:bg-slate-100 prose-th:px-3 prose-th:py-2 prose-td:px-3 prose-td:py-2 prose-td:border-slate-200 prose-tr:border-slate-200 prose-li:text-slate-600 prose-a:text-blue-600 prose-hr:border-slate-200"
@@ -381,7 +404,7 @@ function severityShortLabel(severity: string): string {
       </div>
 
       <div v-if="!loopRows.length" class="text-sm text-slate-500 text-center py-8">
-        本次任务 QA 未提出任何字段级问题（一次通过）
+        本次任务 QA 未提出严重/主要级别问题（一次通过）
       </div>
 
       <table v-else class="w-full text-sm text-left">
@@ -439,9 +462,8 @@ function severityShortLabel(severity: string): string {
       </table>
 
       <div class="mt-4 text-xs text-slate-500 leading-relaxed">
-        说明：QA 在每轮检查中给出的字段级 issue，会被打回到对应 Agent（collector/analyst/writer）。
-        后续轮次中若 QA 不再对该字段提出问题，则视为「已解决」。这张表证明 QA 反馈不仅触发了重做，
-        且重做后输出确实有改善（非伪闭环）。
+        说明：仅追踪严重（critical）和主要（major）级别的 QA 问题。这些问题被打回到对应 Agent 重做，
+        后续轮次中若 QA 不再对该字段提出同级别问题，则视为「已解决」。修复率体现了反馈闭环的实际改善效果。
       </div>
     </div>
 

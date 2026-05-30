@@ -26,9 +26,9 @@ class TestFanOutSubAgent:
         assert any("product" in u for u in urls)
 
     def test_get_default_urls_unknown_competitor(self, collector):
+        # 未知竞品不再自拼搜索端点 URL，交由 Discovery 兜底，返回空列表
         urls = collector._get_default_urls("UnknownProduct", ["pricing"])
-        assert len(urls) >= 1
-        assert "s.jina.ai" in urls[0]
+        assert urls == []
 
     def test_truncate_content_short(self, collector):
         content = "Short content"

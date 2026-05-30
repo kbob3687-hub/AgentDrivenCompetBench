@@ -15,7 +15,7 @@ from typing import Any
 from agents.base import BaseAgent, AgentConfig
 from agents.collector.compliance import is_allowed_by_robots, redact_pii
 from agents.collector.prompts import COLLECTOR_SYSTEM_PROMPT, COLLECT_USER_PROMPT_TEMPLATE
-from agents.collector.tools import FetchResult, jina_reader, playwright_fetch
+from agents.collector.tools import FetchResult, firecrawl_fetch, playwright_fetch, direct_http_fetch
 from schemas.competitor import EvidencedClaim, SourceReference, SourceType
 from schemas.message import AgentMessage, CollectRequest, MessageType
 
@@ -106,7 +106,11 @@ class CollectorAgent(BaseAgent):
         )
 
     async def _fetch_url(self, url: str) -> FetchResult:
-        """获取URL内容，先做 robots.txt 合规检查，再 Jina/Playwright 抓取，最后 PII 脱敏。"""
+        """获取URL内容，降级链：Firecrawl → 直接HTTP抓取 → Playwright。
+
+        每一步都记录失败原因，便于诊断。
+        最后做 PII 脱敏。
+        """
         allowed, reason = await is_allowed_by_robots(url)
         if not allowed:
             return FetchResult(
@@ -114,18 +118,50 @@ class CollectorAgent(BaseAgent):
                 success=False,
                 error=f"robots.txt disallowed: {reason}",
                 robots_status="disallowed",
+                fetch_method="blocked",
             )
 
-        result = await jina_reader(url)
-        if not result.success:
-            result = await playwright_fetch(url)
+        # 第1级：Firecrawl（首选，质量高，支持JS渲染）
+        result = await firecrawl_fetch(url)
+        if result.success:
+            result.robots_status = reason
+            if result.content:
+                redacted, counts = redact_pii(result.content)
+                result.content = redacted
+                result.pii_redactions = counts
+            return result
 
+        firecrawl_error = result.error or "unknown"
+        print(f"  [Collector] Firecrawl 失败 ({url[:50]}): {firecrawl_error}，降级到直接HTTP抓取")
+
+        # 第2级：直接HTTP抓取（免费，无依赖）
+        result = await direct_http_fetch(url)
+        if result.success:
+            result.robots_status = reason
+            if result.content:
+                redacted, counts = redact_pii(result.content)
+                result.content = redacted
+                result.pii_redactions = counts
+            return result
+
+        http_error = result.error or "unknown"
+        print(f"  [Collector] 直接HTTP抓取失败 ({url[:50]}): {http_error}，降级到Playwright")
+
+        # 第3级：Playwright（JS渲染页面，最后手段）
+        result = await playwright_fetch(url)
         result.robots_status = reason
 
         if result.success and result.content:
             redacted, counts = redact_pii(result.content)
             result.content = redacted
             result.pii_redactions = counts
+        elif not result.success:
+            # 所有方法都失败，汇总错误信息
+            result.error = (
+                f"所有抓取方法均失败: "
+                f"Firecrawl({firecrawl_error}) | "
+                f"HTTP({http_error}) | Playwright({result.error})"
+            )
 
         return result
 
@@ -138,6 +174,7 @@ class CollectorAgent(BaseAgent):
         content: str,
         snapshot_hash: str,
         industry_fields: list[str] | None = None,
+        priority_dimensions: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         """调用LLM从网页内容中提取结构化信息"""
         # 构建行业扩展字段提示段
@@ -150,6 +187,15 @@ class CollectorAgent(BaseAgent):
             )
         else:
             industry_fields_section = "\n"
+
+        # 补采维度强调段
+        if priority_dimensions:
+            dims_str = "、".join(priority_dimensions)
+            industry_fields_section += (
+                f"## 重点补采维度\n"
+                f"以下维度数据不足，请从本页面尽可能多地提取相关claim：{dims_str}\n"
+                f"每个重点维度至少提取3条独立的claim（不同角度/不同事实）。\n\n"
+            )
 
         user_prompt = COLLECT_USER_PROMPT_TEMPLATE.format(
             competitor_name=competitor_name,
@@ -232,9 +278,11 @@ class CollectorAgent(BaseAgent):
         )
 
     def _get_default_urls(self, target: str, scope: list[str]) -> list[str]:
-        """根据竞品名称和采集维度生成默认URL列表
+        """已知竞品的 warm-path URL 兜底（warm-path map）。
 
-        对已知竞品使用精确URL，对未知竞品使用Jina搜索自动发现。
+        未知竞品**不再自动拼装**搜索端点 URL —— 那是 Discovery 的职责。
+        Discovery 0 URL 时由上层 (runner) 触发明确错误 / HITL，而不是让 collector
+        盲目去抓 `s.jina.ai/xxx` 这种搜索端点（会被 robots.txt 直接拒）。
         """
         url_map: dict[str, dict[str, list[str]]] = {
             "notion": {
@@ -260,7 +308,6 @@ class CollectorAgent(BaseAgent):
             },
         }
 
-        # Aliases: 中文名/变体 → 标准key
         aliases: dict[str, str] = {
             "飞书": "feishu",
             "lark": "feishu",
@@ -270,23 +317,14 @@ class CollectorAgent(BaseAgent):
         key = target.lower().strip()
         key = aliases.get(key, key)
 
-        urls: list[str] = []
         target_urls = url_map.get(key, {})
+        if not target_urls:
+            # 未知竞品：返回空 → 由上层路由到 Discovery 或 HITL
+            return []
 
-        # 已知竞品：始终注入 user_personas 维度（客户案例页）
-        if target_urls:
-            for dim in scope:
-                urls.extend(target_urls.get(dim, []))
-            # 无论 scope 是否包含 user_personas，都加入客户案例页
-            if "user_personas" not in scope:
-                urls.extend(target_urls.get("user_personas", []))
-        else:
-            # 未知竞品：使用 Jina 搜索 URL 自动发现
-            search_base = "https://s.jina.ai/"
-            for dim in scope:
-                query = f"{target} {dim}".replace("_", " ")
-                urls.append(f"{search_base}{query}")
-            # 补充客户案例搜索
-            urls.append(f"{search_base}{target} customer stories case studies")
-
+        urls: list[str] = []
+        for dim in scope:
+            urls.extend(target_urls.get(dim, []))
+        if "user_personas" not in scope:
+            urls.extend(target_urls.get("user_personas", []))
         return urls
