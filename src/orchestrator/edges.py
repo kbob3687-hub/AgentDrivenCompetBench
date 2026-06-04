@@ -34,19 +34,20 @@ def qa_routing(state: GraphState) -> str:
     final_status = state.get("final_status", "")
 
     # Human intervention overrides
-    if final_status in ("human_force_pass", "human_abort", "completed"):
+    if final_status in ("human_force_pass", "human_abort", "completed", "qa_failed"):
         return "end"
 
     # Reject verdict sets final_status like "rejected(score=0.50)" — terminate
     if final_status.startswith("rejected"):
         return "end"
 
-    # Human requested re-run after pass
-    if final_status == "running":
-        return "collector"
-
     if iteration > max_iterations:
         return "end"
+
+    # Human requested a fresh run after QA passed. Do not let the initial
+    # "running" status override reject/revise target routing.
+    if verdict == "pass" and final_status == "running":
+        return "collector"
 
     if verdict == "pass":
         return "end"

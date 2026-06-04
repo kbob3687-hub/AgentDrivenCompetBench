@@ -3,10 +3,11 @@ import { ref, computed, onMounted } from 'vue'
 import AnalysisForm from './components/AnalysisForm.vue'
 import DagView from './components/DagView.vue'
 import LogStream from './components/LogStream.vue'
-import ResultPanel from './components/ResultPanel.vue'
 import IterationTimeline from './components/IterationTimeline.vue'
 import CompareView from './components/CompareView.vue'
+import ReportWorkspace from './components/ReportWorkspace.vue'
 import { useAnalysis } from './composables/useAnalysis'
+import type { InterventionAction, InterventionPayload } from './types'
 
 const { state, startAnalysis, restoreFromHash, intervene } = useAnalysis()
 
@@ -18,6 +19,10 @@ const isPaused = computed(() => state.status === 'paused')
 
 function handleSubmit(payload: { competitorName: string; dimensions: string[]; industry: string; targetUrls: string[] }) {
   startAnalysis(payload.competitorName, payload.dimensions, payload.industry, payload.targetUrls)
+}
+
+function handleIntervene(payload: InterventionAction | InterventionPayload) {
+  intervene(payload)
 }
 
 onMounted(() => {
@@ -62,40 +67,46 @@ onMounted(() => {
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+    <main class="mx-auto max-w-[1800px] px-4 py-5 sm:px-6">
       <!-- Compare View -->
       <CompareView v-if="viewMode === 'compare'" @close="viewMode = 'analysis'" />
 
       <!-- Analysis View -->
       <template v-else>
-      <!-- Analysis Form -->
-      <AnalysisForm :disabled="isRunning" @submit="handleSubmit" />
+        <div class="grid gap-5 xl:grid-cols-[minmax(680px,48%)_minmax(0,1fr)] xl:items-start">
+          <div class="space-y-5 min-w-0">
+            <AnalysisForm :disabled="isRunning" @submit="handleSubmit" />
 
-      <!-- DAG + Logs -->
-      <div v-if="state.status !== 'idle'" class="grid grid-cols-5 gap-4 h-[350px]">
-        <div class="col-span-3 min-h-0 overflow-hidden">
-          <DagView :node-states="state.nodeStates" :sub-agents="state.subAgents" />
+            <div v-if="state.status !== 'idle'" class="grid gap-4">
+              <div class="h-[360px] min-h-0 overflow-hidden">
+                <DagView :node-states="state.nodeStates" :sub-agents="state.subAgents" />
+              </div>
+              <div class="h-[260px] min-h-0 overflow-hidden">
+                <LogStream :logs="state.logs" />
+              </div>
+            </div>
+
+            <IterationTimeline
+              v-if="state.status !== 'idle' && (state.iterations.length > 0 || state.currentIteration > 0)"
+              class="relative z-10"
+              :iterations="state.iterations"
+              :current-iteration="state.currentIteration"
+              :is-running="isRunning"
+              :is-paused="isPaused"
+              :pause-verdict="state.pauseVerdict"
+              :pause-context="state.pauseContext"
+              @intervene="handleIntervene"
+            />
+          </div>
+
+          <div class="min-w-0 xl:sticky xl:top-5 xl:h-[calc(100vh-104px)]">
+            <ReportWorkspace
+              :result="state.result"
+              :pause-context="state.pauseContext"
+              :status="state.status"
+            />
+          </div>
         </div>
-        <div class="col-span-2 min-h-0 overflow-hidden">
-          <LogStream :logs="state.logs" />
-        </div>
-      </div>
-
-      <!-- Iteration Timeline -->
-      <IterationTimeline
-        v-if="state.status !== 'idle' && (state.iterations.length > 0 || state.currentIteration > 0)"
-        class="relative z-10"
-        :iterations="state.iterations"
-        :current-iteration="state.currentIteration"
-        :is-running="isRunning"
-        :is-paused="isPaused"
-        :pause-verdict="state.pauseVerdict"
-        :pause-context="state.pauseContext"
-        @intervene="(action) => intervene(action)"
-      />
-
-      <!-- Result Panel -->
-      <ResultPanel v-if="isCompleted && state.result" :result="state.result" :task-id="state.taskId" />
       </template>
     </main>
   </div>

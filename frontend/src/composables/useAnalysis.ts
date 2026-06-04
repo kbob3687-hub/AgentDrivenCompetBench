@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import type { AnalysisState, AgentName, LogEntry } from '../types'
+import type { AnalysisState, AgentName, InterventionAction, InterventionPayload, LogEntry } from '../types'
 import { useSSE, type SSEEvent } from './useSSE'
 
 function createInitialState(): AnalysisState {
@@ -20,6 +20,16 @@ function createInitialState(): AnalysisState {
     currentIteration: 0,
     iterations: [],
     subAgents: []
+  }
+}
+
+function formatUrlForLog(rawUrl: string): string {
+  try {
+    const url = new URL(rawUrl)
+    const path = `${url.pathname}${url.search}` || '/'
+    return `${url.hostname}${path}`
+  } catch {
+    return rawUrl
   }
 }
 
@@ -52,18 +62,23 @@ export function useAnalysis() {
       case 'qa_verdict': {
         const { verdict, score, iteration } = event.data
         const missing = event.data.missing_dimensions || []
+        const issueCount = event.data.issues_count ?? 0
+        const target = event.data.target_agent || ''
+        const targetText = target ? `, target: ${target}` : ''
+        const issueText = issueCount ? `, issues: ${issueCount}` : ''
         if (verdict === 'revise') {
           state.nodeStates.collector = 'revise'
           state.nodeStates.analyst = 'revise'
           state.nodeStates.writer = 'revise'
           state.nodeStates.qa = 'done'
           addLog(
-            `QA verdict: REVISE (score: ${score}, missing: ${missing.join(', ')}) — iteration ${iteration}`,
+            `QA verdict: REVISE (score: ${score}${targetText}${issueText}, missing: ${missing.join(', ') || '-'}) — iteration ${iteration}`,
             'warning',
             'qa'
           )
         } else {
-          addLog(`QA verdict: ${verdict.toUpperCase()} (score: ${score}) — iteration ${iteration}`, 'success', 'qa')
+          const type = verdict === 'pass' ? 'success' : 'warning'
+          addLog(`QA verdict: ${verdict.toUpperCase()} (score: ${score}${targetText}${issueText}) — iteration ${iteration}`, type, 'qa')
         }
         break
       }
@@ -77,9 +92,7 @@ export function useAnalysis() {
           url: event.data.url,
           status: 'running',
         })
-        let hostname = event.data.url
-        try { hostname = new URL(event.data.url).hostname } catch {}
-        addLog(`Sub-agent [${event.data.sub_id}] fetching ${hostname}`, 'info', 'collector')
+        addLog(`Sub-agent [${event.data.sub_id}] fetching ${formatUrlForLog(event.data.url)}`, 'info', 'collector')
         break
       }
       case 'sub_agent_end': {
@@ -103,6 +116,7 @@ export function useAnalysis() {
           ? event.data.verdict
           : 'revise'
         state.pauseContext = {
+          reason: event.data.reason || '',
           score: event.data.score,
           iteration: event.data.iteration,
           missing_dimensions: event.data.missing_dimensions || [],
@@ -117,7 +131,15 @@ export function useAnalysis() {
           resolved_fields: event.data.resolved_fields || [],
           regressed_fields: event.data.regressed_fields || [],
         }
-        addLog(`Pipeline paused: ${event.data.message} (score: ${event.data.score})`, 'warning', 'qa')
+        const target = event.data.target_agent ? `，打回 ${event.data.target_agent}` : ''
+        const missing = (event.data.missing_dimensions || []).length
+          ? `，缺失/不足维度: ${(event.data.missing_dimensions || []).join(', ')}`
+          : ''
+        const topIssue = (event.data.issues || [])[0]
+        const issue = topIssue
+          ? `，首要问题: ${topIssue.field_label || topIssue.field_path || '(全局)'} ${topIssue.reason_label || topIssue.issue_type || ''}`
+          : ''
+        addLog(`Pipeline paused: ${event.data.message}${target}${missing}${issue} (score: ${event.data.score})`, 'warning', 'qa')
         break
       }
       case 'hitl_resume': {
@@ -129,7 +151,27 @@ export function useAnalysis() {
       }
       case 'error': {
         state.status = 'failed'
-        addLog(`Error: ${event.data.message}`, 'error')
+        const message = event.data.message || 'Unknown error'
+        if (message.includes('QA 质检自身失败') || message.includes('QA failed')) {
+          state.nodeStates.qa = 'error'
+          const iteration = state.currentIteration || Math.max(state.iterations.length + 1, 1)
+          if (!state.iterations.some(iter => iter.iteration === iteration)) {
+            state.iterations.push({
+              iteration,
+              verdict: 'error',
+              score: 0,
+              issues_count: 0,
+              critical_issues: 1,
+              action_taken: 'QA 自身失败',
+              feedback_summary: message,
+              issues: [],
+              resolved_fields: [],
+              regressed_fields: [],
+              persisted_fields: [],
+            })
+          }
+        }
+        addLog(`Error: ${message}`, 'error')
         break
       }
     }
@@ -226,17 +268,25 @@ export function useAnalysis() {
     })
   }
 
-  async function intervene(action: 'force_pass' | 'abort' | 'continue', reason: string = '') {
+  async function intervene(actionOrPayload: InterventionAction | InterventionPayload, reason: string = '') {
     if (!state.taskId) {
       addLog('无法介入：当前没有活跃任务', 'error')
       return
     }
+    const payload = typeof actionOrPayload === 'string'
+      ? { action: actionOrPayload, reason }
+      : {
+          action: actionOrPayload.action,
+          reason: actionOrPayload.reason || '',
+          urls: actionOrPayload.urls || []
+        }
+    const { action } = payload
     addLog(`发送人工介入指令: ${action}`, 'info')
     try {
       const response = await fetch(`/api/analyze/${state.taskId}/intervene`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, reason })
+        body: JSON.stringify(payload)
       })
       if (!response.ok) {
         const text = await response.text().catch(() => '')
@@ -248,15 +298,15 @@ export function useAnalysis() {
       state.pauseContext = null
       if (action === 'force_pass') {
         state.status = 'running'
-        addLog(`人工确认发布${reason ? ' (' + reason + ')' : ''}，等待报告产出...`, 'warning')
+        addLog(`人工确认发布${payload.reason ? ' (' + payload.reason + ')' : ''}，等待报告产出...`, 'warning')
         // Fallback: SSE might miss COMPLETE if connection dropped — poll status
         pollTaskUntilDone(state.taskId)
       } else if (action === 'abort') {
         state.status = 'failed'
-        addLog(`已终止任务${reason ? ' (' + reason + ')' : ''}`, 'error')
+        addLog(`已终止任务${payload.reason ? ' (' + payload.reason + ')' : ''}`, 'error')
       } else {
         state.status = 'running'
-        addLog(`继续迭代`, 'info')
+        addLog(payload.urls?.length ? `继续迭代，补充 ${payload.urls.length} 个URL` : '继续迭代', 'info')
       }
     } catch (err: any) {
       addLog(`介入请求异常: ${err.message}`, 'error')

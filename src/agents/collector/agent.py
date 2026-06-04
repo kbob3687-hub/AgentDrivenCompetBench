@@ -1,7 +1,7 @@
 """CollectorAgent - 竞品信息采集Agent
 
 负责从公开网页采集竞品数据，输出带溯源的结构化信息。
-使用Jina Reader（主力）和Playwright（JS渲染页面）作为采集工具。
+默认使用免费抓取链路，Jina/Firecrawl 只在显式开启时作为付费兜底。
 """
 
 from __future__ import annotations
@@ -15,9 +15,22 @@ from typing import Any
 from agents.base import BaseAgent, AgentConfig
 from agents.collector.compliance import is_allowed_by_robots, redact_pii
 from agents.collector.prompts import COLLECTOR_SYSTEM_PROMPT, COLLECT_USER_PROMPT_TEMPLATE
-from agents.collector.tools import FetchResult, firecrawl_fetch, playwright_fetch, direct_http_fetch
+from agents.collector.tools import (
+    FetchResult,
+    direct_http_fetch,
+    firecrawl_fetch,
+    jina_reader,
+    playwright_fetch,
+)
 from schemas.competitor import EvidencedClaim, SourceReference, SourceType
 from schemas.message import AgentMessage, CollectRequest, MessageType
+
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 class CollectorAgent(BaseAgent):
@@ -25,7 +38,7 @@ class CollectorAgent(BaseAgent):
 
     工作流程：
     1. 解析CollectRequest，确定采集目标和维度
-    2. 使用Jina Reader获取网页内容（失败时降级到Playwright）
+    2. 使用免费抓取链路获取网页内容（失败时降级到Playwright）
     3. 调用LLM从网页内容中提取结构化信息
     4. 将提取结果封装为EvidencedClaim列表
     5. 返回带完整溯源信息的AgentMessage
@@ -106,7 +119,11 @@ class CollectorAgent(BaseAgent):
         )
 
     async def _fetch_url(self, url: str) -> FetchResult:
-        """获取URL内容，降级链：Firecrawl → 直接HTTP抓取 → Playwright。
+        """获取URL内容，默认免费链路，付费抓取由显式环境变量打开。
+
+        默认链路：直接HTTP抓取 → Playwright。
+        可选付费兜底：ENABLE_JINA=true 时调用 Jina Reader；
+        ENABLE_FIRECRAWL=true 时调用 Firecrawl。
 
         每一步都记录失败原因，便于诊断。
         最后做 PII 脱敏。
@@ -121,20 +138,7 @@ class CollectorAgent(BaseAgent):
                 fetch_method="blocked",
             )
 
-        # 第1级：Firecrawl（首选，质量高，支持JS渲染）
-        result = await firecrawl_fetch(url)
-        if result.success:
-            result.robots_status = reason
-            if result.content:
-                redacted, counts = redact_pii(result.content)
-                result.content = redacted
-                result.pii_redactions = counts
-            return result
-
-        firecrawl_error = result.error or "unknown"
-        print(f"  [Collector] Firecrawl 失败 ({url[:50]}): {firecrawl_error}，降级到直接HTTP抓取")
-
-        # 第2级：直接HTTP抓取（免费，无依赖）
+        # 第1级：直接HTTP抓取（免费，无外部付费依赖）
         result = await direct_http_fetch(url)
         if result.success:
             result.robots_status = reason
@@ -147,7 +151,7 @@ class CollectorAgent(BaseAgent):
         http_error = result.error or "unknown"
         print(f"  [Collector] 直接HTTP抓取失败 ({url[:50]}): {http_error}，降级到Playwright")
 
-        # 第3级：Playwright（JS渲染页面，最后手段）
+        # 第2级：Playwright（本地浏览器渲染，免费兜底）
         result = await playwright_fetch(url)
         result.robots_status = reason
 
@@ -155,15 +159,49 @@ class CollectorAgent(BaseAgent):
             redacted, counts = redact_pii(result.content)
             result.content = redacted
             result.pii_redactions = counts
-        elif not result.success:
-            # 所有方法都失败，汇总错误信息
-            result.error = (
-                f"所有抓取方法均失败: "
-                f"Firecrawl({firecrawl_error}) | "
-                f"HTTP({http_error}) | Playwright({result.error})"
-            )
+            return result
 
-        return result
+        playwright_error = result.error or "unknown"
+
+        jina_error = "disabled (set ENABLE_JINA=true to enable)"
+        if _env_flag("ENABLE_JINA"):
+            print(f"  [Collector] Playwright 失败 ({url[:50]}): {playwright_error}，降级到Jina Reader")
+            result = await jina_reader(url)
+            if result.success:
+                result.robots_status = reason
+                if result.content:
+                    redacted, counts = redact_pii(result.content)
+                    result.content = redacted
+                    result.pii_redactions = counts
+                return result
+            jina_error = result.error or "unknown"
+
+        firecrawl_error = "disabled (set ENABLE_FIRECRAWL=true to enable)"
+        if _env_flag("ENABLE_FIRECRAWL"):
+            print(f"  [Collector] Jina Reader 失败 ({url[:50]}): {jina_error}，降级到Firecrawl")
+            result = await firecrawl_fetch(url)
+            if result.success:
+                result.robots_status = reason
+                if result.content:
+                    redacted, counts = redact_pii(result.content)
+                    result.content = redacted
+                    result.pii_redactions = counts
+                return result
+            firecrawl_error = result.error or "unknown"
+
+        return FetchResult(
+            url=url,
+            success=False,
+            error=(
+                "所有抓取方法均失败: "
+                f"HTTP({http_error}) | "
+                f"Playwright({playwright_error}) | "
+                f"Jina({jina_error}) | "
+                f"Firecrawl({firecrawl_error})"
+            ),
+            robots_status=reason,
+            fetch_method="failed",
+        )
 
     async def _extract_info(
         self,

@@ -8,6 +8,7 @@ from agents.qa.validators import (
     check_overall_confidence,
     check_snippet_existence,
     check_source_coverage,
+    check_untraceable_sources,
     run_all_validators,
 )
 
@@ -66,6 +67,26 @@ class TestSourceCoverage:
         issues = check_source_coverage(sample_profile)
         assert any("功能" in i.description or "实时协作" in i.description for i in issues)
 
+    def test_untraceable_placeholder_source_is_rejected(self, sample_profile):
+        sample_profile["pricing"]["evidence"]["sources"][0] = {
+            "source_type": "web_page",
+            "url": "",
+            "title": "推理得出",
+            "snippet": "基于多条claims综合推理，无单一原文对应",
+        }
+
+        issues = check_untraceable_sources(sample_profile)
+
+        assert any(i.severity == "critical" for i in issues)
+        assert any("URL为空" in i.description for i in issues)
+
+    def test_inference_marker_source_is_rejected_even_with_url(self, sample_profile):
+        sample_profile["pricing"]["evidence"]["sources"][0]["title"] = "推理得出"
+
+        issues = check_untraceable_sources(sample_profile)
+
+        assert any("不可查" in i.description for i in issues)
+
 
 class TestSnippetExistence:
     def test_valid_snippets_pass(self, sample_profile, sample_claims):
@@ -79,6 +100,20 @@ class TestSnippetExistence:
         issues = check_snippet_existence(sample_profile, sample_claims)
         assert len(issues) > 0
         assert any(i.issue_type == "factual_error" for i in issues)
+
+    def test_null_profile_snippet_is_accepted(self, sample_profile, sample_claims):
+        sample_profile["pricing"]["evidence"]["sources"][0]["snippet"] = None
+
+        issues = check_snippet_existence(sample_profile, sample_claims)
+
+        assert issues == []
+
+    def test_null_original_claim_snippet_is_accepted(self, sample_profile, sample_claims):
+        sample_claims[0]["sources"][0]["snippet"] = None
+
+        issues = check_snippet_existence(sample_profile, sample_claims)
+
+        assert isinstance(issues, list)
 
 
 class TestConsistency:
@@ -125,6 +160,25 @@ class TestRunAllValidators:
         issues, avg_conf, checked, verified, missing = result
         assert isinstance(issues, list)
         assert isinstance(avg_conf, float)
+        assert checked >= 0
+        assert verified >= 0
+        assert isinstance(missing, list)
+
+    def test_null_llm_fields_do_not_crash_qa(self, sample_profile, sample_claims):
+        sample_profile["pricing"]["evidence"]["sources"][0]["snippet"] = None
+        sample_profile["pricing"]["tiers"][0]["name"] = None
+        sample_profile["feature_tree"][0]["name"] = None
+        sample_profile["swot"][0]["items"][0]["claim"] = None
+        sample_claims[0]["sources"][0]["snippet"] = None
+
+        issues, avg_conf, checked, verified, missing = run_all_validators(
+            sample_profile,
+            sample_claims,
+            ["pricing"],
+        )
+
+        assert isinstance(issues, list)
+        assert avg_conf >= 0
         assert checked >= 0
         assert verified >= 0
         assert isinstance(missing, list)

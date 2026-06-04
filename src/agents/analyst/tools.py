@@ -45,7 +45,12 @@ def build_pricing_model(
 
     indices = llm_pricing.get("evidence_claim_indices", [])
     supporting_claims = [original_claims[i] for i in indices if i < len(original_claims)]
-    confidence = llm_pricing.get("confidence", average_confidence(supporting_claims))
+    supporting_claims = _claims_with_sources(supporting_claims)
+    if not supporting_claims:
+        return None
+    confidence = llm_pricing.get("confidence") or average_confidence(supporting_claims)
+    model_type = llm_pricing.get("model_type") or "subscription"
+    currency = llm_pricing.get("currency") or "USD"
 
     tiers = []
     for tier_data in llm_pricing.get("tiers", []):
@@ -57,19 +62,17 @@ def build_pricing_model(
             limitations=tier_data.get("limitations", []),
         ))
 
-    sources = _collect_sources(supporting_claims)
-
     evidence = EvidencedClaim(
-        claim=f"定价模式为{llm_pricing.get('model_type', 'unknown')}，共{len(tiers)}个层级",
+        claim=_claim_text(supporting_claims),
         confidence=confidence,
-        sources=sources if sources else [_placeholder_source()],
-        reasoning=f"基于{len(supporting_claims)}条原始claims综合分析",
+        sources=_collect_sources(supporting_claims),
+        reasoning="direct_claim_evidence",
     )
 
     return PricingModel(
-        model_type=llm_pricing.get("model_type", "subscription"),
+        model_type=model_type,
         tiers=tiers,
-        currency=llm_pricing.get("currency", "USD"),
+        currency=currency,
         evidence=evidence,
     )
 
@@ -85,6 +88,9 @@ def build_feature_tree(
     for feat in llm_features:
         indices = feat.get("evidence_claim_indices", [])
         supporting_claims = [original_claims[i] for i in indices if i < len(original_claims)]
+        supporting_claims = _claims_with_sources(supporting_claims)
+        if not supporting_claims:
+            continue
         confidence = feat.get("confidence", average_confidence(supporting_claims))
         sources = _collect_sources(supporting_claims)
 
@@ -93,8 +99,8 @@ def build_feature_tree(
             sub_evidence = EvidencedClaim(
                 claim=sub.get("description", sub.get("name", "")),
                 confidence=confidence,
-                sources=sources if sources else [_placeholder_source()],
-                reasoning="从父功能claims继承",
+                sources=sources,
+                reasoning="direct_claim_evidence",
             )
             sub_features.append(FeatureNode(
                 name=sub.get("name", ""),
@@ -104,10 +110,10 @@ def build_feature_tree(
             ))
 
         description_claim = EvidencedClaim(
-            claim=feat.get("description", feat.get("name", "")),
+            claim=_claim_text(supporting_claims),
             confidence=confidence,
-            sources=sources if sources else [_placeholder_source()],
-            reasoning=f"基于{len(supporting_claims)}条claims归纳",
+            sources=sources,
+            reasoning="direct_claim_evidence",
         )
 
         nodes.append(FeatureNode(
@@ -143,14 +149,17 @@ def build_swot(
         for item in items_data:
             indices = item.get("evidence_claim_indices", [])
             supporting = [original_claims[i] for i in indices if i < len(original_claims)]
+            supporting = _claims_with_sources(supporting)
+            if not supporting:
+                continue
             confidence = item.get("confidence", 0.5)
             sources = _collect_sources(supporting)
 
             evidenced_claims.append(EvidencedClaim(
-                claim=item.get("item", ""),
+                claim=_claim_text(supporting),
                 confidence=confidence,
-                sources=sources if sources else [_placeholder_source()],
-                reasoning=f"SWOT分析推理，基于{len(supporting)}条claims",
+                sources=sources,
+                reasoning="direct_claim_evidence",
             ))
 
         if evidenced_claims:
@@ -170,6 +179,9 @@ def build_user_personas(
     for p in llm_personas:
         indices = p.get("evidence_claim_indices", [])
         supporting = [original_claims[i] for i in indices if i < len(original_claims)]
+        supporting = _claims_with_sources(supporting)
+        if not supporting:
+            continue
         confidence = p.get("confidence", average_confidence(supporting))
         sources = _collect_sources(supporting)
 
@@ -178,8 +190,8 @@ def build_user_personas(
             pain_claims.append(EvidencedClaim(
                 claim=pain if isinstance(pain, str) else pain.get("claim", ""),
                 confidence=confidence,
-                sources=sources if sources else [_placeholder_source()],
-                reasoning="基于用户相关claims推断",
+                sources=sources,
+                reasoning="direct_claim_evidence",
             ))
 
         personas.append(UserPersona(
@@ -264,6 +276,21 @@ def _build_extensions(
     return extensions
 
 
+def _claims_with_sources(claims: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep only claims that have at least one real, clickable source URL."""
+    return [claim for claim in claims if _collect_sources([claim])]
+
+
+def _claim_text(claims: list[dict[str, Any]]) -> str:
+    """Use direct collected claim text instead of analyst-generated inference."""
+    texts: list[str] = []
+    for claim in claims:
+        text = str(claim.get("claim") or "").strip()
+        if text and text not in texts:
+            texts.append(text)
+    return "；".join(texts)
+
+
 def _collect_sources(claims: list[dict[str, Any]]) -> list[SourceReference]:
     """从claims中收集所有SourceReference"""
     sources = []
@@ -282,14 +309,3 @@ def _collect_sources(claims: list[dict[str, Any]]) -> list[SourceReference]:
                     accessed_at=src.get("accessed_at", datetime.now().isoformat()),
                 ))
     return sources
-
-
-def _placeholder_source() -> SourceReference:
-    """当没有可用source时的占位符"""
-    return SourceReference(
-        source_type=SourceType.WEB_PAGE,
-        url="",
-        title="推理得出",
-        snippet="基于多条claims综合推理，无单一原文对应",
-        accessed_at=datetime.now(),
-    )

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { marked } from 'marked'
-import type { FeedbackRecord, PauseContext, QAIssueDetail } from '../types'
+import type { FeedbackRecord, InterventionAction, InterventionPayload, PauseContext, QAIssueDetail } from '../types'
 
 const props = defineProps<{
   iterations: FeedbackRecord[]
@@ -13,11 +13,16 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  intervene: [action: 'force_pass' | 'abort' | 'continue']
+  intervene: [payload: InterventionAction | InterventionPayload]
 }>()
 
 const submitting = ref(false)
 const reportExpanded = ref(true)
+const supplementalUrlsText = ref('')
+
+watch(() => props.pauseContext, () => {
+  supplementalUrlsText.value = ''
+})
 
 const renderedReport = computed(() => {
   const md = props.pauseContext?.report_preview || ''
@@ -25,10 +30,66 @@ const renderedReport = computed(() => {
   return marked.parse(md) as string
 })
 
-function handleIntervene(action: 'force_pass' | 'abort' | 'continue') {
+const supplementalUrls = computed(() => {
+  const urls = supplementalUrlsText.value
+    .split(/\r?\n/)
+    .map(url => url.trim())
+    .filter(url => url.startsWith('http://') || url.startsWith('https://'))
+  return Array.from(new Set(urls))
+})
+
+const pauseReasonText = computed(() => {
+  const ctx = props.pauseContext
+  if (!ctx) return ''
+  const issueText = ctx.issues
+    .map(issue => [issue.issue_type, issue.field_path, issue.description, issue.suggestion].filter(Boolean).join(' '))
+    .join(' ')
+  return [
+    ctx.reason,
+    ctx.message,
+    ctx.target_agent,
+    ...ctx.missing_dimensions,
+    issueText,
+  ].filter(Boolean).join(' ').toLowerCase()
+})
+
+const needsSupplementalUrls = computed(() => {
+  if (!pauseReasonText.value || props.pauseVerdict === 'pass') return false
+  const text = pauseReasonText.value.replace(/[_-]/g, ' ')
+  return /no\s*urls?/.test(text)
+    || /no\s*sources?/.test(text)
+    || /no\s*profile/.test(text)
+    || /empty\s*profile/.test(text)
+    || text.includes('collector no sources')
+    || text.includes('collector fetch failed')
+    || text.includes('未发现可用 url')
+    || text.includes('无 url')
+    || text.includes('没有url')
+    || text.includes('无数据源')
+    || text.includes('没有数据源')
+    || text.includes('信源不足')
+    || text.includes('无 profile')
+    || text.includes('空 profile')
+    || text.includes('无法生成报告')
+    || /采集\s*0\s*条/.test(text)
+})
+
+function interventionReason(): string {
+  return props.pauseContext?.reason || props.pauseContext?.message || 'manual_url_supplement'
+}
+
+function handleIntervene(action: InterventionAction) {
   if (submitting.value) return
   submitting.value = true
-  emit('intervene', action)
+  if (action === 'continue' && needsSupplementalUrls.value) {
+    emit('intervene', {
+      action,
+      reason: interventionReason(),
+      urls: supplementalUrls.value,
+    })
+  } else {
+    emit('intervene', action)
+  }
   setTimeout(() => { submitting.value = false }, 5000)
 }
 
@@ -49,6 +110,7 @@ function scoreColor(score: number): string {
 function verdictClass(verdict: string): string {
   if (verdict === 'pass') return 'bg-emerald-100 text-emerald-700'
   if (verdict === 'revise') return 'bg-orange-100 text-orange-700'
+  if (verdict === 'error') return 'bg-red-100 text-red-700'
   return 'bg-red-100 text-red-700'
 }
 
@@ -70,11 +132,6 @@ function deltaColor(delta: number): string {
   return 'text-slate-500'
 }
 
-function issuesDelta(index: number): number | null {
-  if (index === 0) return null
-  return props.iterations[index].issues_count - props.iterations[index - 1].issues_count
-}
-
 function severityDot(severity: string): string {
   if (severity === 'critical') return 'bg-red-500'
   if (severity === 'major') return 'bg-orange-400'
@@ -85,6 +142,20 @@ function severityLabel(severity: string): string {
   if (severity === 'critical') return '严重'
   if (severity === 'major') return '主要'
   return '次要'
+}
+
+function routeTarget(record: FeedbackRecord): string {
+  const action = record.action_taken || ''
+  if (action.includes('collector')) return 'collector'
+  if (action.includes('analyst')) return 'analyst'
+  if (action.includes('writer')) return 'writer'
+  if (action.includes('QA')) return 'qa'
+  return record.verdict === 'pass' ? '—' : 'collector'
+}
+
+function compactSummary(record: FeedbackRecord): string {
+  const summary = record.feedback_summary || record.action_taken || ''
+  return summary.length > 64 ? `${summary.slice(0, 64)}...` : summary
 }
 
 const sortedIssues = computed<QAIssueDetail[]>(() => {
@@ -128,49 +199,67 @@ const forcePassHint = computed(() => {
 <template>
   <div class="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
     <h3 class="text-sm font-medium text-slate-600 mb-3">QA 反馈循环</h3>
-    <div class="flex items-start gap-2 overflow-x-auto pb-2">
-      <!-- Completed iterations with delta arrows -->
-      <template v-for="(iter, idx) in iterations" :key="iter.iteration">
-        <!-- Delta arrow between cards -->
-        <div v-if="idx > 0" class="flex-shrink-0 flex flex-col items-center justify-center w-[48px] self-center">
-          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-          <span :class="['text-[11px] font-bold', deltaColor(scoreDelta(idx)!)]">
-            {{ deltaText(scoreDelta(idx)!) }}%
-          </span>
-          <span v-if="issuesDelta(idx) !== null && issuesDelta(idx)! < 0" class="text-[10px] text-emerald-600">
-            {{ issuesDelta(idx) }} 问题
-          </span>
-        </div>
+    <div v-if="iterations.length" class="overflow-x-auto rounded-md border border-slate-200">
+      <table class="min-w-full text-left text-xs">
+        <thead class="bg-slate-50 text-slate-500">
+          <tr>
+            <th class="px-3 py-2 font-medium">轮次</th>
+            <th class="px-3 py-2 font-medium">判定</th>
+            <th class="px-3 py-2 font-medium">分数</th>
+            <th class="px-3 py-2 font-medium">变化</th>
+            <th class="px-3 py-2 font-medium">问题</th>
+            <th class="px-3 py-2 font-medium">严重</th>
+            <th class="px-3 py-2 font-medium">Claims</th>
+            <th class="px-3 py-2 font-medium">奖励</th>
+            <th class="px-3 py-2 font-medium">已解决</th>
+            <th class="px-3 py-2 font-medium">新增</th>
+            <th class="px-3 py-2 font-medium">仍卡住</th>
+            <th class="px-3 py-2 font-medium">打回</th>
+            <th class="px-3 py-2 font-medium">摘要</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr v-for="(iter, idx) in iterations" :key="iter.iteration" class="text-slate-700">
+            <td class="whitespace-nowrap px-3 py-2 font-mono">第 {{ iter.iteration }} 轮</td>
+            <td class="px-3 py-2">
+              <span :class="['rounded px-1.5 py-0.5 text-[10px] font-semibold', verdictClass(iter.verdict)]">
+                {{ iter.verdict.toUpperCase() }}
+              </span>
+            </td>
+            <td class="px-3 py-2">
+              <span :class="['inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold text-white', scoreColor(iter.score)]">
+                {{ (iter.score * 100).toFixed(0) }}
+              </span>
+            </td>
+            <td class="whitespace-nowrap px-3 py-2 font-mono">
+              <span v-if="scoreDelta(idx) !== null" :class="deltaColor(scoreDelta(idx)!)">
+                {{ deltaText(scoreDelta(idx)!) }}%
+              </span>
+              <span v-else class="text-slate-400">—</span>
+            </td>
+            <td class="px-3 py-2 font-mono">{{ iter.issues_count }}</td>
+            <td class="px-3 py-2 font-mono text-red-600">{{ iter.critical_issues }}</td>
+            <td class="px-3 py-2 font-mono">{{ iter.claims_count ?? '—' }}</td>
+            <td class="px-3 py-2 font-mono text-emerald-700">
+              {{ iter.improvement_bonus ? `+${(iter.improvement_bonus * 100).toFixed(0)}` : '—' }}
+            </td>
+            <td class="px-3 py-2 font-mono text-emerald-700">{{ iter.resolved_fields?.length || 0 }}</td>
+            <td class="px-3 py-2 font-mono text-red-600">{{ iter.regressed_fields?.length || 0 }}</td>
+            <td class="px-3 py-2 font-mono text-orange-700">{{ iter.persisted_fields?.length || 0 }}</td>
+            <td class="px-3 py-2">
+              <span class="rounded bg-blue-50 px-1.5 py-0.5 font-mono text-[11px] text-blue-700">
+                {{ routeTarget(iter) }}
+              </span>
+            </td>
+            <td class="max-w-[260px] truncate px-3 py-2 text-slate-500" :title="iter.feedback_summary">
+              {{ compactSummary(iter) || '—' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-        <!-- Iteration card -->
-        <div class="flex-shrink-0 w-[200px] rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs text-slate-500">第 {{ iter.iteration }} 轮</span>
-            <span
-              :class="['px-1.5 py-0.5 rounded text-[10px] font-medium', verdictClass(iter.verdict)]"
-            >
-              {{ iter.verdict.toUpperCase() }}
-            </span>
-          </div>
-          <div class="flex items-center gap-2 mb-2">
-            <div
-              :class="['w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white', scoreColor(iter.score)]"
-            >
-              {{ (iter.score * 100).toFixed(0) }}
-            </div>
-            <div class="text-xs text-slate-500">
-              <div>{{ iter.issues_count }} 问题</div>
-              <div v-if="iter.critical_issues">{{ iter.critical_issues }} 严重</div>
-            </div>
-          </div>
-          <div class="text-[11px] text-slate-500 leading-tight">
-            <div v-if="iter.action_taken" class="mb-1 text-slate-600 font-medium">{{ iter.action_taken }}</div>
-            <div class="line-clamp-2">{{ iter.feedback_summary || '—' }}</div>
-          </div>
-        </div>
-      </template>
+    <div class="mt-3 flex items-start gap-2 overflow-x-auto pb-2">
 
       <!-- Current in-progress iteration -->
       <div
@@ -196,7 +285,7 @@ const forcePassHint = computed(() => {
     </div>
 
     <!-- Overall improvement summary -->
-    <div v-if="iterations.length >= 2" class="mt-3 px-3 py-2 rounded-md bg-slate-50 border border-slate-200 flex items-center gap-4">
+    <div v-if="iterations.length >= 2" class="mt-3 px-3 py-2 rounded-md bg-slate-50 border border-slate-200 flex flex-wrap items-center gap-x-4 gap-y-1">
       <span class="text-xs text-slate-500">反馈闭环效果:</span>
       <span class="text-xs font-medium" :class="deltaColor(iterations[iterations.length - 1].score - iterations[0].score)">
         分数 {{ (iterations[0].score * 100).toFixed(0) }}%
@@ -303,13 +392,23 @@ const forcePassHint = computed(() => {
             <li v-for="(issue, idx) in sortedIssues" :key="idx" class="px-3 py-2 text-xs flex items-start gap-2">
               <span :class="['mt-1 w-2 h-2 rounded-full flex-shrink-0', severityDot(issue.severity)]" :title="severityLabel(issue.severity)"></span>
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-0.5">
-                  <span class="font-mono text-slate-700">{{ issue.field_path || '(全局)' }}</span>
-                  <span class="text-[10px] px-1 rounded bg-slate-100 text-slate-500">{{ issue.issue_type }}</span>
+                <div class="flex flex-wrap items-center gap-2 mb-0.5">
+                  <span class="font-medium text-slate-800">{{ issue.field_label || issue.field_path || '整体质量' }}</span>
+                  <span class="text-[10px] px-1 rounded bg-slate-100 text-slate-500">{{ severityLabel(issue.severity) }}</span>
+                  <span v-if="issue.field_path" class="text-[10px] font-mono text-slate-400">{{ issue.field_path }}</span>
                 </div>
-                <div class="text-slate-600">{{ issue.description }}</div>
-                <div v-if="issue.suggestion" class="text-slate-500 mt-0.5">
-                  <span class="text-slate-400">建议:</span> {{ issue.suggestion }}
+                <div class="text-slate-600">
+                  <span class="font-medium text-slate-700">为什么不达标:</span>
+                  {{ issue.reason_label || issue.description }}
+                </div>
+                <div v-if="issue.description && issue.reason_label" class="text-slate-500 mt-0.5">
+                  <span class="text-slate-400">检查依据:</span> {{ issue.description }}
+                </div>
+                <div v-if="issue.action_hint || issue.suggestion" class="text-blue-700 mt-0.5">
+                  <span class="text-blue-500">下一步:</span> {{ issue.action_hint || issue.suggestion }}
+                </div>
+                <div v-if="issue.iteration_hint" class="text-red-600 mt-0.5">
+                  <span class="text-red-500">为什么重跑仍不达标:</span> {{ issue.iteration_hint }}
                 </div>
               </div>
             </li>
@@ -331,6 +430,27 @@ const forcePassHint = computed(() => {
             v-html="renderedReport"
             @click.prevent="handleReportLinkClick"
           ></div>
+        </div>
+
+        <div v-if="needsSupplementalUrls" class="border border-blue-200 rounded bg-blue-50 p-3 space-y-2">
+          <div class="flex items-center justify-between gap-3">
+            <label for="supplemental-urls" class="text-xs font-medium text-blue-700">
+              补充数据源 URL
+            </label>
+            <span class="text-[11px] text-blue-600">
+              {{ supplementalUrls.length }} 个有效输入
+            </span>
+          </div>
+          <textarea
+            id="supplemental-urls"
+            v-model="supplementalUrlsText"
+            rows="4"
+            class="w-full resize-y rounded border border-blue-200 bg-white px-3 py-2 text-xs font-mono text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            placeholder="每行一个 URL，例如：&#10;https://example.com/pricing&#10;https://example.com/features"
+          ></textarea>
+          <p class="text-[11px] text-blue-700">
+            点击继续迭代时会随介入请求一并提交，供后端作为人工补充数据源。
+          </p>
         </div>
       </div>
 
