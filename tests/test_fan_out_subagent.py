@@ -60,6 +60,48 @@ class TestFanOutSubAgent:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_fetch_url_skips_paid_readers_by_default(self, collector, monkeypatch):
+        """Default fetch path must not spend Jina/Firecrawl credits."""
+        monkeypatch.delenv("ENABLE_JINA", raising=False)
+        monkeypatch.delenv("ENABLE_FIRECRAWL", raising=False)
+
+        async def fake_allowed(url: str):
+            return True, "allowed"
+
+        async def fake_direct_http(url: str):
+            return FetchResult(
+                url=url,
+                success=False,
+                error="内容过短 (9 字符)，可能需要JS渲染",
+                fetch_method="direct_http",
+            )
+
+        async def fake_playwright(url: str):
+            return FetchResult(
+                url=url,
+                success=False,
+                error="NotImplementedError: ",
+                fetch_method="playwright",
+            )
+
+        async def fail_paid_reader(url: str):
+            raise AssertionError("paid reader should be disabled by default")
+
+        monkeypatch.setattr("agents.collector.agent.is_allowed_by_robots", fake_allowed)
+        monkeypatch.setattr("agents.collector.agent.direct_http_fetch", fake_direct_http)
+        monkeypatch.setattr("agents.collector.agent.playwright_fetch", fake_playwright)
+        monkeypatch.setattr("agents.collector.agent.jina_reader", fail_paid_reader)
+        monkeypatch.setattr("agents.collector.agent.firecrawl_fetch", fail_paid_reader)
+
+        result = await collector._fetch_url("https://www.feishu.cn/pricing")
+
+        assert result.success is False
+        assert "HTTP(内容过短" in result.error
+        assert "Playwright(NotImplementedError" in result.error
+        assert "Jina(disabled" in result.error
+        assert "Firecrawl(disabled" in result.error
+
+    @pytest.mark.asyncio
     async def test_fan_out_parallel_execution(self):
         """Verify that multiple URLs are fetched concurrently with semaphore."""
         fetch_count = 0
