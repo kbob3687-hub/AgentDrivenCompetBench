@@ -71,7 +71,9 @@ class EventBus:
     async def subscribe(self, task_id: str):
         """异步生成器 - 先回放历史事件，再实时消费新事件"""
         # 回放历史（客户端晚连也能收到之前的事件）
-        for event in self.get_history(task_id):
+        replayed_events = list(self.get_history(task_id))
+        replayed_ids = {id(event) for event in replayed_events}
+        for event in replayed_events:
             yield event
 
         # 如果任务已结束，不再等待新事件
@@ -81,6 +83,19 @@ class EventBus:
         queue = self._queues.get(task_id)
         if not queue:
             return
+
+        # 任务启动后，SSE 客户端通常会晚几百毫秒接入。此时早期事件既在
+        # history 中，也还留在 queue 中；直接消费会导致前端看到重复日志。
+        while True:
+            try:
+                event = queue.get_nowait()
+            except asyncio.QueueEmpty:
+                break
+            if event is None:
+                return
+            if id(event) in replayed_ids:
+                continue
+            yield event
 
         while True:
             event = await queue.get()
