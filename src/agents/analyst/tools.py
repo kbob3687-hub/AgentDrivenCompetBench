@@ -45,7 +45,9 @@ def build_pricing_model(
 
     indices = llm_pricing.get("evidence_claim_indices", [])
     supporting_claims = [original_claims[i] for i in indices if i < len(original_claims)]
-    confidence = llm_pricing.get("confidence", average_confidence(supporting_claims))
+    confidence = llm_pricing.get("confidence") or average_confidence(supporting_claims)
+    model_type = llm_pricing.get("model_type") or "subscription"
+    currency = llm_pricing.get("currency") or "USD"
 
     tiers = []
     for tier_data in llm_pricing.get("tiers", []):
@@ -60,16 +62,16 @@ def build_pricing_model(
     sources = _collect_sources(supporting_claims)
 
     evidence = EvidencedClaim(
-        claim=f"定价模式为{llm_pricing.get('model_type', 'unknown')}，共{len(tiers)}个层级",
+        claim=f"定价模式为{model_type}，共{len(tiers)}个层级",
         confidence=confidence,
         sources=sources if sources else [_placeholder_source()],
         reasoning=f"基于{len(supporting_claims)}条原始claims综合分析",
     )
 
     return PricingModel(
-        model_type=llm_pricing.get("model_type", "subscription"),
+        model_type=model_type,
         tiers=tiers,
-        currency=llm_pricing.get("currency", "USD"),
+        currency=currency,
         evidence=evidence,
     )
 
