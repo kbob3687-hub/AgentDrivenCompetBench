@@ -7,6 +7,15 @@ from typing import Any
 from schemas.message import QAIssue
 
 
+UNTRACEABLE_SOURCE_MARKERS = (
+    "推理得出",
+    "基于多条claims",
+    "基于多条 claims",
+    "综合推理",
+    "无单一原文对应",
+)
+
+
 def _as_text(value: Any) -> str:
     """Return a stripped string for loose LLM-produced fields."""
     if value is None:
@@ -19,6 +28,23 @@ def _as_text(value: Any) -> str:
 def _as_list(value: Any) -> list[Any]:
     """Treat missing/null list fields as empty instead of crashing QA."""
     return value if isinstance(value, list) else []
+
+
+def _iter_sources(profile: dict[str, Any]):
+    def _walk(obj: Any, path: str) -> None:
+        if isinstance(obj, dict):
+            if isinstance(obj.get("sources"), list):
+                for i, src in enumerate(obj["sources"]):
+                    yield_path = f"{path}.sources[{i}]" if path else f"sources[{i}]"
+                    yield yield_path, src
+            for key, value in obj.items():
+                next_path = f"{path}.{key}" if path else str(key)
+                yield from _walk(value, next_path)
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                yield from _walk(item, f"{path}[{i}]")
+
+    yield from _walk(profile, "")
 
 
 def check_dimension_coverage(
@@ -230,6 +256,52 @@ def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
     return issues
 
 
+def check_untraceable_sources(profile: dict[str, Any]) -> list[QAIssue]:
+    """Reject placeholder/inference sources that cannot be clicked and verified."""
+    issues: list[QAIssue] = []
+
+    for path, src in _iter_sources(profile):
+        if not isinstance(src, dict):
+            issues.append(QAIssue(
+                field_path=path,
+                issue_type="missing_source",
+                severity="critical",
+                description="来源结构无效，无法核查",
+                suggestion="删除该结论或补充真实可点击URL来源",
+                evidence=f"{path} is not an object",
+            ))
+            continue
+
+        url = _as_text(src.get("url"))
+        title = _as_text(src.get("title"))
+        snippet = _as_text(src.get("snippet"))
+        combined = f"{title} {snippet}"
+
+        if not url:
+            issues.append(QAIssue(
+                field_path=f"{path}.url",
+                issue_type="missing_source",
+                severity="critical",
+                description="来源URL为空，最终报告不可查",
+                suggestion="删除该结论或补充真实可点击URL来源",
+                evidence=f"path={path}, title={title!r}",
+            ))
+            continue
+
+        marker = next((m for m in UNTRACEABLE_SOURCE_MARKERS if m in combined), "")
+        if marker:
+            issues.append(QAIssue(
+                field_path=path,
+                issue_type="missing_source",
+                severity="critical",
+                description=f"来源包含不可查的推理占位文案: {marker}",
+                suggestion="删除该结论；比赛版本只允许直接来自真实URL的结论",
+                evidence=f"path={path}, url={url}",
+            ))
+
+    return issues
+
+
 def check_snippet_existence(
     profile: dict[str, Any],
     original_claims: list[dict[str, Any]],
@@ -263,13 +335,13 @@ def check_snippet_existence(
                 for orig in original_snippets
                 if orig
             )
-            if not found and snippet != "基于多条claims综合推理，无单一原文对应":
+            if not found:
                 issues.append(QAIssue(
                     field_path=f"{path}[{k}].snippet",
                     issue_type="factual_error",
                     severity="minor",
                     description=f"snippet无法在原始采集数据中找到对应文本",
-                    suggestion="核实该snippet是否来自实际采集内容，或标记为推理得出",
+                    suggestion="核实该snippet是否来自实际采集内容；不可查的推理型来源必须删除",
                     evidence=f"snippet: '{snippet[:80]}...'",
                 ))
 
@@ -467,6 +539,7 @@ def run_all_validators(
 
     # 检查1：来源覆盖
     all_issues.extend(check_source_coverage(profile))
+    all_issues.extend(check_untraceable_sources(profile))
 
     # 检查7：UserPersona溯源
     all_issues.extend(check_user_persona_sourcing(profile, original_claims))

@@ -8,6 +8,7 @@ from agents.qa.validators import (
     check_overall_confidence,
     check_snippet_existence,
     check_source_coverage,
+    check_untraceable_sources,
     run_all_validators,
 )
 
@@ -65,6 +66,26 @@ class TestSourceCoverage:
         sample_profile["feature_tree"][0]["description"]["sources"] = []
         issues = check_source_coverage(sample_profile)
         assert any("功能" in i.description or "实时协作" in i.description for i in issues)
+
+    def test_untraceable_placeholder_source_is_rejected(self, sample_profile):
+        sample_profile["pricing"]["evidence"]["sources"][0] = {
+            "source_type": "web_page",
+            "url": "",
+            "title": "推理得出",
+            "snippet": "基于多条claims综合推理，无单一原文对应",
+        }
+
+        issues = check_untraceable_sources(sample_profile)
+
+        assert any(i.severity == "critical" for i in issues)
+        assert any("URL为空" in i.description for i in issues)
+
+    def test_inference_marker_source_is_rejected_even_with_url(self, sample_profile):
+        sample_profile["pricing"]["evidence"]["sources"][0]["title"] = "推理得出"
+
+        issues = check_untraceable_sources(sample_profile)
+
+        assert any("不可查" in i.description for i in issues)
 
 
 class TestSnippetExistence:
