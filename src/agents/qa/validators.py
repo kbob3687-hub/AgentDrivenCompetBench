@@ -7,6 +7,20 @@ from typing import Any
 from schemas.message import QAIssue
 
 
+def _as_text(value: Any) -> str:
+    """Return a stripped string for loose LLM-produced fields."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value.strip()
+    return str(value).strip()
+
+
+def _as_list(value: Any) -> list[Any]:
+    """Treat missing/null list fields as empty instead of crashing QA."""
+    return value if isinstance(value, list) else []
+
+
 def check_dimension_coverage(
     claims: list[dict[str, Any]],
     expected_dimensions: list[str],
@@ -30,7 +44,7 @@ def check_dimension_coverage(
     # 按维度分组统计 claims
     dim_counts: dict[str, int] = {}
     for c in claims:
-        dim = c.get("dimension", "")
+        dim = _as_text(c.get("dimension"))
         if dim:
             dim_counts[dim] = dim_counts.get(dim, 0) + 1
 
@@ -87,7 +101,7 @@ def check_extensions_coverage(
     except (ValueError, ImportError):
         return issues, missing
 
-    extensions = profile.get("extensions", {})
+    extensions = profile.get("extensions") or {}
     missing = template.validate_extensions(extensions)
 
     for field_name in missing:
@@ -114,14 +128,16 @@ def check_user_persona_sourcing(
     每个 persona 的 pain_points 必须有 sources，且 source URL 应来自客户案例页。
     """
     issues: list[QAIssue] = []
-    personas = profile.get("user_personas", [])
+    personas = _as_list(profile.get("user_personas"))
 
     if not personas:
         return issues
 
     for i, persona in enumerate(personas):
-        segment = persona.get("segment", f"persona_{i}")
-        pain_points = persona.get("pain_points", [])
+        if not isinstance(persona, dict):
+            continue
+        segment = _as_text(persona.get("segment")) or f"persona_{i}"
+        pain_points = _as_list(persona.get("pain_points"))
 
         if not pain_points:
             issues.append(QAIssue(
@@ -137,7 +153,7 @@ def check_user_persona_sourcing(
         has_source = False
         for pp in pain_points:
             if isinstance(pp, dict):
-                sources = pp.get("sources", [])
+                sources = _as_list(pp.get("sources"))
                 if sources:
                     has_source = True
                     break
@@ -165,8 +181,8 @@ def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
     # 检查pricing evidence
     pricing = profile.get("pricing")
     if pricing:
-        evidence = pricing.get("evidence", {})
-        sources = evidence.get("sources", [])
+        evidence = pricing.get("evidence") or {}
+        sources = _as_list(evidence.get("sources"))
         if len(sources) < 1:
             issues.append(QAIssue(
                 field_path="pricing.evidence.sources",
@@ -178,31 +194,37 @@ def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
             ))
 
     # 检查feature_tree
-    for i, node in enumerate(profile.get("feature_tree", [])):
-        desc = node.get("description", {})
-        sources = desc.get("sources", [])
+    for i, node in enumerate(_as_list(profile.get("feature_tree"))):
+        if not isinstance(node, dict):
+            continue
+        desc = node.get("description") or {}
+        sources = _as_list(desc.get("sources"))
         if len(sources) < 1:
             issues.append(QAIssue(
                 field_path=f"feature_tree[{i}].description.sources",
                 issue_type="missing_source",
                 severity="minor",
-                description=f"功能'{node.get('name', '')}'没有来源支撑",
+                description=f"功能'{_as_text(node.get('name'))}'没有来源支撑",
                 suggestion="补充来源以提高可信度",
                 evidence=f"当前sources数量: {len(sources)}",
             ))
 
     # 检查SWOT
-    for i, swot_item in enumerate(profile.get("swot", [])):
-        for j, item in enumerate(swot_item.get("items", [])):
-            sources = item.get("sources", [])
+    for i, swot_item in enumerate(_as_list(profile.get("swot"))):
+        if not isinstance(swot_item, dict):
+            continue
+        for j, item in enumerate(_as_list(swot_item.get("items"))):
+            if not isinstance(item, dict):
+                continue
+            sources = _as_list(item.get("sources"))
             if len(sources) < 1:
                 issues.append(QAIssue(
                     field_path=f"swot[{i}].items[{j}].sources",
                     issue_type="missing_source",
                     severity="minor",
-                    description=f"SWOT条目'{item.get('claim', '')[:50]}'缺少来源",
+                    description=f"SWOT条目'{_as_text(item.get('claim'))[:50]}'缺少来源",
                     suggestion="补充支撑证据或降低该条目置信度",
-                    evidence=f"category={swot_item.get('category')}, sources={len(sources)}",
+                    evidence=f"category={_as_text(swot_item.get('category'))}, sources={len(sources)}",
                 ))
 
     return issues
@@ -218,15 +240,21 @@ def check_snippet_existence(
     # 收集所有原始snippets作为参考
     original_snippets: set[str] = set()
     for claim in original_claims:
-        for src in claim.get("sources", []):
-            snippet = src.get("snippet", "").strip()
+        if not isinstance(claim, dict):
+            continue
+        for src in _as_list(claim.get("sources")):
+            if not isinstance(src, dict):
+                continue
+            snippet = _as_text(src.get("snippet"))
             if snippet:
                 original_snippets.add(snippet)
 
     # 检查profile中的snippets是否能在原始数据中找到
     def _check_sources(sources: list[dict], path: str) -> None:
         for k, src in enumerate(sources):
-            snippet = src.get("snippet", "").strip()
+            if not isinstance(src, dict):
+                continue
+            snippet = _as_text(src.get("snippet"))
             if not snippet:
                 continue
             # 宽松匹配：取snippet前20字符做子串搜索（LLM会paraphrase，严格匹配必然失败）
@@ -248,13 +276,15 @@ def check_snippet_existence(
     # 遍历pricing
     pricing = profile.get("pricing")
     if pricing:
-        evidence = pricing.get("evidence", {})
-        _check_sources(evidence.get("sources", []), "pricing.evidence.sources")
+        evidence = pricing.get("evidence") or {}
+        _check_sources(_as_list(evidence.get("sources")), "pricing.evidence.sources")
 
     # 遍历feature_tree
-    for i, node in enumerate(profile.get("feature_tree", [])):
-        desc = node.get("description", {})
-        _check_sources(desc.get("sources", []), f"feature_tree[{i}].description.sources")
+    for i, node in enumerate(_as_list(profile.get("feature_tree"))):
+        if not isinstance(node, dict):
+            continue
+        desc = node.get("description") or {}
+        _check_sources(_as_list(desc.get("sources")), f"feature_tree[{i}].description.sources")
 
     return issues
 
@@ -266,8 +296,8 @@ def check_consistency(profile: dict[str, Any]) -> list[QAIssue]:
     # 检查定价一致性：tiers中的价格是否与evidence描述一致
     pricing = profile.get("pricing")
     if pricing:
-        tiers = pricing.get("tiers", [])
-        tier_names = [t.get("name", "").lower() for t in tiers]
+        tiers = _as_list(pricing.get("tiers"))
+        tier_names = [_as_text(t.get("name")).lower() for t in tiers if isinstance(t, dict)]
 
         # 检查是否有重复层级名
         seen: set[str] = set()
@@ -285,24 +315,32 @@ def check_consistency(profile: dict[str, Any]) -> list[QAIssue]:
 
         # 检查价格是否为空
         for i, tier in enumerate(tiers):
-            price = tier.get("price", "")
+            if not isinstance(tier, dict):
+                continue
+            price = _as_text(tier.get("price"))
             if not price or price == "N/A":
                 issues.append(QAIssue(
                     field_path=f"pricing.tiers[{i}].price",
                     issue_type="schema_violation",
                     severity="major",
-                    description=f"层级'{tier.get('name', '')}'缺少价格信息",
+                    description=f"层级'{_as_text(tier.get('name'))}'缺少价格信息",
                     suggestion="补充该层级的具体定价",
                     evidence=f"price field is empty or N/A",
                 ))
 
     # 检查SWOT中strengths和weaknesses是否矛盾
-    swot_items = profile.get("swot", [])
+    swot_items = _as_list(profile.get("swot"))
     strengths_text = ""
     weaknesses_text = ""
     for item in swot_items:
-        cat = item.get("category", "")
-        claims_text = " ".join(c.get("claim", "") for c in item.get("items", []))
+        if not isinstance(item, dict):
+            continue
+        cat = _as_text(item.get("category"))
+        claims_text = " ".join(
+            _as_text(c.get("claim"))
+            for c in _as_list(item.get("items"))
+            if isinstance(c, dict)
+        )
         if cat == "strength":
             strengths_text = claims_text
         elif cat == "weakness":
@@ -333,34 +371,46 @@ def check_overall_confidence(profile: dict[str, Any]) -> tuple[float, list[QAIss
     # 收集所有confidence值
     pricing = profile.get("pricing")
     if pricing:
-        evidence = pricing.get("evidence", {})
+        evidence = pricing.get("evidence") or {}
         conf = evidence.get("confidence", 0)
         if conf:
             confidences.append(conf)
 
-    for node in profile.get("feature_tree", []):
-        desc = node.get("description", {})
+    for node in _as_list(profile.get("feature_tree")):
+        if not isinstance(node, dict):
+            continue
+        desc = node.get("description") or {}
         conf = desc.get("confidence", 0)
         if conf:
             confidences.append(conf)
 
-    for swot_item in profile.get("swot", []):
-        for item in swot_item.get("items", []):
+    for swot_item in _as_list(profile.get("swot")):
+        if not isinstance(swot_item, dict):
+            continue
+        for item in _as_list(swot_item.get("items")):
+            if not isinstance(item, dict):
+                continue
             conf = item.get("confidence", 0)
             if conf:
                 confidences.append(conf)
 
-    for persona in profile.get("user_personas", []):
-        for claim in persona.get("pain_points", []):
+    for persona in _as_list(profile.get("user_personas")):
+        if not isinstance(persona, dict):
+            continue
+        for claim in _as_list(persona.get("pain_points")):
+            if not isinstance(claim, dict):
+                continue
             conf = claim.get("confidence", 0)
             if conf:
                 confidences.append(conf)
-        for claim in persona.get("satisfaction_signals", []):
+        for claim in _as_list(persona.get("satisfaction_signals")):
+            if not isinstance(claim, dict):
+                continue
             conf = claim.get("confidence", 0)
             if conf:
                 confidences.append(conf)
 
-    for _key, val in profile.get("extensions", {}).items():
+    for _key, val in (profile.get("extensions") or {}).items():
         if isinstance(val, dict):
             conf = val.get("confidence", 0)
             if conf:
@@ -446,11 +496,13 @@ def _count_claims(profile: dict[str, Any]) -> int:
     count = 0
     if profile.get("pricing"):
         count += 1
-    count += len(profile.get("feature_tree", []))
-    for swot_item in profile.get("swot", []):
-        count += len(swot_item.get("items", []))
-    count += len(profile.get("user_personas", []))
-    for _key, val in profile.get("extensions", {}).items():
+    count += len(_as_list(profile.get("feature_tree")))
+    for swot_item in _as_list(profile.get("swot")):
+        if not isinstance(swot_item, dict):
+            continue
+        count += len(_as_list(swot_item.get("items")))
+    count += len(_as_list(profile.get("user_personas")))
+    for _key, val in (profile.get("extensions") or {}).items():
         if val is not None:
             count += 1
     return max(count, 1) if profile.get("company_name") else count

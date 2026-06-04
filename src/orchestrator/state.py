@@ -22,6 +22,9 @@ class FeedbackRecord(BaseModel):
     critical_issues: int = Field(default=0, description="严重问题数")
     action_taken: str = Field(description="采取的动作: 打回Collector/打回Analyst/通过")
     feedback_summary: str = Field(default="", description="反馈摘要")
+    raw_score: float | None = Field(default=None, description="未加入迭代改善奖励前的原始QA评分")
+    improvement_bonus: float = Field(default=0.0, description="本轮因客观改善获得的评分奖励")
+    claims_count: int = Field(default=0, description="本轮进入QA的累计claims数量")
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
 
     # 闭环改善追踪：本轮 QA 给出的字段级 issue 明细 + 与上一轮的 diff

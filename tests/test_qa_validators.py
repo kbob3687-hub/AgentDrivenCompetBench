@@ -80,6 +80,20 @@ class TestSnippetExistence:
         assert len(issues) > 0
         assert any(i.issue_type == "factual_error" for i in issues)
 
+    def test_null_profile_snippet_is_accepted(self, sample_profile, sample_claims):
+        sample_profile["pricing"]["evidence"]["sources"][0]["snippet"] = None
+
+        issues = check_snippet_existence(sample_profile, sample_claims)
+
+        assert issues == []
+
+    def test_null_original_claim_snippet_is_accepted(self, sample_profile, sample_claims):
+        sample_claims[0]["sources"][0]["snippet"] = None
+
+        issues = check_snippet_existence(sample_profile, sample_claims)
+
+        assert isinstance(issues, list)
+
 
 class TestConsistency:
     def test_no_issues_on_clean_profile(self, sample_profile):
@@ -125,6 +139,25 @@ class TestRunAllValidators:
         issues, avg_conf, checked, verified, missing = result
         assert isinstance(issues, list)
         assert isinstance(avg_conf, float)
+        assert checked >= 0
+        assert verified >= 0
+        assert isinstance(missing, list)
+
+    def test_null_llm_fields_do_not_crash_qa(self, sample_profile, sample_claims):
+        sample_profile["pricing"]["evidence"]["sources"][0]["snippet"] = None
+        sample_profile["pricing"]["tiers"][0]["name"] = None
+        sample_profile["feature_tree"][0]["name"] = None
+        sample_profile["swot"][0]["items"][0]["claim"] = None
+        sample_claims[0]["sources"][0]["snippet"] = None
+
+        issues, avg_conf, checked, verified, missing = run_all_validators(
+            sample_profile,
+            sample_claims,
+            ["pricing"],
+        )
+
+        assert isinstance(issues, list)
+        assert avg_conf >= 0
         assert checked >= 0
         assert verified >= 0
         assert isinstance(missing, list)

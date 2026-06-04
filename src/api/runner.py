@@ -22,6 +22,7 @@ from agents.writer.agent import WriterAgent
 from api.events import EventType, SSEEvent, event_bus
 from orchestrator.edges import qa_routing
 from orchestrator.routing import classify_no_profile_failure
+from orchestrator.scoring import iteration_improvement_bonus
 from orchestrator.state import FeedbackRecord, GraphState
 from schemas.message import AgentMessage, MessageContext, MessageType
 
@@ -999,7 +1000,8 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         }
 
     verdict = args.get("verdict", "reject")
-    score = args.get("overall_score", 0.0)
+    raw_score = args.get("overall_score", 0.0)
+    score = raw_score
     issues_count = args.get("issues_count", 0)
     critical_issues = args.get("critical_issues", 0)
     feedback = args.get("feedback", {})
@@ -1042,6 +1044,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     # 与上一轮做 field_path 级 diff，标记 resolved / regressed / persisted
     prev_history = state.get("feedback_history", [])
     prev_fields: set[str] = set()
+    previous_record = prev_history[-1] if prev_history and isinstance(prev_history[-1], dict) else None
     if prev_history:
         last = prev_history[-1]
         if isinstance(last, dict):
@@ -1062,6 +1065,38 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         )
         for issue in qa_issues_list
     ]
+
+    previous_claims_count = int(previous_record.get("claims_count", 0) or 0) if previous_record else 0
+    current_claims_count = len(state.get("claims", []))
+    improvement_bonus = iteration_improvement_bonus(
+        raw_score=raw_score,
+        previous_record=previous_record,
+        issues_count=issues_count,
+        critical_issues=critical_issues,
+        current_claims_count=current_claims_count,
+        previous_claims_count=previous_claims_count,
+        resolved_fields_count=len(resolved_fields),
+        regressed_fields_count=len(regressed_fields),
+    )
+    if improvement_bonus:
+        score = round(raw_score + improvement_bonus, 2)
+        if isinstance(feedback, dict):
+            feedback["overall_score"] = score
+            summary = (
+                f"{summary} 迭代改善奖励 +{improvement_bonus:.2f}"
+                f"（严重问题 {previous_record.get('critical_issues', 0)}→{critical_issues}，"
+                f"问题数 {previous_record.get('issues_count', 0)}→{issues_count}）。"
+            )
+            feedback["summary"] = summary
+        await _publish(task_id, EventType.LOG, {
+            "message": (
+                f"QA 迭代改善奖励: 原始分 {raw_score:.2f} → 展示分 {score:.2f}；"
+                f"严重问题 {previous_record.get('critical_issues', 0)}→{critical_issues}，"
+                f"问题数 {previous_record.get('issues_count', 0)}→{issues_count}，"
+                f"claims {previous_claims_count}→{current_claims_count}"
+            ),
+            "agent": "qa",
+        })
 
     if verdict != "pass":
         route_reason = (
@@ -1112,6 +1147,9 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         critical_issues=critical_issues,
         action_taken=action,
         feedback_summary=summary,
+        raw_score=raw_score,
+        improvement_bonus=improvement_bonus,
+        claims_count=current_claims_count,
         issues=qa_issues_list,
         resolved_fields=resolved_fields,
         regressed_fields=regressed_fields,

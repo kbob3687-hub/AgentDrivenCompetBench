@@ -351,10 +351,16 @@ class TestFeedbackRecord:
             critical_issues=1,
             action_taken="打回Collector补采['ai_features']",
             feedback_summary="缺少AI功能维度数据",
+            raw_score=0.60,
+            improvement_bonus=0.05,
+            claims_count=12,
         )
         assert record.iteration == 1
         assert record.verdict == "revise"
         assert record.score == 0.65
+        assert record.raw_score == 0.60
+        assert record.improvement_bonus == 0.05
+        assert record.claims_count == 12
 
     def test_record_serialization(self):
         record = FeedbackRecord(
@@ -368,4 +374,6 @@ class TestFeedbackRecord:
         data = record.model_dump(mode="json")
         assert data["verdict"] == "pass"
         assert data["score"] == 0.82
+        assert data["improvement_bonus"] == 0.0
+        assert data["claims_count"] == 0
         assert "timestamp" in data

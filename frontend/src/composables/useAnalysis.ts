@@ -151,7 +151,27 @@ export function useAnalysis() {
       }
       case 'error': {
         state.status = 'failed'
-        addLog(`Error: ${event.data.message}`, 'error')
+        const message = event.data.message || 'Unknown error'
+        if (message.includes('QA 质检自身失败') || message.includes('QA failed')) {
+          state.nodeStates.qa = 'error'
+          const iteration = state.currentIteration || Math.max(state.iterations.length + 1, 1)
+          if (!state.iterations.some(iter => iter.iteration === iteration)) {
+            state.iterations.push({
+              iteration,
+              verdict: 'error',
+              score: 0,
+              issues_count: 0,
+              critical_issues: 1,
+              action_taken: 'QA 自身失败',
+              feedback_summary: message,
+              issues: [],
+              resolved_fields: [],
+              regressed_fields: [],
+              persisted_fields: [],
+            })
+          }
+        }
+        addLog(`Error: ${message}`, 'error')
         break
       }
     }
