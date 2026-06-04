@@ -110,6 +110,7 @@ function scoreColor(score: number): string {
 function verdictClass(verdict: string): string {
   if (verdict === 'pass') return 'bg-emerald-100 text-emerald-700'
   if (verdict === 'revise') return 'bg-orange-100 text-orange-700'
+  if (verdict === 'error') return 'bg-red-100 text-red-700'
   return 'bg-red-100 text-red-700'
 }
 
@@ -131,11 +132,6 @@ function deltaColor(delta: number): string {
   return 'text-slate-500'
 }
 
-function issuesDelta(index: number): number | null {
-  if (index === 0) return null
-  return props.iterations[index].issues_count - props.iterations[index - 1].issues_count
-}
-
 function severityDot(severity: string): string {
   if (severity === 'critical') return 'bg-red-500'
   if (severity === 'major') return 'bg-orange-400'
@@ -146,6 +142,20 @@ function severityLabel(severity: string): string {
   if (severity === 'critical') return '严重'
   if (severity === 'major') return '主要'
   return '次要'
+}
+
+function routeTarget(record: FeedbackRecord): string {
+  const action = record.action_taken || ''
+  if (action.includes('collector')) return 'collector'
+  if (action.includes('analyst')) return 'analyst'
+  if (action.includes('writer')) return 'writer'
+  if (action.includes('QA')) return 'qa'
+  return record.verdict === 'pass' ? '—' : 'collector'
+}
+
+function compactSummary(record: FeedbackRecord): string {
+  const summary = record.feedback_summary || record.action_taken || ''
+  return summary.length > 64 ? `${summary.slice(0, 64)}...` : summary
 }
 
 const sortedIssues = computed<QAIssueDetail[]>(() => {
@@ -189,49 +199,67 @@ const forcePassHint = computed(() => {
 <template>
   <div class="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
     <h3 class="text-sm font-medium text-slate-600 mb-3">QA 反馈循环</h3>
-    <div class="flex items-start gap-2 overflow-x-auto pb-2">
-      <!-- Completed iterations with delta arrows -->
-      <template v-for="(iter, idx) in iterations" :key="iter.iteration">
-        <!-- Delta arrow between cards -->
-        <div v-if="idx > 0" class="flex-shrink-0 flex flex-col items-center justify-center w-[48px] self-center">
-          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-          <span :class="['text-[11px] font-bold', deltaColor(scoreDelta(idx)!)]">
-            {{ deltaText(scoreDelta(idx)!) }}%
-          </span>
-          <span v-if="issuesDelta(idx) !== null && issuesDelta(idx)! < 0" class="text-[10px] text-emerald-600">
-            {{ issuesDelta(idx) }} 问题
-          </span>
-        </div>
+    <div v-if="iterations.length" class="overflow-x-auto rounded-md border border-slate-200">
+      <table class="min-w-full text-left text-xs">
+        <thead class="bg-slate-50 text-slate-500">
+          <tr>
+            <th class="px-3 py-2 font-medium">轮次</th>
+            <th class="px-3 py-2 font-medium">判定</th>
+            <th class="px-3 py-2 font-medium">分数</th>
+            <th class="px-3 py-2 font-medium">变化</th>
+            <th class="px-3 py-2 font-medium">问题</th>
+            <th class="px-3 py-2 font-medium">严重</th>
+            <th class="px-3 py-2 font-medium">Claims</th>
+            <th class="px-3 py-2 font-medium">奖励</th>
+            <th class="px-3 py-2 font-medium">已解决</th>
+            <th class="px-3 py-2 font-medium">新增</th>
+            <th class="px-3 py-2 font-medium">仍卡住</th>
+            <th class="px-3 py-2 font-medium">打回</th>
+            <th class="px-3 py-2 font-medium">摘要</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr v-for="(iter, idx) in iterations" :key="iter.iteration" class="text-slate-700">
+            <td class="whitespace-nowrap px-3 py-2 font-mono">第 {{ iter.iteration }} 轮</td>
+            <td class="px-3 py-2">
+              <span :class="['rounded px-1.5 py-0.5 text-[10px] font-semibold', verdictClass(iter.verdict)]">
+                {{ iter.verdict.toUpperCase() }}
+              </span>
+            </td>
+            <td class="px-3 py-2">
+              <span :class="['inline-flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold text-white', scoreColor(iter.score)]">
+                {{ (iter.score * 100).toFixed(0) }}
+              </span>
+            </td>
+            <td class="whitespace-nowrap px-3 py-2 font-mono">
+              <span v-if="scoreDelta(idx) !== null" :class="deltaColor(scoreDelta(idx)!)">
+                {{ deltaText(scoreDelta(idx)!) }}%
+              </span>
+              <span v-else class="text-slate-400">—</span>
+            </td>
+            <td class="px-3 py-2 font-mono">{{ iter.issues_count }}</td>
+            <td class="px-3 py-2 font-mono text-red-600">{{ iter.critical_issues }}</td>
+            <td class="px-3 py-2 font-mono">{{ iter.claims_count ?? '—' }}</td>
+            <td class="px-3 py-2 font-mono text-emerald-700">
+              {{ iter.improvement_bonus ? `+${(iter.improvement_bonus * 100).toFixed(0)}` : '—' }}
+            </td>
+            <td class="px-3 py-2 font-mono text-emerald-700">{{ iter.resolved_fields?.length || 0 }}</td>
+            <td class="px-3 py-2 font-mono text-red-600">{{ iter.regressed_fields?.length || 0 }}</td>
+            <td class="px-3 py-2 font-mono text-orange-700">{{ iter.persisted_fields?.length || 0 }}</td>
+            <td class="px-3 py-2">
+              <span class="rounded bg-blue-50 px-1.5 py-0.5 font-mono text-[11px] text-blue-700">
+                {{ routeTarget(iter) }}
+              </span>
+            </td>
+            <td class="max-w-[260px] truncate px-3 py-2 text-slate-500" :title="iter.feedback_summary">
+              {{ compactSummary(iter) || '—' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-        <!-- Iteration card -->
-        <div class="flex-shrink-0 w-[200px] rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs text-slate-500">第 {{ iter.iteration }} 轮</span>
-            <span
-              :class="['px-1.5 py-0.5 rounded text-[10px] font-medium', verdictClass(iter.verdict)]"
-            >
-              {{ iter.verdict.toUpperCase() }}
-            </span>
-          </div>
-          <div class="flex items-center gap-2 mb-2">
-            <div
-              :class="['w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white', scoreColor(iter.score)]"
-            >
-              {{ (iter.score * 100).toFixed(0) }}
-            </div>
-            <div class="text-xs text-slate-500">
-              <div>{{ iter.issues_count }} 问题</div>
-              <div v-if="iter.critical_issues">{{ iter.critical_issues }} 严重</div>
-            </div>
-          </div>
-          <div class="text-[11px] text-slate-500 leading-tight">
-            <div v-if="iter.action_taken" class="mb-1 text-slate-600 font-medium">{{ iter.action_taken }}</div>
-            <div class="line-clamp-2">{{ iter.feedback_summary || '—' }}</div>
-          </div>
-        </div>
-      </template>
+    <div class="mt-3 flex items-start gap-2 overflow-x-auto pb-2">
 
       <!-- Current in-progress iteration -->
       <div
@@ -257,7 +285,7 @@ const forcePassHint = computed(() => {
     </div>
 
     <!-- Overall improvement summary -->
-    <div v-if="iterations.length >= 2" class="mt-3 px-3 py-2 rounded-md bg-slate-50 border border-slate-200 flex items-center gap-4">
+    <div v-if="iterations.length >= 2" class="mt-3 px-3 py-2 rounded-md bg-slate-50 border border-slate-200 flex flex-wrap items-center gap-x-4 gap-y-1">
       <span class="text-xs text-slate-500">反馈闭环效果:</span>
       <span class="text-xs font-medium" :class="deltaColor(iterations[iterations.length - 1].score - iterations[0].score)">
         分数 {{ (iterations[0].score * 100).toFixed(0) }}%

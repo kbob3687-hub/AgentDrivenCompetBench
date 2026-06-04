@@ -60,6 +60,9 @@ export interface FeedbackRecord {
   critical_issues: number
   action_taken: string
   feedback_summary: string
+  raw_score?: number | null
+  improvement_bonus?: number
+  claims_count?: number
   issues?: QAIssueDetail[]
   resolved_fields?: string[]
   regressed_fields?: string[]
