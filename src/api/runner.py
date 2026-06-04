@@ -21,6 +21,7 @@ from agents.qa.agent import QAAgent
 from agents.writer.agent import WriterAgent
 from api.events import EventType, SSEEvent, event_bus
 from orchestrator.edges import qa_routing
+from orchestrator.routing import classify_no_profile_failure
 from orchestrator.state import FeedbackRecord, GraphState
 from schemas.message import AgentMessage, MessageContext, MessageType
 
@@ -29,15 +30,69 @@ _task_traces: dict[str, list[dict[str, Any]]] = {}
 
 # Per-task HITL gate: when QA says revise, pipeline waits here until human decides
 _hitl_gates: dict[str, asyncio.Event] = {}
-_hitl_decisions: dict[str, str] = {}  # task_id -> "continue" | "force_pass" | "abort"
+_hitl_decisions: dict[str, dict[str, Any]] = {}
 
 
-def hitl_resume(task_id: str, decision: str) -> None:
+def _normalize_manual_urls(urls: list[str] | None) -> list[str]:
+    normalized: list[str] = []
+    for raw in urls or []:
+        url = raw.strip()
+        if not url.startswith(("http://", "https://")):
+            continue
+        if url not in normalized:
+            normalized.append(url)
+    return normalized
+
+
+def hitl_resume(
+    task_id: str,
+    decision: str,
+    urls: list[str] | None = None,
+    reason: str = "",
+) -> None:
     """Called by intervene API to unblock a paused pipeline."""
-    _hitl_decisions[task_id] = decision
+    _hitl_decisions[task_id] = {
+        "decision": decision,
+        "urls": _normalize_manual_urls(urls),
+        "reason": reason,
+    }
     gate = _hitl_gates.get(task_id)
     if gate:
         gate.set()
+
+
+def _pop_hitl_payload(task_id: str, default_decision: str) -> dict[str, Any]:
+    payload = _hitl_decisions.pop(task_id, None)
+    if not payload:
+        return {"decision": default_decision, "urls": [], "reason": ""}
+    return {
+        "decision": payload.get("decision", default_decision),
+        "urls": _normalize_manual_urls(payload.get("urls", [])),
+        "reason": payload.get("reason", ""),
+    }
+
+
+def _apply_manual_url_resume(
+    update: dict[str, Any],
+    payload: dict[str, Any],
+    *,
+    current_iteration: int,
+    max_iterations: int,
+) -> None:
+    urls = payload.get("urls") or []
+    if payload.get("decision") != "continue" or not urls:
+        return
+
+    update["target_urls"] = urls
+    update["discovered_urls"] = urls
+    update["collect_errors"] = []
+    update["qa_target_agent"] = "collector"
+    update["suggested_strategy"] = ""
+    update["final_status"] = "running"
+
+    next_iteration = update.get("iteration", current_iteration + 1)
+    if next_iteration > max_iterations:
+        update["max_iterations"] = next_iteration
 
 
 def _make_message(
@@ -70,6 +125,128 @@ def _make_message(
 
 async def _publish(task_id: str, event_type: EventType, data: dict[str, Any]) -> None:
     await event_bus.publish(task_id, SSEEvent(event_type=event_type, data=data))
+
+
+def _usable_pre_fetched_content(content: str | None, min_chars: int = 500) -> str:
+    """Return pre-fetched page content only when it is long enough to trust."""
+    if not content:
+        return ""
+    cleaned = content.strip()
+    if len(cleaned) < min_chars:
+        return ""
+    return cleaned
+
+
+def _qa_field_catalog(industry: str) -> dict[str, str]:
+    labels = {
+        "pricing": "定价信息",
+        "features": "核心功能",
+        "integrations": "第三方集成",
+        "ai_features": "AI 功能",
+        "customers": "客户案例",
+        "user_personas": "用户画像",
+        "source": "数据来源",
+        "sources": "数据来源",
+        "snippet": "原文摘录",
+        "confidence": "置信度",
+        "profile": "分析档案",
+        "report": "报告正文",
+        "extensions": "行业扩展字段",
+    }
+    if industry:
+        try:
+            from schemas.extensions import load_template
+
+            template = load_template(industry)
+            for field in template.fields:
+                description = field.description.split("（", 1)[0].split(":", 1)[0].strip()
+                labels[field.field_name] = description or field.field_name
+                labels[f"extensions.{field.field_name}"] = description or field.field_name
+        except Exception:
+            pass
+    return labels
+
+
+def _qa_field_label(field_path: str, labels: dict[str, str]) -> str:
+    if not field_path:
+        return "整体质量"
+    normalized = field_path.replace("[", ".").replace("]", "")
+    parts = [p for p in normalized.split(".") if p]
+    if field_path in labels:
+        return labels[field_path]
+    if len(parts) >= 2 and parts[0] == "extensions":
+        return labels.get(f"extensions.{parts[1]}", labels.get(parts[1], parts[1]))
+    if parts:
+        return labels.get(parts[-1], labels.get(parts[0], parts[-1]))
+    return field_path
+
+
+def _qa_reason_label(issue_type: str, target_agent: str) -> str:
+    mapping = {
+        "missing_source": "缺少可信来源或证据不足",
+        "factual_error": "事实可能不可靠，需要重新核对来源",
+        "outdated": "来源可能过旧，需要补充更新资料",
+        "low_confidence": "分析置信度过低",
+        "inconsistency": "分析结论前后不一致",
+        "schema_violation": "输出结构不符合要求",
+    }
+    base = mapping.get(issue_type, "质量检查未通过")
+    if target_agent == "collector" and issue_type in {"missing_source", "factual_error", "outdated"}:
+        return f"{base}，所以打回 Collector 补数据"
+    if target_agent == "analyst":
+        return f"{base}，所以打回 Analyst 重做分析"
+    if target_agent == "writer":
+        return f"{base}，所以打回 Writer 重写报告"
+    return base
+
+
+def _qa_action_hint(issue: dict[str, Any], field_label: str, target_agent: str) -> str:
+    issue_type = issue.get("issue_type", "")
+    raw_suggestion = (issue.get("suggestion") or "").strip()
+    field_path = issue.get("field_path", "")
+    if target_agent == "collector":
+        if "api" in field_path:
+            return "补充开放平台、API 文档、开发者中心、SDK 文档等 URL。"
+        if "export" in field_path:
+            return "补充帮助中心里的导出/迁移/备份文档。"
+        if "integration" in field_path:
+            return "补充 integrations、marketplace、app directory 页面。"
+        if issue_type == "missing_source":
+            return f"补充能直接证明“{field_label}”的官方页面或可信第三方来源。"
+        return raw_suggestion or "补充更直接的数据源后重新采集。"
+    if target_agent == "analyst":
+        return raw_suggestion or "用已有证据重新组织 profile，补齐置信度和证据映射。"
+    if target_agent == "writer":
+        return raw_suggestion or "按 profile 重新生成报告，保留来源引用。"
+    return raw_suggestion or "按 QA 问题修复后继续迭代。"
+
+
+def _enrich_qa_issue(
+    issue: dict[str, Any],
+    *,
+    labels: dict[str, str],
+    target_agent: str,
+    persisted_fields: set[str] | None = None,
+) -> dict[str, Any]:
+    enriched = dict(issue)
+    field_label = _qa_field_label(issue.get("field_path", ""), labels)
+    reason_label = _qa_reason_label(issue.get("issue_type", ""), target_agent)
+    enriched["field_label"] = field_label
+    enriched["reason_label"] = reason_label
+    enriched["action_hint"] = _qa_action_hint(issue, field_label, target_agent)
+    if persisted_fields and issue.get("field_path") in persisted_fields:
+        enriched["iteration_hint"] = "上一轮已经存在，本轮仍未解决；继续只重复同样 URL 大概率不会改善。"
+    return enriched
+
+
+def _brief_qa_issue(issue: dict[str, Any], max_len: int = 120) -> str:
+    field = issue.get("field_label") or issue.get("field_path") or "(全局)"
+    severity = issue.get("severity") or "minor"
+    reason = issue.get("reason_label") or issue.get("issue_type") or "unknown"
+    description = (issue.get("description") or "").strip()
+    if len(description) > max_len:
+        description = description[:max_len].rstrip() + "..."
+    return f"[{severity}] {field}: {reason}；{description}"
 
 
 def _build_trace_entry(
@@ -166,9 +343,10 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
         if path == "open_search" and trusted_count == 0 and other_count == 0:
             await _publish(task_id, EventType.LOG, {
                 "message": (
-                    "💡 提示: open_search 策略 0 命中。常见原因：1) 中文消费品在 Jina 索引中覆盖差；"
-                    "2) Jina 配额耗尽（检查 JINA_API_KEY）；3) 候选源被 robots.txt 拦截。"
-                    "建议改用 target_urls 手动指定 2-3 个权威源（如百度百科、36氪报道）。"
+                    "💡 提示: open_search 策略 0 命中。常见原因：1) ENABLE_FIRECRAWL=false，"
+                    "当前只做免费域名猜测和URL验证；2) Firecrawl 未配置、额度不足或搜索不可用；"
+                    "3) 候选URL不可达、被站点拦截或 robots.txt 限制。"
+                    "建议补充 2-3 个可直接访问的权威源，或在演示模式下开启受控付费抓取。"
                 ),
                 "agent": "discovery",
             })
@@ -193,6 +371,7 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
         "discovery_queries": result.get("search_queries", []),
         "discovery_strategy": strategy,
         "suggested_strategy": "",
+        "pre_fetched_content": result.get("pre_fetched", {}),
     }
 
 
@@ -218,9 +397,17 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     target = state["competitor_name"]
     discovered = state.get("discovered_urls", [])
     new_strategy = state.get("discovery_strategy", "official_only")
+    manual_urls = _normalize_manual_urls(state.get("target_urls", []))
+    pre_fetched_updates: dict[str, str] = {}
 
     # QA 自适应降级：上一轮建议切换策略 → 重跑 Discovery 拿新数据源
-    if suggested and suggested != new_strategy and not state.get("target_urls"):
+    if manual_urls:
+        urls = manual_urls[:10]
+        await _publish(task_id, EventType.LOG, {
+            "message": f"使用人工补充的数据源: {len(urls)} 个URL",
+            "agent": "collector",
+        })
+    elif suggested and suggested != new_strategy:
         await _publish(task_id, EventType.LOG, {
             "message": f"QA 反馈触发策略降级: {new_strategy} → {suggested}，重新发现数据源",
             "agent": "collector",
@@ -233,6 +420,7 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
             trusted_domains=state.get("trusted_domains", []),
         )
         urls = rediscover_result["urls"][:10]
+        pre_fetched_updates.update(rediscover_result.get("pre_fetched", {}))
         await _publish(task_id, EventType.LOG, {
             "message": f"新数据源 [{rediscover_result['path']}]: {len(urls)} 个URL",
             "agent": "collector",
@@ -258,6 +446,7 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         )
         new_urls = [u for u in rediscover_result.get("urls", []) if u not in failed_urls]
         urls = new_urls[:10]
+        pre_fetched_updates.update(rediscover_result.get("pre_fetched", {}))
         await _publish(task_id, EventType.LOG, {
             "message": (
                 f"重新发现 [{rediscover_result['path']}]: "
@@ -302,6 +491,11 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     # Fan-out: 并行 fetch + extract
     semaphore = asyncio.Semaphore(4)
     fetch_errors: list[str] = []
+    # Discovery 阶段搜索结果中的内容摘要（robots.txt 拦截时兜底）
+    pre_fetched: dict[str, str] = {
+        **state.get("pre_fetched_content", {}),
+        **pre_fetched_updates,
+    }
 
     async def process_url(url: str, sub_id: str) -> list[dict]:
         await _publish(task_id, EventType.SUB_AGENT_START, {
@@ -310,9 +504,69 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         sub_start = time.time()
 
         async with semaphore:
+            cached_content = _usable_pre_fetched_content(pre_fetched.get(url))
+            if cached_content:
+                await _publish(task_id, EventType.LOG, {
+                    "message": (
+                        f"复用 Discovery 预抓取内容: {url} "
+                        f"({len(cached_content)} 字符)，跳过重复抓取"
+                    ),
+                    "agent": "collector",
+                })
+                content = agent._truncate_content(cached_content, max_chars=12000)
+                extracted = await agent._extract_info(
+                    competitor_name=target,
+                    dimensions=scope,
+                    url=url,
+                    title="",
+                    content=content,
+                    snapshot_hash="",
+                    industry_fields=industry_fields,
+                    priority_dimensions=missing if iteration > 1 else None,
+                )
+                await _publish(task_id, EventType.SUB_AGENT_END, {
+                    "parent": "collector", "sub_id": sub_id, "url": url,
+                    "iteration": iteration, "success": True,
+                    "claims_count": len(extracted),
+                    "duration_ms": round((time.time() - sub_start) * 1000),
+                })
+                return extracted
+
             fetch_result = await agent._fetch_url(url)
 
             if not fetch_result.success:
+                # robots.txt 拦截：尝试用 Discovery 搜索结果中的内容兜底
+                if fetch_result.robots_status == "disallowed" and url in pre_fetched:
+                    fallback_content = _usable_pre_fetched_content(
+                        pre_fetched[url], min_chars=50
+                    )
+                    if fallback_content:
+                        await _publish(task_id, EventType.LOG, {
+                            "message": (
+                                f"⛔ robots.txt 禁止抓取: {url}，"
+                                f"使用搜索摘要兜底 ({len(fallback_content)} 字符)"
+                            ),
+                            "agent": "collector",
+                        })
+                        content = agent._truncate_content(fallback_content, max_chars=12000)
+                        extracted = await agent._extract_info(
+                            competitor_name=target,
+                            dimensions=scope,
+                            url=url,
+                            title="",
+                            content=content,
+                            snapshot_hash="",
+                            industry_fields=industry_fields,
+                            priority_dimensions=missing if iteration > 1 else None,
+                        )
+                        await _publish(task_id, EventType.SUB_AGENT_END, {
+                            "parent": "collector", "sub_id": sub_id, "url": url,
+                            "iteration": iteration, "success": True,
+                            "claims_count": len(extracted),
+                            "duration_ms": round((time.time() - sub_start) * 1000),
+                        })
+                        return extracted
+
                 fetch_errors.append(f"{url}: {fetch_result.error}")
                 if fetch_result.robots_status == "disallowed":
                     await _publish(task_id, EventType.LOG, {
@@ -431,8 +685,10 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         "collect_scope": scope,
         "missing_dimensions": [],
         "discovered_urls": urls,
+        "target_urls": manual_urls,
         "discovery_strategy": new_strategy,
         "suggested_strategy": "",  # 消费完清空
+        "pre_fetched_content": pre_fetched,
     }
 
 
@@ -578,11 +834,13 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     })
     start = time.time()
 
-    agent = QAAgent()
     profile = state.get("profile", {})
     report_markdown = state.get("report_markdown", "")
 
     if not profile:
+        failure = classify_no_profile_failure(state)
+        target_agent = failure["target_agent"]
+        missing_dimensions = failure["missing_dimensions"]
         history = list(state.get("feedback_history", []))
         record = FeedbackRecord(
             iteration=iteration,
@@ -590,8 +848,8 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             score=0.0,
             issues_count=0,
             critical_issues=0,
-            action_taken="reject(no profile)",
-            feedback_summary="no profile to check",
+            action_taken=f"reject(no profile) -> {target_agent}",
+            feedback_summary=failure["summary"],
         )
         history.append(record.model_dump(mode="json"))
         await _publish(task_id, EventType.ITERATION_SUMMARY, record.model_dump(mode="json"))
@@ -605,34 +863,49 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         })
 
         max_iter = state.get("max_iterations", 3)
+        suggested_strategy = failure.get("suggested_strategy", "")
         update: dict[str, Any] = {
             "qa_verdict": "reject",
             "qa_score": 0.0,
             "qa_issues": [],
-            "qa_feedback_summary": "no profile to check",
+            "qa_feedback_summary": failure["summary"],
             "feedback_history": history,
             "iteration": iteration + 1,
+            "qa_target_agent": target_agent,
+            "missing_dimensions": missing_dimensions,
+            "suggested_strategy": suggested_strategy,
         }
 
         # 即使没有 profile，也必须经过人工审核（不能静默终止）
         score_trend = [r.get("score", 0.0) for r in history]
+        failure_message = failure.get("message") or failure["summary"]
+        error_samples = failure.get("error_samples", [])
+        if error_samples:
+            failure_message += " 失败样例：" + "；".join(error_samples[:2])
+        pause_issues = [
+            {
+                "field_path": "collector.fetch",
+                "severity": "major",
+                "issue_type": failure.get("reason", "collector_failed"),
+                "description": sample,
+                "suggestion": "补充可直接访问的数据源，或修复本地抓取/开启受控付费抓取后重试。",
+            }
+            for sample in error_samples[:3]
+        ]
         await _publish(task_id, EventType.HITL_PAUSE, {
             "verdict": "reject",
             "score": 0.0,
             "iteration": iteration,
-            "missing_dimensions": state.get("collect_scope", []),
-            "message": (
-                f"采集 0 条数据，无法生成报告（第 {iteration}/{max_iter} 轮）。"
-                "可能原因：Discovery 未发现可用 URL / 该领域信源不足 / Jina 配额耗尽。"
-                "请决定是终止任务还是继续重试。"
-            ),
-            "issues": [],
+            "missing_dimensions": missing_dimensions,
+            "message": f"{failure_message}（第 {iteration}/{max_iter} 轮）。",
+            "issues": pause_issues,
             "score_trend": score_trend,
-            "suggested_strategy": "",
+            "suggested_strategy": suggested_strategy,
             "current_strategy": state.get("discovery_strategy", "official_only"),
+            "reason": failure["reason"],
             "report_preview": "",
             "iterations_left": max(0, max_iter - iteration),
-            "target_agent": "discovery",
+            "target_agent": target_agent,
             "resolved_fields": [],
             "regressed_fields": [],
         })
@@ -642,14 +915,26 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         await gate.wait()
         _hitl_gates.pop(task_id, None)
 
-        decision = _hitl_decisions.pop(task_id, "abort")
+        hitl_payload = _pop_hitl_payload(task_id, "abort")
+        decision = hitl_payload["decision"]
+        _apply_manual_url_resume(
+            update,
+            hitl_payload,
+            current_iteration=iteration,
+            max_iterations=max_iter,
+        )
         await _publish(task_id, EventType.HITL_RESUME, {
-            "decision": decision, "iteration": iteration,
+            "decision": decision,
+            "iteration": iteration,
+            "urls_count": len(hitl_payload.get("urls", [])),
         })
 
         if decision == "abort" or iteration >= max_iter:
-            update["final_status"] = "human_abort" if decision == "abort" else "max_iterations_reached(no_profile)"
-            update["completed_at"] = datetime.now().isoformat()
+            if decision == "continue" and hitl_payload.get("urls"):
+                update.pop("completed_at", None)
+            else:
+                update["final_status"] = "human_abort" if decision == "abort" else "max_iterations_reached(no_profile)"
+                update["completed_at"] = datetime.now().isoformat()
         elif decision == "force_pass":
             # 强制通过 + 空 profile 没意义，按 abort 处理
             update["final_status"] = "human_abort"
@@ -658,6 +943,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
 
         return update
 
+    agent = QAAgent()
     message = _make_message(
         to_agent="qa",
         function_name="quality_check",
@@ -677,6 +963,40 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     result = await agent.execute(message)
     args = result.arguments
     duration = time.time() - start
+
+    if args.get("error"):
+        error_message = args.get("error", "unknown QA error")
+        error_type = args.get("error_type", "QAError")
+        await _publish(task_id, EventType.AGENT_END, {
+            "agent": "qa", "iteration": iteration, "duration_ms": round(duration * 1000),
+        })
+        await _publish(task_id, EventType.ERROR, {
+            "message": (
+                f"QA 质检自身失败，不是 Collector 数据质量不达标: "
+                f"{error_type}: {error_message}"
+            )
+        })
+        _task_traces.setdefault(task_id, []).append(_build_trace_entry(
+            agent="qa",
+            iteration=iteration,
+            duration_ms=round(duration * 1000),
+            model=agent.config.model,
+            input_tokens=len(str(profile)) // 4 + len(report_markdown) // 4,
+            output_tokens=0,
+            prompt_preview=f"质检 {state['competitor_name']} profile + 报告",
+            output_preview=f"QA failed: {error_type}: {error_message}",
+        ))
+        return {
+            "qa_verdict": "reject",
+            "qa_score": 0.0,
+            "qa_issues": [],
+            "qa_feedback_summary": f"QA 质检自身失败: {error_type}: {error_message}",
+            "qa_target_agent": "qa",
+            "missing_dimensions": [],
+            "error": f"QA failed: {error_type}: {error_message}",
+            "final_status": "qa_failed",
+            "completed_at": datetime.now().isoformat(),
+        }
 
     verdict = args.get("verdict", "reject")
     score = args.get("overall_score", 0.0)
@@ -732,6 +1052,57 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     resolved_fields = sorted(prev_fields - curr_fields)
     regressed_fields = sorted(curr_fields - prev_fields)
     persisted_fields = sorted(curr_fields & prev_fields)
+    field_labels = _qa_field_catalog(state.get("industry", ""))
+    qa_issues_list = [
+        _enrich_qa_issue(
+            issue,
+            labels=field_labels,
+            target_agent=target_agent,
+            persisted_fields=set(persisted_fields),
+        )
+        for issue in qa_issues_list
+    ]
+
+    if verdict != "pass":
+        route_reason = (
+            "还有关键维度没有足够证据，所以需要 Collector 补数据"
+            if missing_dims
+            else "QA 判断主要问题属于当前打回对象负责"
+        )
+        await _publish(task_id, EventType.LOG, {
+            "message": (
+                f"QA 打回 {target_agent}: {route_reason}；"
+                f"score={score:.2f}；issues={issues_count}；critical={critical_issues}"
+            ),
+            "agent": "qa",
+        })
+        if missing_dims:
+            missing_labels = [_qa_field_label(dim, field_labels) for dim in missing_dims]
+            await _publish(task_id, EventType.LOG, {
+                "message": f"Collector 质量不达标: 缺少/不足 {', '.join(missing_labels)} 的可验证证据",
+                "agent": "qa",
+            })
+        for issue in sorted(
+            qa_issues_list,
+            key=lambda i: {"critical": 0, "major": 1, "minor": 2}.get(i.get("severity", ""), 9),
+        )[:3]:
+            await _publish(task_id, EventType.LOG, {
+                "message": f"QA 主要问题: {_brief_qa_issue(issue)}",
+                "agent": "qa",
+            })
+        if iteration > 1:
+            unresolved = [
+                _qa_field_label(field, field_labels)
+                for field in persisted_fields[:5]
+            ]
+            await _publish(task_id, EventType.LOG, {
+                "message": (
+                    f"QA 迭代变化: 已解决 {len(resolved_fields)} 个，"
+                    f"新增 {len(regressed_fields)} 个，仍未解决 {len(persisted_fields)} 个"
+                    + (f"（仍卡在: {', '.join(unresolved)}）" if unresolved else "")
+                ),
+                "agent": "qa",
+            })
 
     record = FeedbackRecord(
         iteration=iteration,
@@ -791,12 +1162,14 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     iterations_left = max(0, max_iter - iteration)
 
     def _hitl_payload(msg: str) -> dict[str, Any]:
+        reason = "qa_pass" if verdict == "pass" else f"qa_{verdict}"
         return {
             "iteration": iteration,
             "score": score,
             "verdict": verdict,
             "missing_dimensions": missing_dims if verdict != "pass" else [],
             "message": msg,
+            "reason": reason,
             "issues": qa_issues_list,
             "score_trend": score_trend,
             "suggested_strategy": suggested_strategy,
@@ -819,9 +1192,18 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         await gate.wait()
         _hitl_gates.pop(task_id, None)
 
-        decision = _hitl_decisions.pop(task_id, "force_pass")
+        hitl_payload = _pop_hitl_payload(task_id, "force_pass")
+        decision = hitl_payload["decision"]
+        _apply_manual_url_resume(
+            update,
+            hitl_payload,
+            current_iteration=iteration,
+            max_iterations=max_iter,
+        )
         await _publish(task_id, EventType.HITL_RESUME, {
-            "decision": decision, "iteration": iteration,
+            "decision": decision,
+            "iteration": iteration,
+            "urls_count": len(hitl_payload.get("urls", [])),
         })
 
         if decision == "abort":
@@ -834,7 +1216,10 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             update["iteration"] = iteration + 1
         else:
             update["final_status"] = "completed"
-        update["completed_at"] = datetime.now().isoformat()
+        if update.get("final_status") == "running":
+            update.pop("completed_at", None)
+        else:
+            update["completed_at"] = datetime.now().isoformat()
 
     elif iteration >= max_iter:
         # 达到最大迭代次数，仍需人工审核（不能静默终止）
@@ -847,17 +1232,34 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         await gate.wait()
         _hitl_gates.pop(task_id, None)
 
-        decision = _hitl_decisions.pop(task_id, "abort")
+        hitl_payload = _pop_hitl_payload(task_id, "abort")
+        decision = hitl_payload["decision"]
+        _apply_manual_url_resume(
+            update,
+            hitl_payload,
+            current_iteration=iteration,
+            max_iterations=max_iter,
+        )
         await _publish(task_id, EventType.HITL_RESUME, {
-            "decision": decision, "iteration": iteration,
+            "decision": decision,
+            "iteration": iteration,
+            "urls_count": len(hitl_payload.get("urls", [])),
         })
 
         if decision == "force_pass":
             update["qa_verdict"] = "pass"
             update["final_status"] = "human_force_pass"
+        elif decision == "continue" and hitl_payload.get("urls"):
+            update.pop("completed_at", None)
+        elif decision == "abort":
+            update["qa_verdict"] = "reject"
+            update["final_status"] = "human_abort"
         else:
             update["final_status"] = f"max_iterations_reached(last_verdict={verdict})"
-        update["completed_at"] = datetime.now().isoformat()
+        if update.get("final_status") == "running":
+            update.pop("completed_at", None)
+        else:
+            update["completed_at"] = datetime.now().isoformat()
     elif verdict in ("revise", "reject"):
         # HITL: pause and wait for human decision
         # reject 也必须经过人工审核，不能直接终止任务
@@ -873,9 +1275,18 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         await gate.wait()
         _hitl_gates.pop(task_id, None)
 
-        decision = _hitl_decisions.pop(task_id, "continue")
+        hitl_payload = _pop_hitl_payload(task_id, "continue")
+        decision = hitl_payload["decision"]
+        _apply_manual_url_resume(
+            update,
+            hitl_payload,
+            current_iteration=iteration,
+            max_iterations=max_iter,
+        )
         await _publish(task_id, EventType.HITL_RESUME, {
-            "decision": decision, "iteration": iteration,
+            "decision": decision,
+            "iteration": iteration,
+            "urls_count": len(hitl_payload.get("urls", [])),
         })
 
         if decision == "force_pass":
@@ -989,7 +1400,7 @@ async def run_analysis(
         }
 
         _task_traces[task_id] = []
-        config = {"recursion_limit": max_iterations * 6}
+        config = {"recursion_limit": max_iterations * 8 + 8}
         final_state = await app.ainvoke(initial_state, config=config)
 
         if "completed_at" not in final_state:

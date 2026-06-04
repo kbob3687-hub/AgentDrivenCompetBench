@@ -64,6 +64,7 @@ class GraphState(TypedDict, total=False):
     discovery_queries: list[str]
     discovery_strategy: str  # "official_only" | "open_search"
     trusted_domains: list[str]
+    pre_fetched_content: dict[str, str]  # URL → 搜索结果中的内容摘要（robots.txt 拦截时兜底）
 
     # ---- Collector输出 ----
     claims: list[dict[str, Any]]

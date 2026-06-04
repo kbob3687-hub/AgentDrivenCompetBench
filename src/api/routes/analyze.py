@@ -306,15 +306,15 @@ async def intervene_task(task_id: str, req: InterveneRequest) -> dict[str, str]:
         raise HTTPException(status_code=404, detail="Task not found")
 
     if req.action == "force_pass":
-        hitl_resume(task_id, "force_pass")
+        hitl_resume(task_id, "force_pass", urls=req.urls, reason=req.reason)
         return {"status": "ok", "message": "Task force-passed by human"}
 
     elif req.action == "continue":
-        hitl_resume(task_id, "continue")
+        hitl_resume(task_id, "continue", urls=req.urls, reason=req.reason)
         return {"status": "ok", "message": "Pipeline resumed, continuing iteration"}
 
     elif req.action == "abort":
-        hitl_resume(task_id, "abort")
+        hitl_resume(task_id, "abort", urls=req.urls, reason=req.reason)
         return {"status": "ok", "message": "Task aborted by human"}
 
     raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")

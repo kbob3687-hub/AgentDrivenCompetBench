@@ -18,6 +18,7 @@ from agents.collector.agent import CollectorAgent
 from agents.discovery.agent import DiscoveryAgent
 from agents.qa.agent import QAAgent
 from agents.writer.agent import WriterAgent
+from orchestrator.routing import classify_no_profile_failure
 from orchestrator.state import FeedbackRecord, GraphState
 from schemas.message import AgentMessage, MessageContext, MessageType
 
@@ -128,6 +129,7 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
         "discovery_queries": result.get("search_queries", []),
         "discovery_strategy": strategy,
         "suggested_strategy": "",  # 消费完清空
+        "pre_fetched_content": result.get("pre_fetched", {}),
     }
 
 
@@ -269,13 +271,14 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     """QA节点 - 质检profile和报告，决定pass/revise/reject"""
     iteration = state.get("iteration", 1)
     print(f"\n[QA] 第{iteration}轮 - 质量检查中...")
-    agent = QAAgent()
 
     profile = state.get("profile", {})
     report_markdown = state.get("report_markdown", "")
 
     if not profile:
         iteration = state.get("iteration", 1)
+        failure = classify_no_profile_failure(state)
+        target_agent = failure["target_agent"]
         history = list(state.get("feedback_history", []))
         record = FeedbackRecord(
             iteration=iteration,
@@ -283,8 +286,8 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             score=0.0,
             issues_count=0,
             critical_issues=0,
-            action_taken="打回Collector重采（无profile）",
-            feedback_summary="no profile to check",
+            action_taken=f"reject(no profile) -> {target_agent}",
+            feedback_summary=failure["summary"],
         )
         history.append(record.model_dump(mode="json"))
 
@@ -300,12 +303,15 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             "qa_verdict": "reject",
             "qa_score": 0.0,
             "qa_issues": [],
-            "qa_feedback_summary": "no profile to check",
+            "qa_feedback_summary": failure["summary"],
             "feedback_history": history,
             "iteration": iteration + 1,
+            "qa_target_agent": target_agent,
+            "missing_dimensions": failure["missing_dimensions"],
             **final,
         }
 
+    agent = QAAgent()
     message = _make_message(
         to_agent="qa",
         function_name="quality_check",
