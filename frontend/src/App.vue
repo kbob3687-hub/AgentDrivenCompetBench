@@ -74,15 +74,15 @@ onMounted(() => {
 
       <!-- Analysis View -->
       <template v-else>
-        <div class="grid gap-5 xl:grid-cols-[minmax(520px,42%)_minmax(0,1fr)] xl:items-start">
+        <div class="grid gap-5 xl:grid-cols-[minmax(680px,48%)_minmax(0,1fr)] xl:items-start">
           <div class="space-y-5 min-w-0">
             <AnalysisForm :disabled="isRunning" @submit="handleSubmit" />
 
-            <div v-if="state.status !== 'idle'" class="grid gap-4 lg:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-              <div class="h-[300px] min-h-0 overflow-hidden">
+            <div v-if="state.status !== 'idle'" class="grid gap-4">
+              <div class="h-[360px] min-h-0 overflow-hidden">
                 <DagView :node-states="state.nodeStates" :sub-agents="state.subAgents" />
               </div>
-              <div class="h-[300px] min-h-0 overflow-hidden">
+              <div class="h-[260px] min-h-0 overflow-hidden">
                 <LogStream :logs="state.logs" />
               </div>
             </div>

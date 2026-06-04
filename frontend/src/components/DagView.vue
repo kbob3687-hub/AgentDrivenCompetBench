@@ -26,7 +26,7 @@ const agentNodes = computed(() => [
   {
     id: 'discovery',
     type: 'agent',
-    position: { x: 50, y: 100 },
+    position: { x: 30, y: 110 },
     data: { label: 'Discovery', status: props.nodeStates.discovery },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -34,7 +34,7 @@ const agentNodes = computed(() => [
   {
     id: 'collector',
     type: 'agent',
-    position: { x: 220, y: 100 },
+    position: { x: 175, y: 110 },
     data: { label: 'Collector', status: props.nodeStates.collector },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -42,7 +42,7 @@ const agentNodes = computed(() => [
   {
     id: 'analyst',
     type: 'agent',
-    position: { x: 390, y: 100 },
+    position: { x: 320, y: 110 },
     data: { label: 'Analyst', status: props.nodeStates.analyst },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -50,7 +50,7 @@ const agentNodes = computed(() => [
   {
     id: 'writer',
     type: 'agent',
-    position: { x: 560, y: 100 },
+    position: { x: 465, y: 110 },
     data: { label: 'Writer', status: props.nodeStates.writer },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -58,7 +58,7 @@ const agentNodes = computed(() => [
   {
     id: 'qa',
     type: 'agent',
-    position: { x: 730, y: 100 },
+    position: { x: 610, y: 110 },
     data: { label: 'QA', status: props.nodeStates.qa },
     sourcePosition: Position.Right,
     targetPosition: Position.Left
@@ -69,7 +69,7 @@ const subNodes = computed(() =>
   props.subAgents.map((sa, i) => ({
     id: `sub-${sa.sub_id}`,
     type: 'sub-agent',
-    position: { x: 20 + i * 100, y: 220 },
+    position: { x: 20 + i * 86, y: 235 },
     data: { label: getUrlLabel(sa.url), status: sa.status, claims: sa.claims_count },
     sourcePosition: Position.Top,
     targetPosition: Position.Top
@@ -136,6 +136,7 @@ const edges = computed(() => [...mainEdges.value, ...subEdges.value])
       :nodes="nodes"
       :edges="edges"
       :fit-view-on-init="true"
+      :fit-view-options="{ padding: 0.18, minZoom: 0.55, maxZoom: 1 }"
       :nodes-draggable="false"
       :nodes-connectable="false"
       :zoom-on-scroll="false"
