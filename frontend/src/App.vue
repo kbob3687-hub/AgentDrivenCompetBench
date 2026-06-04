@@ -3,7 +3,6 @@ import { ref, computed, onMounted } from 'vue'
 import AnalysisForm from './components/AnalysisForm.vue'
 import DagView from './components/DagView.vue'
 import LogStream from './components/LogStream.vue'
-import ResultPanel from './components/ResultPanel.vue'
 import IterationTimeline from './components/IterationTimeline.vue'
 import CompareView from './components/CompareView.vue'
 import ReportWorkspace from './components/ReportWorkspace.vue'
@@ -97,13 +96,6 @@ onMounted(() => {
               :pause-verdict="state.pauseVerdict"
               :pause-context="state.pauseContext"
               @intervene="handleIntervene"
-            />
-
-            <ResultPanel
-              v-if="isCompleted && state.result"
-              class="xl:hidden"
-              :result="state.result"
-              :task-id="state.taskId"
             />
           </div>
 
