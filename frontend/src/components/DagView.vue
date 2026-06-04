@@ -11,9 +11,15 @@ const props = defineProps<{
   subAgents: SubAgentState[]
 }>()
 
-function getHostname(url: string): string {
-  try { return new URL(url).hostname.replace('www.', '') }
-  catch { return url.slice(0, 20) }
+function getUrlLabel(rawUrl: string): string {
+  try {
+    const url = new URL(rawUrl)
+    const host = url.hostname.replace('www.', '')
+    const path = `${url.pathname}${url.search}` || '/'
+    return `${host}${path}`
+  } catch {
+    return rawUrl
+  }
 }
 
 const agentNodes = computed(() => [
@@ -64,7 +70,7 @@ const subNodes = computed(() =>
     id: `sub-${sa.sub_id}`,
     type: 'sub-agent',
     position: { x: 20 + i * 100, y: 220 },
-    data: { label: getHostname(sa.url), status: sa.status, claims: sa.claims_count },
+    data: { label: getUrlLabel(sa.url), status: sa.status, claims: sa.claims_count },
     sourcePosition: Position.Top,
     targetPosition: Position.Top
   }))

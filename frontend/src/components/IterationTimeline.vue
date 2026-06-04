@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { marked } from 'marked'
-import type { FeedbackRecord, PauseContext, QAIssueDetail } from '../types'
+import type { FeedbackRecord, InterventionAction, InterventionPayload, PauseContext, QAIssueDetail } from '../types'
 
 const props = defineProps<{
   iterations: FeedbackRecord[]
@@ -13,11 +13,16 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  intervene: [action: 'force_pass' | 'abort' | 'continue']
+  intervene: [payload: InterventionAction | InterventionPayload]
 }>()
 
 const submitting = ref(false)
 const reportExpanded = ref(true)
+const supplementalUrlsText = ref('')
+
+watch(() => props.pauseContext, () => {
+  supplementalUrlsText.value = ''
+})
 
 const renderedReport = computed(() => {
   const md = props.pauseContext?.report_preview || ''
@@ -25,10 +30,66 @@ const renderedReport = computed(() => {
   return marked.parse(md) as string
 })
 
-function handleIntervene(action: 'force_pass' | 'abort' | 'continue') {
+const supplementalUrls = computed(() => {
+  const urls = supplementalUrlsText.value
+    .split(/\r?\n/)
+    .map(url => url.trim())
+    .filter(url => url.startsWith('http://') || url.startsWith('https://'))
+  return Array.from(new Set(urls))
+})
+
+const pauseReasonText = computed(() => {
+  const ctx = props.pauseContext
+  if (!ctx) return ''
+  const issueText = ctx.issues
+    .map(issue => [issue.issue_type, issue.field_path, issue.description, issue.suggestion].filter(Boolean).join(' '))
+    .join(' ')
+  return [
+    ctx.reason,
+    ctx.message,
+    ctx.target_agent,
+    ...ctx.missing_dimensions,
+    issueText,
+  ].filter(Boolean).join(' ').toLowerCase()
+})
+
+const needsSupplementalUrls = computed(() => {
+  if (!pauseReasonText.value || props.pauseVerdict === 'pass') return false
+  const text = pauseReasonText.value.replace(/[_-]/g, ' ')
+  return /no\s*urls?/.test(text)
+    || /no\s*sources?/.test(text)
+    || /no\s*profile/.test(text)
+    || /empty\s*profile/.test(text)
+    || text.includes('collector no sources')
+    || text.includes('collector fetch failed')
+    || text.includes('未发现可用 url')
+    || text.includes('无 url')
+    || text.includes('没有url')
+    || text.includes('无数据源')
+    || text.includes('没有数据源')
+    || text.includes('信源不足')
+    || text.includes('无 profile')
+    || text.includes('空 profile')
+    || text.includes('无法生成报告')
+    || /采集\s*0\s*条/.test(text)
+})
+
+function interventionReason(): string {
+  return props.pauseContext?.reason || props.pauseContext?.message || 'manual_url_supplement'
+}
+
+function handleIntervene(action: InterventionAction) {
   if (submitting.value) return
   submitting.value = true
-  emit('intervene', action)
+  if (action === 'continue' && needsSupplementalUrls.value) {
+    emit('intervene', {
+      action,
+      reason: interventionReason(),
+      urls: supplementalUrls.value,
+    })
+  } else {
+    emit('intervene', action)
+  }
   setTimeout(() => { submitting.value = false }, 5000)
 }
 
@@ -303,13 +364,23 @@ const forcePassHint = computed(() => {
             <li v-for="(issue, idx) in sortedIssues" :key="idx" class="px-3 py-2 text-xs flex items-start gap-2">
               <span :class="['mt-1 w-2 h-2 rounded-full flex-shrink-0', severityDot(issue.severity)]" :title="severityLabel(issue.severity)"></span>
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-0.5">
-                  <span class="font-mono text-slate-700">{{ issue.field_path || '(全局)' }}</span>
-                  <span class="text-[10px] px-1 rounded bg-slate-100 text-slate-500">{{ issue.issue_type }}</span>
+                <div class="flex flex-wrap items-center gap-2 mb-0.5">
+                  <span class="font-medium text-slate-800">{{ issue.field_label || issue.field_path || '整体质量' }}</span>
+                  <span class="text-[10px] px-1 rounded bg-slate-100 text-slate-500">{{ severityLabel(issue.severity) }}</span>
+                  <span v-if="issue.field_path" class="text-[10px] font-mono text-slate-400">{{ issue.field_path }}</span>
                 </div>
-                <div class="text-slate-600">{{ issue.description }}</div>
-                <div v-if="issue.suggestion" class="text-slate-500 mt-0.5">
-                  <span class="text-slate-400">建议:</span> {{ issue.suggestion }}
+                <div class="text-slate-600">
+                  <span class="font-medium text-slate-700">为什么不达标:</span>
+                  {{ issue.reason_label || issue.description }}
+                </div>
+                <div v-if="issue.description && issue.reason_label" class="text-slate-500 mt-0.5">
+                  <span class="text-slate-400">检查依据:</span> {{ issue.description }}
+                </div>
+                <div v-if="issue.action_hint || issue.suggestion" class="text-blue-700 mt-0.5">
+                  <span class="text-blue-500">下一步:</span> {{ issue.action_hint || issue.suggestion }}
+                </div>
+                <div v-if="issue.iteration_hint" class="text-red-600 mt-0.5">
+                  <span class="text-red-500">为什么重跑仍不达标:</span> {{ issue.iteration_hint }}
                 </div>
               </div>
             </li>
@@ -331,6 +402,27 @@ const forcePassHint = computed(() => {
             v-html="renderedReport"
             @click.prevent="handleReportLinkClick"
           ></div>
+        </div>
+
+        <div v-if="needsSupplementalUrls" class="border border-blue-200 rounded bg-blue-50 p-3 space-y-2">
+          <div class="flex items-center justify-between gap-3">
+            <label for="supplemental-urls" class="text-xs font-medium text-blue-700">
+              补充数据源 URL
+            </label>
+            <span class="text-[11px] text-blue-600">
+              {{ supplementalUrls.length }} 个有效输入
+            </span>
+          </div>
+          <textarea
+            id="supplemental-urls"
+            v-model="supplementalUrlsText"
+            rows="4"
+            class="w-full resize-y rounded border border-blue-200 bg-white px-3 py-2 text-xs font-mono text-slate-700 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            placeholder="每行一个 URL，例如：&#10;https://example.com/pricing&#10;https://example.com/features"
+          ></textarea>
+          <p class="text-[11px] text-blue-700">
+            点击继续迭代时会随介入请求一并提交，供后端作为人工补充数据源。
+          </p>
         </div>
       </div>
 

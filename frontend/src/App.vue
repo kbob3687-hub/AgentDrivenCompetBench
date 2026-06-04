@@ -7,6 +7,7 @@ import ResultPanel from './components/ResultPanel.vue'
 import IterationTimeline from './components/IterationTimeline.vue'
 import CompareView from './components/CompareView.vue'
 import { useAnalysis } from './composables/useAnalysis'
+import type { InterventionAction, InterventionPayload } from './types'
 
 const { state, startAnalysis, restoreFromHash, intervene } = useAnalysis()
 
@@ -18,6 +19,10 @@ const isPaused = computed(() => state.status === 'paused')
 
 function handleSubmit(payload: { competitorName: string; dimensions: string[]; industry: string; targetUrls: string[] }) {
   startAnalysis(payload.competitorName, payload.dimensions, payload.industry, payload.targetUrls)
+}
+
+function handleIntervene(payload: InterventionAction | InterventionPayload) {
+  intervene(payload)
 }
 
 onMounted(() => {
@@ -91,7 +96,7 @@ onMounted(() => {
         :is-paused="isPaused"
         :pause-verdict="state.pauseVerdict"
         :pause-context="state.pauseContext"
-        @intervene="(action) => intervene(action)"
+        @intervene="handleIntervene"
       />
 
       <!-- Result Panel -->

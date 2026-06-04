@@ -1,10 +1,18 @@
 export type AgentName = 'discovery' | 'collector' | 'analyst' | 'writer' | 'qa'
 export type NodeStatus = 'idle' | 'running' | 'done' | 'error' | 'revise'
+export type InterventionAction = 'force_pass' | 'abort' | 'continue'
 
 export interface SSEAgentStart { agent: AgentName; iteration: number }
 export interface SSEAgentEnd { agent: AgentName; iteration: number; duration_ms: number }
 export interface SSELog { message: string; agent?: AgentName; iteration?: number }
-export interface SSEQaVerdict { verdict: string; score: number; missing_dimensions: string[]; iteration: number; issues_count?: number }
+export interface SSEQaVerdict {
+  verdict: string
+  score: number
+  missing_dimensions: string[]
+  iteration: number
+  issues_count?: number
+  target_agent?: AgentName
+}
 export interface SSEComplete { final_status: string; qa_score: number; report_markdown: string; feedback_history: FeedbackRecord[]; agent_traces: AgentTrace[]; trace_id: string }
 
 export interface AgentTrace {
@@ -60,10 +68,14 @@ export interface FeedbackRecord {
 
 export interface QAIssueDetail {
   field_path: string
+  field_label?: string
   severity: 'critical' | 'major' | 'minor' | string
   issue_type: string
+  reason_label?: string
   description: string
   suggestion: string
+  action_hint?: string
+  iteration_hint?: string
 }
 
 export interface AnalysisState {
@@ -80,6 +92,7 @@ export interface AnalysisState {
 }
 
 export interface PauseContext {
+  reason?: string
   score: number
   iteration: number
   missing_dimensions: string[]
@@ -93,6 +106,12 @@ export interface PauseContext {
   target_agent: string
   resolved_fields: string[]
   regressed_fields: string[]
+}
+
+export interface InterventionPayload {
+  action: InterventionAction
+  reason?: string
+  urls?: string[]
 }
 
 export interface LogEntry {
