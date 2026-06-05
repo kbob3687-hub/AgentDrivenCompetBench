@@ -5,6 +5,8 @@ import { useSSE, type SSEEvent } from './useSSE'
 function createInitialState(): AnalysisState {
   return {
     taskId: null,
+    competitorName: 'Notion',
+    industry: 'saas',
     status: 'idle',
     pauseVerdict: null,
     pauseContext: null,
@@ -107,6 +109,7 @@ export function useAnalysis() {
       case 'complete': {
         state.status = 'completed'
         state.result = event.data
+        syncAnalysisMeta(event.data)
         addLog(`Analysis complete! Final score: ${event.data.qa_score}`, 'success')
         break
       }
@@ -181,6 +184,8 @@ export function useAnalysis() {
 
   async function startAnalysis(competitorName: string, dimensions: string[], industry: string = 'saas', targetUrls: string[] = []) {
     resetState()
+    state.competitorName = competitorName
+    state.industry = industry
     state.status = 'running'
 
     try {
@@ -225,6 +230,7 @@ export function useAnalysis() {
       if (data.status === 'completed') {
         state.status = 'completed'
         state.result = data.result
+        syncAnalysisMeta(data.result)
         if (data.result?.feedback_history) {
           state.iterations = data.result.feedback_history
           state.currentIteration = data.result.feedback_history.length
@@ -232,6 +238,7 @@ export function useAnalysis() {
       } else if (data.status === 'running') {
         // 检查SSE连接是否可用，如果不可用则标记为失败
         state.status = 'running'
+        syncAnalysisMeta(data.result)
         connect(hash)
         // 设置超时：如果10秒内没有收到任何事件，认为任务已中断
         setTimeout(() => {
@@ -244,6 +251,7 @@ export function useAnalysis() {
         }, 10000)
       } else if (data.status === 'failed') {
         state.status = 'failed'
+        syncAnalysisMeta(data.result)
       }
       return true
     } catch {
@@ -266,6 +274,16 @@ export function useAnalysis() {
       type,
       agent
     })
+  }
+
+  function syncAnalysisMeta(result: any) {
+    if (!result || typeof result !== 'object') return
+    if (typeof result.competitor_name === 'string' && result.competitor_name.trim()) {
+      state.competitorName = result.competitor_name.trim()
+    }
+    if (typeof result.industry === 'string' && result.industry.trim()) {
+      state.industry = result.industry.trim()
+    }
   }
 
   async function intervene(actionOrPayload: InterventionAction | InterventionPayload, reason: string = '') {
@@ -325,6 +343,7 @@ export function useAnalysis() {
         if (data.status === 'completed') {
           state.status = 'completed'
           state.result = data.result
+          syncAnalysisMeta(data.result)
           if (data.result?.feedback_history) {
             state.iterations = data.result.feedback_history
             state.currentIteration = data.result.feedback_history.length

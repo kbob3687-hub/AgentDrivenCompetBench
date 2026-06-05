@@ -1451,6 +1451,8 @@ async def run_analysis(
 
         await _publish(task_id, EventType.COMPLETE, {
             "final_status": final_state.get("final_status", "ended"),
+            "competitor_name": final_state.get("competitor_name", competitor_name),
+            "industry": final_state.get("industry", industry),
             "qa_score": final_state.get("qa_score", 0.0),
             "report_markdown": final_state.get("report_markdown", ""),
             "feedback_history": final_state.get("feedback_history", []),

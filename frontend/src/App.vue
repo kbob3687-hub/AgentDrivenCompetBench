@@ -75,7 +75,12 @@ onMounted(() => {
       <template v-else>
         <div class="grid gap-5 xl:grid-cols-[minmax(680px,48%)_minmax(0,1fr)] xl:items-start">
           <div class="space-y-5 min-w-0">
-            <AnalysisForm :disabled="isRunning" @submit="handleSubmit" />
+            <AnalysisForm
+              :disabled="isRunning"
+              :competitor-name="state.competitorName"
+              :industry="state.industry"
+              @submit="handleSubmit"
+            />
 
             <div v-if="state.status !== 'idle'" class="grid gap-4">
               <div class="h-[360px] min-h-0 overflow-hidden">

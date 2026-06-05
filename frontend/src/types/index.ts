@@ -13,7 +13,16 @@ export interface SSEQaVerdict {
   issues_count?: number
   target_agent?: AgentName
 }
-export interface SSEComplete { final_status: string; qa_score: number; report_markdown: string; feedback_history: FeedbackRecord[]; agent_traces: AgentTrace[]; trace_id: string }
+export interface SSEComplete {
+  final_status: string
+  competitor_name?: string
+  industry?: string
+  qa_score: number
+  report_markdown: string
+  feedback_history: FeedbackRecord[]
+  agent_traces: AgentTrace[]
+  trace_id: string
+}
 
 export interface AgentTrace {
   agent: AgentName
@@ -83,6 +92,8 @@ export interface QAIssueDetail {
 
 export interface AnalysisState {
   taskId: string | null
+  competitorName: string
+  industry: string
   status: 'idle' | 'running' | 'completed' | 'failed' | 'paused'
   pauseVerdict: 'pass' | 'revise' | null
   pauseContext: PauseContext | null
