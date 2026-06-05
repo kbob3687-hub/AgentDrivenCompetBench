@@ -34,6 +34,25 @@ _hitl_gates: dict[str, asyncio.Event] = {}
 _hitl_decisions: dict[str, dict[str, Any]] = {}
 
 
+def _langfuse_trace_id(task_id: str) -> str:
+    return task_id.replace("-", "")[:32]
+
+
+def _langfuse_trace_url(task_id: str) -> str:
+    """Build the real Langfuse trace URL with the SDK project id.
+
+    The frontend must not hard-code Langfuse project ids or URL shape.
+    """
+    try:
+        from langfuse import Langfuse
+
+        return Langfuse(timeout=10).get_trace_url(
+            trace_id=_langfuse_trace_id(task_id)
+        ) or ""
+    except Exception:
+        return ""
+
+
 def _normalize_manual_urls(urls: list[str] | None) -> list[str]:
     normalized: list[str] = []
     for raw in urls or []:
@@ -1448,6 +1467,10 @@ async def run_analysis(
 
         traces = _task_traces.pop(task_id, [])
         final_state["agent_traces"] = traces
+        langfuse_trace_id = _langfuse_trace_id(task_id)
+        langfuse_trace_url = _langfuse_trace_url(task_id)
+        final_state["langfuse_trace_id"] = langfuse_trace_id
+        final_state["langfuse_trace_url"] = langfuse_trace_url
 
         await _publish(task_id, EventType.COMPLETE, {
             "final_status": final_state.get("final_status", "ended"),
@@ -1458,6 +1481,8 @@ async def run_analysis(
             "feedback_history": final_state.get("feedback_history", []),
             "agent_traces": traces,
             "trace_id": task_id,
+            "langfuse_trace_id": langfuse_trace_id,
+            "langfuse_trace_url": langfuse_trace_url,
         })
 
         return final_state

@@ -22,6 +22,8 @@ export interface SSEComplete {
   feedback_history: FeedbackRecord[]
   agent_traces: AgentTrace[]
   trace_id: string
+  langfuse_trace_id?: string
+  langfuse_trace_url?: string
 }
 
 export interface AgentTrace {

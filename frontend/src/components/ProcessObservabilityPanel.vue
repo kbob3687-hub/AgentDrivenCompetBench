@@ -92,7 +92,11 @@ function handleIntervene(payload: InterventionAction | InterventionPayload) {
       </div>
 
       <div v-show="activeTab === 'trace'" class="p-4">
-        <AgentTracePanel :traces="traces" :trace-id="result?.trace_id || taskId" />
+        <AgentTracePanel
+          :traces="traces"
+          :trace-id="result?.langfuse_trace_id || result?.trace_id || taskId"
+          :trace-url="result?.langfuse_trace_url || ''"
+        />
       </div>
 
       <div v-show="activeTab === 'metrics'" class="p-4">

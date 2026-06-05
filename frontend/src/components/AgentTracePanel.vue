@@ -5,6 +5,7 @@ import type { AgentTrace } from '../types'
 const props = defineProps<{
   traces: AgentTrace[]
   traceId?: string | null
+  traceUrl?: string | null
 }>()
 
 const totalTokens = computed(() =>
@@ -28,9 +29,7 @@ const estimatedCost = computed(() => {
 })
 
 const langfuseUrl = computed(() => {
-  if (!props.traceId) return ''
-  const cleanId = props.traceId.replace(/-/g, '').slice(0, 32)
-  return `https://cloud.langfuse.com/project/clkpwwm0m000gmm094odg11gi/traces?traceId=${cleanId}`
+  return props.traceUrl || ''
 })
 
 function agentColor(agent: string): string {
@@ -112,16 +111,24 @@ function agentDotColor(agent: string): string {
         </div>
       </div>
 
-      <div v-if="langfuseUrl" class="mt-4 flex items-center justify-between border-t border-slate-200 pt-3">
-        <span class="text-xs text-slate-500">完整 Prompt / 输入 / 输出 / Token 明细</span>
+      <div class="mt-4 flex items-center justify-between gap-3 border-t border-slate-200 pt-3">
+        <span class="min-w-0 truncate text-xs text-slate-500">
+          Langfuse Trace
+          <span v-if="traceId" class="font-mono text-slate-600">{{ traceId }}</span>
+          <span v-else>任务完成后生成</span>
+        </span>
         <a
+          v-if="langfuseUrl"
           :href="langfuseUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="rounded-md bg-slate-100 px-3 py-1.5 text-xs text-slate-600 transition-colors hover:bg-slate-200"
+          class="shrink-0 rounded-md bg-slate-100 px-3 py-1.5 text-xs text-slate-600 transition-colors hover:bg-slate-200"
         >
           在 Langfuse 中查看
         </a>
+        <span v-else class="shrink-0 text-xs text-amber-600">
+          未生成云端链接
+        </span>
       </div>
     </template>
   </div>
