@@ -26,6 +26,7 @@ from schemas.extensions import (
     list_templates,
     get_template_schema,
     TEMPLATE_REGISTRY,
+    load_template,
     create_template,
     update_template,
     delete_template,
@@ -40,6 +41,34 @@ _tasks: dict[str, dict[str, Any]] = {}
 
 # Task timeout: 10 minutes (in seconds)
 TASK_TIMEOUT_SECONDS = 600
+
+
+def _compare_field_label(description: str, fallback: str) -> str:
+    label = (description or "").strip()
+    for separator in ("（", "(", ":", "："):
+        if separator in label:
+            label = label.split(separator, 1)[0].strip()
+    return label or fallback.replace("_", " ")
+
+
+def _compare_extension_fields(industry: str | None) -> list[dict[str, Any]]:
+    if not industry:
+        return []
+    try:
+        template = load_template(industry)
+    except ValueError:
+        return []
+
+    return [
+        {
+            "field_name": field.field_name,
+            "label": _compare_field_label(field.description, field.field_name),
+            "field_type": field.field_type,
+            "required": field.required,
+            "description": field.description,
+        }
+        for field in template.fields
+    ]
 
 
 async def _run_task(task_id: str, req: AnalyzeRequest) -> None:
@@ -234,7 +263,19 @@ async def compare_tasks(req: CompareRequest) -> CompareResponse:
     if any(c["profile"]["extensions"] for c in competitors):
         dimensions.append("extensions")
 
-    return CompareResponse(competitors=competitors, dimensions=dimensions)
+    industry_keys = [(c.get("industry") or "").strip().lower() for c in competitors]
+    selected_industries = set(industry_keys)
+    mixed_industries = any(not key for key in industry_keys) or len(selected_industries) != 1
+    common_industry = industry_keys[0] if not mixed_industries else None
+    extension_fields = _compare_extension_fields(common_industry)
+
+    return CompareResponse(
+        competitors=competitors,
+        dimensions=dimensions,
+        common_industry=common_industry,
+        mixed_industries=mixed_industries,
+        extension_fields=extension_fields,
+    )
 
 
 @router.get("/templates", tags=["templates"])
