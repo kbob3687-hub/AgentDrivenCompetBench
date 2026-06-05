@@ -3,8 +3,8 @@ import { ref, computed, onMounted } from 'vue'
 import AnalysisForm from './components/AnalysisForm.vue'
 import DagView from './components/DagView.vue'
 import LogStream from './components/LogStream.vue'
-import IterationTimeline from './components/IterationTimeline.vue'
 import CompareView from './components/CompareView.vue'
+import ProcessObservabilityPanel from './components/ProcessObservabilityPanel.vue'
 import ReportWorkspace from './components/ReportWorkspace.vue'
 import { useAnalysis } from './composables/useAnalysis'
 import type { InterventionAction, InterventionPayload } from './types'
@@ -91,9 +91,11 @@ onMounted(() => {
               </div>
             </div>
 
-            <IterationTimeline
+            <ProcessObservabilityPanel
               v-if="state.status !== 'idle' && (state.iterations.length > 0 || state.currentIteration > 0)"
               class="relative z-10"
+              :result="state.result"
+              :task-id="state.taskId"
               :iterations="state.iterations"
               :current-iteration="state.currentIteration"
               :is-running="isRunning"
