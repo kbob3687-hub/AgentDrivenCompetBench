@@ -10,15 +10,15 @@ import json
 import os
 from typing import Any
 
-from agents.base import AgentConfig, BaseAgent
+from agents.analyst.persona_sources import can_support_user_persona
 from agents.analyst.prompts import ANALYST_SYSTEM_PROMPT, ANALYZE_USER_PROMPT_TEMPLATE
 from agents.analyst.tools import (
     build_competitor_profile,
     group_claims_by_dimension,
 )
-from schemas.competitor import CompetitorProfile
-from schemas.extensions import load_template, TEMPLATE_REGISTRY
-from schemas.message import AgentMessage, AnalyzeRequest, MessageType
+from agents.base import AgentConfig, BaseAgent
+from schemas.extensions import TEMPLATE_REGISTRY, load_template
+from schemas.message import AgentMessage, MessageType
 
 
 class AnalystAgent(BaseAgent):
@@ -54,7 +54,11 @@ class AnalystAgent(BaseAgent):
         competitor_name = args.get("competitor_name", "")
         claims = args.get("claims", [])
         dimensions = args.get("dimensions_requested", [])
-        industry = args.get("industry", "") or getattr(message.context, "industry", "") if message.context else ""
+        industry = (
+            args.get("industry", "") or getattr(message.context, "industry", "")
+            if message.context
+            else ""
+        )
 
         if not claims:
             return self.build_message(
@@ -72,26 +76,28 @@ class AnalystAgent(BaseAgent):
 
         # 按维度分组，用于prompt展示
         grouped = group_claims_by_dimension(claims)
-        dimensions_summary = ", ".join(
-            f"{dim}({len(items)}条)" for dim, items in grouped.items()
-        )
+        dimensions_summary = ", ".join(f"{dim}({len(items)}条)" for dim, items in grouped.items())
 
         # 构造claims的JSON表示（带索引）
         indexed_claims = []
         for i, claim in enumerate(claims):
-            source_url = claim.get("sources", [{}])[0].get("url", "") if claim.get("sources") else ""
-            is_customer_source = any(
-                kw in source_url for kw in ["/customers", "/customer-stories", "/case-studies"]
+            source_url = (
+                claim.get("sources", [{}])[0].get("url", "") if claim.get("sources") else ""
             )
-            indexed_claims.append({
-                "index": i,
-                "dimension": claim.get("dimension", "unknown"),
-                "claim": claim.get("claim", ""),
-                "confidence": claim.get("confidence", 0.5),
-                "source_url": source_url,
-                "snippet": claim.get("sources", [{}])[0].get("snippet", "") if claim.get("sources") else "",
-                "is_customer_source": is_customer_source,
-            })
+            can_support_persona = can_support_user_persona(source_url, claim.get("claim", ""))
+            indexed_claims.append(
+                {
+                    "index": i,
+                    "dimension": claim.get("dimension", "unknown"),
+                    "claim": claim.get("claim", ""),
+                    "confidence": claim.get("confidence", 0.5),
+                    "source_url": source_url,
+                    "snippet": claim.get("sources", [{}])[0].get("snippet", "")
+                    if claim.get("sources")
+                    else "",
+                    "can_support_user_persona": can_support_persona,
+                }
+            )
 
         # 动态注入行业扩展字段到 prompt
         extension_prompt = ""
@@ -215,7 +221,7 @@ class AnalystAgent(BaseAgent):
                     depth -= 1
                     if depth == 0:
                         try:
-                            return json.loads(text[first_brace:i + 1])
+                            return json.loads(text[first_brace : i + 1])
                         except json.JSONDecodeError:
                             break
 
@@ -229,5 +235,7 @@ class AnalystAgent(BaseAgent):
             except json.JSONDecodeError:
                 pass
 
-        print(f"  [Analyst] Failed to parse LLM output. Length: {len(text)}, Preview: {text[:300]!r}")
+        print(
+            f"  [Analyst] Failed to parse LLM output. Length: {len(text)}, Preview: {text[:300]!r}"
+        )
         return None

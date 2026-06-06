@@ -1,7 +1,7 @@
 """Tests for fan-out sub-agent pattern (parallel URL fetching)."""
 
 import asyncio
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import pytest
 
@@ -13,10 +13,13 @@ class TestFanOutSubAgent:
 
     @pytest.fixture
     def collector(self):
-        with patch("agents.base.Langfuse"), \
-             patch("agents.base.anthropic.AsyncAnthropic"), \
-             patch("agents.base.AsyncOpenAI"):
+        with (
+            patch("agents.base.Langfuse"),
+            patch("agents.base.anthropic.AsyncAnthropic"),
+            patch("agents.base.AsyncOpenAI"),
+        ):
             from agents.collector.agent import CollectorAgent
+
             return CollectorAgent()
 
     def test_get_default_urls_notion(self, collector):
@@ -198,9 +201,7 @@ class TestFanOutSubAgent:
             max_concurrent = max(max_concurrent, current_concurrent)
             await asyncio.sleep(0.05)
             current_concurrent -= 1
-            return FetchResult(
-                url=url, success=True, content="ok", title="ok", snapshot_hash="h"
-            )
+            return FetchResult(url=url, success=True, content="ok", title="ok", snapshot_hash="h")
 
         urls = [f"https://example.com/{i}" for i in range(8)]
         semaphore = asyncio.Semaphore(4)

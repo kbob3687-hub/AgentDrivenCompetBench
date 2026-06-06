@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from agents.analyst.persona_sources import can_support_user_persona
 from schemas.message import QAIssue
-
 
 UNTRACEABLE_SOURCE_MARKERS = (
     "推理得出",
@@ -80,25 +80,29 @@ def check_dimension_coverage(
         if dim not in covered_dims:
             # 完全缺失
             missing.append(dim)
-            issues.append(QAIssue(
-                field_path=f"dimensions.{dim}",
-                issue_type="missing_source",
-                severity="critical",
-                description=f"期望维度'{dim}'完全缺失，profile数据不完整",
-                suggestion=f"需要补充采集'{dim}'维度的数据来源",
-                evidence=f"已覆盖: {sorted(covered_dims)}, 缺失: {dim}",
-            ))
+            issues.append(
+                QAIssue(
+                    field_path=f"dimensions.{dim}",
+                    issue_type="missing_source",
+                    severity="critical",
+                    description=f"期望维度'{dim}'完全缺失，profile数据不完整",
+                    suggestion=f"需要补充采集'{dim}'维度的数据来源",
+                    evidence=f"已覆盖: {sorted(covered_dims)}, 缺失: {dim}",
+                )
+            )
         elif dim_counts[dim] < MIN_CLAIMS_PER_DIM:
             # 维度覆盖了但深度不足 → 加入 missing 触发补采
             missing.append(dim)
-            issues.append(QAIssue(
-                field_path=f"dimensions.{dim}",
-                issue_type="missing_source",
-                severity="major",
-                description=f"维度'{dim}'数据不充分，仅{dim_counts[dim]}条claim（要求≥{MIN_CLAIMS_PER_DIM}）",
-                suggestion=f"补充采集'{dim}'维度更多数据来源以提高分析深度",
-                evidence=f"dim={dim}, count={dim_counts[dim]}, threshold={MIN_CLAIMS_PER_DIM}",
-            ))
+            issues.append(
+                QAIssue(
+                    field_path=f"dimensions.{dim}",
+                    issue_type="missing_source",
+                    severity="major",
+                    description=f"维度'{dim}'数据不充分，仅{dim_counts[dim]}条claim（要求≥{MIN_CLAIMS_PER_DIM}）",
+                    suggestion=f"补充采集'{dim}'维度更多数据来源以提高分析深度",
+                    evidence=f"dim={dim}, count={dim_counts[dim]}, threshold={MIN_CLAIMS_PER_DIM}",
+                )
+            )
 
     return issues, missing
 
@@ -123,6 +127,7 @@ def check_extensions_coverage(
 
     try:
         from schemas.extensions import load_template
+
         template = load_template(industry)
     except (ValueError, ImportError):
         return issues, missing
@@ -133,14 +138,16 @@ def check_extensions_coverage(
     for field_name in missing:
         field_def = next((f for f in template.fields if f.field_name == field_name), None)
         desc = field_def.description if field_def else field_name
-        issues.append(QAIssue(
-            field_path=f"extensions.{field_name}",
-            issue_type="missing_source",
-            severity="major",
-            description=f"行业模板必填扩展字段'{field_name}'未填充: {desc}",
-            suggestion=f"补充采集'{field_name}'相关数据并在分析时填充该字段",
-            evidence=f"industry={industry}, field={field_name}, required=True",
-        ))
+        issues.append(
+            QAIssue(
+                field_path=f"extensions.{field_name}",
+                issue_type="missing_source",
+                severity="major",
+                description=f"行业模板必填扩展字段'{field_name}'未填充: {desc}",
+                suggestion=f"补充采集'{field_name}'相关数据并在分析时填充该字段",
+                evidence=f"industry={industry}, field={field_name}, required=True",
+            )
+        )
 
     return issues, missing
 
@@ -149,9 +156,10 @@ def check_user_persona_sourcing(
     profile: dict[str, Any],
     original_claims: list[dict[str, Any]] | None = None,
 ) -> list[QAIssue]:
-    """检查7：UserPersona 必须有客户案例来源支撑
+    """检查7：UserPersona 必须有明确用户/场景来源支撑
 
-    每个 persona 的 pain_points 必须有 sources，且 source URL 应来自客户案例页。
+    每个 persona 的 pain_points 必须有 sources，且 source URL 或 claim
+    应明确描述用户群体、客户类型、使用场景、评价或案例。
     """
     issues: list[QAIssue] = []
     personas = _as_list(profile.get("user_personas"))
@@ -166,33 +174,59 @@ def check_user_persona_sourcing(
         pain_points = _as_list(persona.get("pain_points"))
 
         if not pain_points:
-            issues.append(QAIssue(
-                field_path=f"user_personas[{i}].pain_points",
-                issue_type="missing_source",
-                severity="major",
-                description=f"用户画像'{segment}'缺少痛点数据",
-                suggestion="从客户案例页补充该用户群体的痛点信息",
-                evidence=f"segment={segment}, pain_points=[]",
-            ))
+            issues.append(
+                QAIssue(
+                    field_path=f"user_personas[{i}].pain_points",
+                    issue_type="missing_source",
+                    severity="major",
+                    description=f"用户画像'{segment}'缺少痛点数据",
+                    suggestion="补充该用户群体的可溯源痛点、场景或评价信息",
+                    evidence=f"segment={segment}, pain_points=[]",
+                )
+            )
             continue
 
         has_source = False
+        has_persona_source = False
         for pp in pain_points:
             if isinstance(pp, dict):
                 sources = _as_list(pp.get("sources"))
                 if sources:
                     has_source = True
+                    claim_text = _as_text(pp.get("claim"))
+                    for source in sources:
+                        if not isinstance(source, dict):
+                            continue
+                        source_url = _as_text(source.get("url"))
+                        snippet = _as_text(source.get("snippet"))
+                        if can_support_user_persona(source_url, f"{claim_text} {snippet}"):
+                            has_persona_source = True
+                            break
+                if has_persona_source:
                     break
 
         if not has_source:
-            issues.append(QAIssue(
-                field_path=f"user_personas[{i}].pain_points",
-                issue_type="missing_source",
-                severity="minor",
-                description=f"用户画像'{segment}'的痛点缺少溯源来源",
-                suggestion="确保痛点数据引用了客户案例页的原始内容",
-                evidence=f"segment={segment}, no sources found in pain_points",
-            ))
+            issues.append(
+                QAIssue(
+                    field_path=f"user_personas[{i}].pain_points",
+                    issue_type="missing_source",
+                    severity="minor",
+                    description=f"用户画像'{segment}'的痛点缺少溯源来源",
+                    suggestion="确保痛点数据引用了明确描述用户/场景的原始内容",
+                    evidence=f"segment={segment}, no sources found in pain_points",
+                )
+            )
+        elif not has_persona_source:
+            issues.append(
+                QAIssue(
+                    field_path=f"user_personas[{i}].pain_points",
+                    issue_type="weak_source",
+                    severity="minor",
+                    description=f"用户画像'{segment}'的来源未明确指向用户群体或使用场景",
+                    suggestion="优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+                    evidence=f"segment={segment}, sources exist but persona relevance is weak",
+                )
+            )
 
     return issues
 
@@ -210,14 +244,16 @@ def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
         evidence = pricing.get("evidence") or {}
         sources = _as_list(evidence.get("sources"))
         if len(sources) < 1:
-            issues.append(QAIssue(
-                field_path="pricing.evidence.sources",
-                issue_type="missing_source",
-                severity="major",
-                description=f"定价信息没有任何来源支撑",
-                suggestion="补充定价数据来源（如官网定价页、第三方评测等）",
-                evidence=f"当前sources数量: {len(sources)}",
-            ))
+            issues.append(
+                QAIssue(
+                    field_path="pricing.evidence.sources",
+                    issue_type="missing_source",
+                    severity="major",
+                    description="定价信息没有任何来源支撑",
+                    suggestion="补充定价数据来源（如官网定价页、第三方评测等）",
+                    evidence=f"当前sources数量: {len(sources)}",
+                )
+            )
 
     # 检查feature_tree
     for i, node in enumerate(_as_list(profile.get("feature_tree"))):
@@ -226,14 +262,16 @@ def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
         desc = node.get("description") or {}
         sources = _as_list(desc.get("sources"))
         if len(sources) < 1:
-            issues.append(QAIssue(
-                field_path=f"feature_tree[{i}].description.sources",
-                issue_type="missing_source",
-                severity="minor",
-                description=f"功能'{_as_text(node.get('name'))}'没有来源支撑",
-                suggestion="补充来源以提高可信度",
-                evidence=f"当前sources数量: {len(sources)}",
-            ))
+            issues.append(
+                QAIssue(
+                    field_path=f"feature_tree[{i}].description.sources",
+                    issue_type="missing_source",
+                    severity="minor",
+                    description=f"功能'{_as_text(node.get('name'))}'没有来源支撑",
+                    suggestion="补充来源以提高可信度",
+                    evidence=f"当前sources数量: {len(sources)}",
+                )
+            )
 
     # 检查SWOT
     for i, swot_item in enumerate(_as_list(profile.get("swot"))):
@@ -244,14 +282,16 @@ def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
                 continue
             sources = _as_list(item.get("sources"))
             if len(sources) < 1:
-                issues.append(QAIssue(
-                    field_path=f"swot[{i}].items[{j}].sources",
-                    issue_type="missing_source",
-                    severity="minor",
-                    description=f"SWOT条目'{_as_text(item.get('claim'))[:50]}'缺少来源",
-                    suggestion="补充支撑证据或降低该条目置信度",
-                    evidence=f"category={_as_text(swot_item.get('category'))}, sources={len(sources)}",
-                ))
+                issues.append(
+                    QAIssue(
+                        field_path=f"swot[{i}].items[{j}].sources",
+                        issue_type="missing_source",
+                        severity="minor",
+                        description=f"SWOT条目'{_as_text(item.get('claim'))[:50]}'缺少来源",
+                        suggestion="补充支撑证据或降低该条目置信度",
+                        evidence=f"category={_as_text(swot_item.get('category'))}, sources={len(sources)}",
+                    )
+                )
 
     return issues
 
@@ -262,14 +302,16 @@ def check_untraceable_sources(profile: dict[str, Any]) -> list[QAIssue]:
 
     for path, src in _iter_sources(profile):
         if not isinstance(src, dict):
-            issues.append(QAIssue(
-                field_path=path,
-                issue_type="missing_source",
-                severity="critical",
-                description="来源结构无效，无法核查",
-                suggestion="删除该结论或补充真实可点击URL来源",
-                evidence=f"{path} is not an object",
-            ))
+            issues.append(
+                QAIssue(
+                    field_path=path,
+                    issue_type="missing_source",
+                    severity="critical",
+                    description="来源结构无效，无法核查",
+                    suggestion="删除该结论或补充真实可点击URL来源",
+                    evidence=f"{path} is not an object",
+                )
+            )
             continue
 
         url = _as_text(src.get("url"))
@@ -278,26 +320,30 @@ def check_untraceable_sources(profile: dict[str, Any]) -> list[QAIssue]:
         combined = f"{title} {snippet}"
 
         if not url:
-            issues.append(QAIssue(
-                field_path=f"{path}.url",
-                issue_type="missing_source",
-                severity="critical",
-                description="来源URL为空，最终报告不可查",
-                suggestion="删除该结论或补充真实可点击URL来源",
-                evidence=f"path={path}, title={title!r}",
-            ))
+            issues.append(
+                QAIssue(
+                    field_path=f"{path}.url",
+                    issue_type="missing_source",
+                    severity="critical",
+                    description="来源URL为空，最终报告不可查",
+                    suggestion="删除该结论或补充真实可点击URL来源",
+                    evidence=f"path={path}, title={title!r}",
+                )
+            )
             continue
 
         marker = next((m for m in UNTRACEABLE_SOURCE_MARKERS if m in combined), "")
         if marker:
-            issues.append(QAIssue(
-                field_path=path,
-                issue_type="missing_source",
-                severity="critical",
-                description=f"来源包含不可查的推理占位文案: {marker}",
-                suggestion="删除该结论；比赛版本只允许直接来自真实URL的结论",
-                evidence=f"path={path}, url={url}",
-            ))
+            issues.append(
+                QAIssue(
+                    field_path=path,
+                    issue_type="missing_source",
+                    severity="critical",
+                    description=f"来源包含不可查的推理占位文案: {marker}",
+                    suggestion="删除该结论；比赛版本只允许直接来自真实URL的结论",
+                    evidence=f"path={path}, url={url}",
+                )
+            )
 
     return issues
 
@@ -331,19 +377,19 @@ def check_snippet_existence(
                 continue
             # 宽松匹配：取snippet前20字符做子串搜索（LLM会paraphrase，严格匹配必然失败）
             found = any(
-                snippet[:20] in orig or orig[:20] in snippet
-                for orig in original_snippets
-                if orig
+                snippet[:20] in orig or orig[:20] in snippet for orig in original_snippets if orig
             )
             if not found:
-                issues.append(QAIssue(
-                    field_path=f"{path}[{k}].snippet",
-                    issue_type="factual_error",
-                    severity="minor",
-                    description=f"snippet无法在原始采集数据中找到对应文本",
-                    suggestion="核实该snippet是否来自实际采集内容；不可查的推理型来源必须删除",
-                    evidence=f"snippet: '{snippet[:80]}...'",
-                ))
+                issues.append(
+                    QAIssue(
+                        field_path=f"{path}[{k}].snippet",
+                        issue_type="factual_error",
+                        severity="minor",
+                        description="snippet无法在原始采集数据中找到对应文本",
+                        suggestion="核实该snippet是否来自实际采集内容；不可查的推理型来源必须删除",
+                        evidence=f"snippet: '{snippet[:80]}...'",
+                    )
+                )
 
     # 遍历pricing
     pricing = profile.get("pricing")
@@ -375,14 +421,16 @@ def check_consistency(profile: dict[str, Any]) -> list[QAIssue]:
         seen: set[str] = set()
         for i, name in enumerate(tier_names):
             if name in seen:
-                issues.append(QAIssue(
-                    field_path=f"pricing.tiers[{i}].name",
-                    issue_type="inconsistency",
-                    severity="major",
-                    description=f"定价层级名称'{name}'重复出现",
-                    suggestion="合并重复层级或修正名称",
-                    evidence=f"重复的tier name: {name}",
-                ))
+                issues.append(
+                    QAIssue(
+                        field_path=f"pricing.tiers[{i}].name",
+                        issue_type="inconsistency",
+                        severity="major",
+                        description=f"定价层级名称'{name}'重复出现",
+                        suggestion="合并重复层级或修正名称",
+                        evidence=f"重复的tier name: {name}",
+                    )
+                )
             seen.add(name)
 
         # 检查价格是否为空
@@ -391,14 +439,16 @@ def check_consistency(profile: dict[str, Any]) -> list[QAIssue]:
                 continue
             price = _as_text(tier.get("price"))
             if not price or price == "N/A":
-                issues.append(QAIssue(
-                    field_path=f"pricing.tiers[{i}].price",
-                    issue_type="schema_violation",
-                    severity="major",
-                    description=f"层级'{_as_text(tier.get('name'))}'缺少价格信息",
-                    suggestion="补充该层级的具体定价",
-                    evidence=f"price field is empty or N/A",
-                ))
+                issues.append(
+                    QAIssue(
+                        field_path=f"pricing.tiers[{i}].price",
+                        issue_type="schema_violation",
+                        severity="major",
+                        description=f"层级'{_as_text(tier.get('name'))}'缺少价格信息",
+                        suggestion="补充该层级的具体定价",
+                        evidence="price field is empty or N/A",
+                    )
+                )
 
     # 检查SWOT中strengths和weaknesses是否矛盾
     swot_items = _as_list(profile.get("swot"))
@@ -409,9 +459,7 @@ def check_consistency(profile: dict[str, Any]) -> list[QAIssue]:
             continue
         cat = _as_text(item.get("category"))
         claims_text = " ".join(
-            _as_text(c.get("claim"))
-            for c in _as_list(item.get("items"))
-            if isinstance(c, dict)
+            _as_text(c.get("claim")) for c in _as_list(item.get("items")) if isinstance(c, dict)
         )
         if cat == "strength":
             strengths_text = claims_text
@@ -423,14 +471,16 @@ def check_consistency(profile: dict[str, Any]) -> list[QAIssue]:
         keywords = ["免费", "定价", "AI", "协作", "集成"]
         for kw in keywords:
             if kw in strengths_text and kw in weaknesses_text:
-                issues.append(QAIssue(
-                    field_path="swot",
-                    issue_type="inconsistency",
-                    severity="minor",
-                    description=f"'{kw}'同时出现在优势和劣势中，需确认是否为不同角度的合理分析",
-                    suggestion=f"检查关于'{kw}'的优势和劣势描述是否从不同角度阐述，如是则保留并补充说明",
-                    evidence=f"keyword '{kw}' appears in both strengths and weaknesses",
-                ))
+                issues.append(
+                    QAIssue(
+                        field_path="swot",
+                        issue_type="inconsistency",
+                        severity="minor",
+                        description=f"'{kw}'同时出现在优势和劣势中，需确认是否为不同角度的合理分析",
+                        suggestion=f"检查关于'{kw}'的优势和劣势描述是否从不同角度阐述，如是则保留并补充说明",
+                        evidence=f"keyword '{kw}' appears in both strengths and weaknesses",
+                    )
+                )
 
     return issues
 
@@ -489,27 +539,31 @@ def check_overall_confidence(profile: dict[str, Any]) -> tuple[float, list[QAIss
                 confidences.append(conf)
 
     if not confidences:
-        issues.append(QAIssue(
-            field_path="*",
-            issue_type="schema_violation",
-            severity="critical",
-            description="无法计算整体置信度，profile中没有任何confidence字段",
-            suggestion="确保所有EvidencedClaim都包含confidence评分",
-            evidence="confidences list is empty",
-        ))
+        issues.append(
+            QAIssue(
+                field_path="*",
+                issue_type="schema_violation",
+                severity="critical",
+                description="无法计算整体置信度，profile中没有任何confidence字段",
+                suggestion="确保所有EvidencedClaim都包含confidence评分",
+                evidence="confidences list is empty",
+            )
+        )
         return 0.0, issues
 
     avg_confidence = sum(confidences) / len(confidences)
 
     if avg_confidence < 0.75:
-        issues.append(QAIssue(
-            field_path="*",
-            issue_type="low_confidence",
-            severity="critical",
-            description=f"整体平均置信度{avg_confidence:.2f}低于阈值0.75",
-            suggestion="补充更多数据来源以提高置信度，或移除低置信度的不确定结论",
-            evidence=f"avg_confidence={avg_confidence:.2f}, total_claims={len(confidences)}",
-        ))
+        issues.append(
+            QAIssue(
+                field_path="*",
+                issue_type="low_confidence",
+                severity="critical",
+                description=f"整体平均置信度{avg_confidence:.2f}低于阈值0.75",
+                suggestion="补充更多数据来源以提高置信度，或移除低置信度的不确定结论",
+                evidence=f"avg_confidence={avg_confidence:.2f}, total_claims={len(confidences)}",
+            )
+        )
 
     return avg_confidence, issues
 

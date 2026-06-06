@@ -31,13 +31,15 @@ def _extract_qa_issues(feedback: Any) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for issue in feedback.get("issues", []):
         if isinstance(issue, dict):
-            out.append({
-                "field_path": issue.get("field_path", ""),
-                "severity": issue.get("severity", "minor"),
-                "issue_type": issue.get("issue_type", ""),
-                "description": issue.get("description", ""),
-                "suggestion": issue.get("suggestion") or "",
-            })
+            out.append(
+                {
+                    "field_path": issue.get("field_path", ""),
+                    "severity": issue.get("severity", "minor"),
+                    "issue_type": issue.get("issue_type", ""),
+                    "description": issue.get("description", ""),
+                    "suggestion": issue.get("suggestion") or "",
+                }
+            )
     return out
 
 
@@ -146,7 +148,9 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         print(f"\n[Collector] 第{iteration}轮 - 补采缺失维度 {missing}，当前scope: {expanded}")
         scope = expanded
     else:
-        print(f"\n[Collector] 第{iteration}轮 - 开始采集 {state['competitor_name']}，scope: {scope}")
+        print(
+            f"\n[Collector] 第{iteration}轮 - 开始采集 {state['competitor_name']}，scope: {scope}"
+        )
 
     target_urls = state.get("discovered_urls", state.get("target_urls", []))
     new_strategy = state.get("discovery_strategy", "official_only")
@@ -155,10 +159,12 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     if suggested and suggested != new_strategy and not state.get("target_urls"):
         print(f"  [Collector] 触发 Discovery 重发现 (策略: {new_strategy} → {suggested})")
         from agents.discovery.agent import DiscoveryAgent
+
         new_strategy = suggested
         rediscover = DiscoveryAgent()
         result = await rediscover.discover(
-            state["competitor_name"], scope,
+            state["competitor_name"],
+            scope,
             strategy=new_strategy,
             trusted_domains=state.get("trusted_domains", []),
         )
@@ -238,7 +244,7 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
 
 async def writer_node(state: GraphState) -> dict[str, Any]:
     """Writer节点 - 将profile转为Markdown报告"""
-    print(f"\n[Writer] 生成Markdown报告...")
+    print("\n[Writer] 生成Markdown报告...")
     agent = WriterAgent()
 
     profile = state.get("profile", {})
@@ -345,9 +351,13 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     feedback = args.get("feedback", {})
     summary = feedback.get("summary", "") if isinstance(feedback, dict) else ""
     missing_dims = args.get("missing_dimensions", [])
-    target_agent = (feedback.get("target_agent", "collector") if isinstance(feedback, dict) else "collector")
+    target_agent = (
+        feedback.get("target_agent", "collector") if isinstance(feedback, dict) else "collector"
+    )
 
-    print(f"  [QA] verdict={verdict}, score={score:.2f}, issues={issues_count}, target={target_agent}, missing_dims={missing_dims}")
+    print(
+        f"  [QA] verdict={verdict}, score={score:.2f}, issues={issues_count}, target={target_agent}, missing_dims={missing_dims}"
+    )
 
     # 记录FeedbackRecord
     iteration = state.get("iteration", 1)
@@ -364,7 +374,9 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     field_diff = _diff_fields(state.get("feedback_history", []), feedback)
     history = list(state.get("feedback_history", []))
     previous_record = history[-1] if history and isinstance(history[-1], dict) else None
-    previous_claims_count = int(previous_record.get("claims_count", 0) or 0) if previous_record else 0
+    previous_claims_count = (
+        int(previous_record.get("claims_count", 0) or 0) if previous_record else 0
+    )
     current_claims_count = len(state.get("claims", []))
     improvement_bonus = iteration_improvement_bonus(
         raw_score=raw_score,

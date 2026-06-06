@@ -4,8 +4,8 @@ import pytest
 
 from agents.discovery import agent as discovery_module
 from agents.discovery.agent import (
-    DiscoveryAgent,
     KNOWN_COMPETITORS,
+    DiscoveryAgent,
 )
 
 
@@ -53,6 +53,8 @@ class TestDiscoveryWarmPath:
         assert agent._normalize_name("飞书") == "feishu"
         assert agent._normalize_name("Lark") == "feishu"
         assert agent._normalize_name("Click Up") == "clickup"
+        assert agent._normalize_name("钉钉") == "dingtalk"
+        assert agent._normalize_name("DingTalk") == "dingtalk"
 
     @pytest.mark.asyncio
     async def test_customers_always_injected(self, agent):
@@ -124,11 +126,75 @@ class TestDiscoveryColdPath:
         assert "影石Insta360" in variants
         assert "insta360" in variants
 
+    def test_brand_variants_preserve_chinese_and_add_identity_hints(self, agent):
+        variants = agent._brand_variants("钉钉")
+
+        assert "钉钉" in variants
+        assert "DingTalk" in variants
+        assert "dingtalk.com" in variants
+
     def test_domain_guesses_strip_company_suffixes(self, agent):
         guesses = agent._guess_domains("Acme Technologies Ltd")
 
         assert "acme.com" in guesses
         assert "acmetechnologiesltd.com" in guesses
+
+    def test_domain_guesses_use_identity_hints_for_chinese_brands(self, agent):
+        guesses = agent._guess_domains("钉钉")
+
+        assert "dingtalk.com" in guesses
+        assert "dingtalk.io" in guesses
+        assert "open.dingtalk.com" in guesses
+        assert not any("钉钉" in guess for guess in guesses)
+
+    def test_user_personas_generates_persona_source_paths(self, agent):
+        urls = agent._candidate_urls_for_bases(["https://example.com"], ["user_personas"])
+
+        assert "https://example.com/customers" in urls
+        assert "https://example.com/case-studies" in urls
+        assert "https://example.com/solutions" in urls
+        assert "https://example.com/reviews" in urls
+
+    @pytest.mark.asyncio
+    async def test_cold_path_uses_identity_domain_when_search_returns_zero(
+        self, agent, monkeypatch
+    ):
+        queries: list[str] = []
+
+        async def fake_web_search(client, query):
+            queries.append(query)
+            return []
+
+        async def fake_validate_urls(urls):
+            return [
+                url
+                for url in urls
+                if url
+                in {
+                    "https://dingtalk.com",
+                    "https://open.dingtalk.com",
+                    "https://www.dingtalk.com/features",
+                    "https://open.dingtalk.com/developers",
+                }
+            ]
+
+        monkeypatch.setattr(discovery_module, "_web_search", fake_web_search)
+        monkeypatch.setattr(agent, "_validate_urls", fake_validate_urls)
+
+        result = await agent.discover(
+            "钉钉",
+            ["features", "api_openness"],
+            strategy="official_only",
+        )
+
+        assert result["path"] == "cold"
+        assert result["domain"] == "dingtalk.com"
+        assert "https://dingtalk.com" in result["urls"]
+        assert "https://open.dingtalk.com" in result["urls"]
+        assert "https://www.dingtalk.com/features" in result["urls"]
+        assert "https://open.dingtalk.com/developers" in result["urls"]
+        assert any(q == "钉钉 official website" for q in queries)
+        assert any(q == "DingTalk official website" for q in queries)
 
     @pytest.mark.asyncio
     async def test_open_search_uses_guessed_domain_when_search_returns_zero(
@@ -142,8 +208,10 @@ class TestDiscoveryColdPath:
 
         async def fake_validate_urls(urls):
             return [
-                url for url in urls
-                if url in {
+                url
+                for url in urls
+                if url
+                in {
                     "https://acme.com",
                     "https://acme.com/product",
                     "https://www.acme.com/support",
@@ -174,11 +242,13 @@ class TestDiscoveryColdPath:
         async def fake_web_search(client, query):
             if "official website" not in query:
                 return []
-            return [{
-                "url": "https://www.acmex.com/product",
-                "title": "Acme X Product",
-                "content": "Acme X product page markdown with enough source text.",
-            }]
+            return [
+                {
+                    "url": "https://www.acmex.com/product",
+                    "title": "Acme X Product",
+                    "content": "Acme X product page markdown with enough source text.",
+                }
+            ]
 
         async def fake_validate_urls(urls):
             return []

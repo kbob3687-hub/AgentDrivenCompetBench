@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 class AnalyzeRequest(BaseModel):
     competitor_name: str = Field(description="竞品名称")
     dimensions: list[str] = Field(
-        default=["pricing", "features"],
+        default=["pricing", "features", "user_personas"],
         description="分析维度列表",
     )
     industry: str = Field(default="saas", description="行业模板: saas/consumer/hardware")

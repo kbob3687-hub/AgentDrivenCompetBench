@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from agents.collector.compliance import redact_pii
 
 
@@ -42,6 +40,7 @@ class TestFirecrawlRetrySignature:
 
     def test_function_accepts_max_retries(self):
         import inspect
+
         from agents.collector.tools import firecrawl_fetch
 
         sig = inspect.signature(firecrawl_fetch)

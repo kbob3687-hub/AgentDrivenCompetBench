@@ -8,13 +8,12 @@ from __future__ import annotations
 
 import json
 import os
-import uuid
 from datetime import datetime
 from typing import Any
 
-from agents.base import BaseAgent, AgentConfig
+from agents.base import AgentConfig, BaseAgent
 from agents.collector.compliance import is_allowed_by_robots, redact_pii
-from agents.collector.prompts import COLLECTOR_SYSTEM_PROMPT, COLLECT_USER_PROMPT_TEMPLATE
+from agents.collector.prompts import COLLECT_USER_PROMPT_TEMPLATE, COLLECTOR_SYSTEM_PROMPT
 from agents.collector.tools import (
     FetchResult,
     direct_http_fetch,
@@ -22,7 +21,7 @@ from agents.collector.tools import (
     jina_reader,
     playwright_fetch,
 )
-from schemas.competitor import EvidencedClaim, SourceReference, SourceType
+from schemas.competitor import SourceType
 from schemas.message import AgentMessage, CollectRequest, MessageType
 
 
@@ -165,7 +164,9 @@ class CollectorAgent(BaseAgent):
 
         jina_error = "disabled (set ENABLE_JINA=true to enable)"
         if _env_flag("ENABLE_JINA"):
-            print(f"  [Collector] Playwright 失败 ({url[:50]}): {playwright_error}，降级到Jina Reader")
+            print(
+                f"  [Collector] Playwright 失败 ({url[:50]}): {playwright_error}，降级到Jina Reader"
+            )
             result = await jina_reader(url)
             if result.success:
                 result.robots_status = reason
@@ -244,9 +245,7 @@ class CollectorAgent(BaseAgent):
             industry_fields_section=industry_fields_section,
         )
 
-        response = await self.call_llm(
-            messages=[{"role": "user", "content": user_prompt}]
-        )
+        response = await self.call_llm(messages=[{"role": "user", "content": user_prompt}])
 
         # 解析LLM输出
         parsed = self._parse_llm_output(response.text)
@@ -309,11 +308,7 @@ class CollectorAgent(BaseAgent):
         if len(content) <= max_chars:
             return content
         half = max_chars // 2
-        return (
-            content[:half]
-            + "\n\n... [内容过长，中间部分已省略] ...\n\n"
-            + content[-half:]
-        )
+        return content[:half] + "\n\n... [内容过长，中间部分已省略] ...\n\n" + content[-half:]
 
     def _get_default_urls(self, target: str, scope: list[str]) -> list[str]:
         """已知竞品的 warm-path URL 兜底（warm-path map）。

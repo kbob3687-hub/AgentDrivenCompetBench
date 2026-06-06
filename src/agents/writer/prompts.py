@@ -41,7 +41,7 @@ WRITER_SYSTEM_PROMPT = """你是一个专业的竞品分析报告撰写Agent。�
 ### 4. 用户画像
 - 如果profile中有user_personas数据，按用户群体分组展示：
   - **群体名称**：痛点列表 + 使用场景 + 角标引用
-- 如果user_personas为空，跳过此章节
+- 如果user_personas为空，保留本章节并写：本轮未采集到可溯源用户画像证据
 
 ### 5. SWOT分析
 - 用四个独立的列表（不用表格），每条一行：

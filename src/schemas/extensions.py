@@ -24,9 +24,7 @@ class ExtensionFieldDef(BaseModel):
     """扩展字段定义 - 描述一个动态字段的元信息"""
 
     field_name: str = Field(description="字段名称（英文snake_case）")
-    field_type: str = Field(
-        description="字段类型: string/number/boolean/list/evidenced_claim"
-    )
+    field_type: str = Field(description="字段类型: string/number/boolean/list/evidenced_claim")
     description: str = Field(description="字段描述（中文）")
     required: bool = Field(default=False, description="是否必填")
     default: Any = Field(default=None, description="默认值")
@@ -152,9 +150,7 @@ def load_template(industry: str) -> IndustryTemplate:
     template = TEMPLATE_REGISTRY.get(industry.lower())
     if not template:
         available = list(TEMPLATE_REGISTRY.keys())
-        raise ValueError(
-            f"Unknown industry '{industry}'. Available templates: {available}"
-        )
+        raise ValueError(f"Unknown industry '{industry}'. Available templates: {available}")
     return template
 
 
@@ -234,7 +230,12 @@ def update_template(industry: str, updates: dict[str, Any]) -> IndustryTemplate:
 
     TEMPLATE_REGISTRY[industry] = template
     _persist_yaml(template)
-    _record_change("update", f"Updated: {industry} → v{template.version}", before=before, after=template.model_dump())
+    _record_change(
+        "update",
+        f"Updated: {industry} → v{template.version}",
+        before=before,
+        after=template.model_dump(),
+    )
     return template
 
 
@@ -267,8 +268,16 @@ def compare_templates(industry_a: str, industry_b: str) -> dict[str, Any]:
     only_b = sorted(fields_b - fields_a)
     all_names = sorted(fields_a | fields_b)
     return {
-        "template_a": {"industry": ta.industry, "display_name": ta.display_name, "version": ta.version},
-        "template_b": {"industry": tb.industry, "display_name": tb.display_name, "version": tb.version},
+        "template_a": {
+            "industry": ta.industry,
+            "display_name": ta.display_name,
+            "version": ta.version,
+        },
+        "template_b": {
+            "industry": tb.industry,
+            "display_name": tb.display_name,
+            "version": tb.version,
+        },
         "shared_fields": shared,
         "only_in_a": only_a,
         "only_in_b": only_b,
@@ -294,7 +303,11 @@ def _persist_yaml(template: IndustryTemplate) -> None:
         yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
 
-def _record_change(action: str, details: str, before: dict | None = None, after: dict | None = None) -> None:
-    _SCHEMA_CHANGELOG.append(SchemaChangeRecord(action=action, details=details, before=before, after=after))
+def _record_change(
+    action: str, details: str, before: dict | None = None, after: dict | None = None
+) -> None:
+    _SCHEMA_CHANGELOG.append(
+        SchemaChangeRecord(action=action, details=details, before=before, after=after)
+    )
     if len(_SCHEMA_CHANGELOG) > 200:
         _SCHEMA_CHANGELOG.pop(0)

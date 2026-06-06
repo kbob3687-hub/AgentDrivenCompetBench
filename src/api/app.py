@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from storage.engine import init_engine, dispose_engine, get_engine
+    from storage.engine import dispose_engine, init_engine
     from storage.models import Base
 
     try:

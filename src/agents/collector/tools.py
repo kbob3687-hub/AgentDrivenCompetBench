@@ -100,12 +100,13 @@ async def jina_reader(url: str, timeout: float = 45.0, max_retries: int = 2) -> 
             logger.warning("Jina Reader 超时: url=%s, timeout=%ss", url, timeout)
         except httpx.HTTPStatusError as e:
             last_error = (
-                f"HTTP {e.response.status_code} {e.response.reason_phrase}: "
-                f"{e.response.text[:200]}"
+                f"HTTP {e.response.status_code} {e.response.reason_phrase}: {e.response.text[:200]}"
             )
             logger.warning(
                 "Jina Reader HTTP错误: url=%s, status=%d, body=%s",
-                url, e.response.status_code, e.response.text[:100],
+                url,
+                e.response.status_code,
+                e.response.text[:100],
             )
             # 4xx 通常重试无意义（401/403/402 配额或鉴权），429 除外
             if 400 <= e.response.status_code < 500 and e.response.status_code != 429:
@@ -151,21 +152,19 @@ async def firecrawl_fetch(url: str, timeout: float = 60.0, max_retries: int = 2)
         )
 
     import asyncio
+
     app = FirecrawlApp(api_key=api_key)
     last_error = ""
 
     for attempt in range(max_retries + 1):
         try:
             loop = asyncio.get_event_loop()
-            result = await loop.run_in_executor(
-                None,
-                lambda: app.scrape_url(url)
-            )
+            result = await loop.run_in_executor(None, lambda: app.scrape_url(url))
 
-            if not result or not hasattr(result, 'markdown') or not result.markdown:
+            if not result or not hasattr(result, "markdown") or not result.markdown:
                 last_error = "Firecrawl 返回空内容"
                 if attempt < max_retries:
-                    await asyncio.sleep(2 ** attempt)
+                    await asyncio.sleep(2**attempt)
                     continue
                 logger.warning("Firecrawl 返回空内容: url=%s (已重试%d次)", url, max_retries)
                 return FetchResult(
@@ -177,14 +176,16 @@ async def firecrawl_fetch(url: str, timeout: float = 60.0, max_retries: int = 2)
 
             content = result.markdown
             title = ""
-            if hasattr(result, 'metadata') and result.metadata:
-                title = getattr(result.metadata, 'title', '') or ""
+            if hasattr(result, "metadata") and result.metadata:
+                title = getattr(result.metadata, "title", "") or ""
             if not title:
                 title = _extract_title(content)
 
             snapshot_hash = hashlib.sha256(content.encode()).hexdigest()[:16]
 
-            logger.info("Firecrawl 抓取成功: url=%s, len=%d, attempt=%d", url, len(content), attempt)
+            logger.info(
+                "Firecrawl 抓取成功: url=%s, len=%d, attempt=%d", url, len(content), attempt
+            )
             return FetchResult(
                 url=url,
                 title=title,
@@ -198,10 +199,18 @@ async def firecrawl_fetch(url: str, timeout: float = 60.0, max_retries: int = 2)
         except Exception as e:
             last_error = f"{type(e).__name__}: {str(e)}"
             if attempt < max_retries:
-                logger.info("Firecrawl 重试 %d/%d: url=%s, error=%s", attempt + 1, max_retries, url, last_error)
-                await asyncio.sleep(2 ** attempt)
+                logger.info(
+                    "Firecrawl 重试 %d/%d: url=%s, error=%s",
+                    attempt + 1,
+                    max_retries,
+                    url,
+                    last_error,
+                )
+                await asyncio.sleep(2**attempt)
             else:
-                logger.warning("Firecrawl 抓取失败(已重试%d次): url=%s, error=%s", max_retries, url, last_error)
+                logger.warning(
+                    "Firecrawl 抓取失败(已重试%d次): url=%s, error=%s", max_retries, url, last_error
+                )
 
     return FetchResult(
         url=url,
@@ -237,9 +246,7 @@ async def direct_http_fetch(url: str, timeout: float = 30.0) -> FetchResult:
     }
 
     try:
-        async with httpx.AsyncClient(
-            timeout=timeout, follow_redirects=True, proxy=proxy
-        ) as client:
+        async with httpx.AsyncClient(timeout=timeout, follow_redirects=True, proxy=proxy) as client:
             response = await client.get(url, headers=headers)
             response.raise_for_status()
 
@@ -297,15 +304,15 @@ async def direct_http_fetch(url: str, timeout: float = 30.0) -> FetchResult:
 def _html_to_text(html: str) -> str:
     """从HTML中提取纯文本（简单实现，去除标签和脚本）"""
     # 移除 script 和 style 标签及其内容
-    html = re.sub(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL | re.IGNORECASE)
-    html = re.sub(r'<style[^>]*>.*?</style>', '', html, flags=re.DOTALL | re.IGNORECASE)
+    html = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.DOTALL | re.IGNORECASE)
+    html = re.sub(r"<style[^>]*>.*?</style>", "", html, flags=re.DOTALL | re.IGNORECASE)
     # 移除 HTML 注释
-    html = re.sub(r'<!--.*?-->', '', html, flags=re.DOTALL)
+    html = re.sub(r"<!--.*?-->", "", html, flags=re.DOTALL)
     # 移除 HTML 标签
-    text = re.sub(r'<[^>]+>', ' ', html)
+    text = re.sub(r"<[^>]+>", " ", html)
     # 清理空白字符
-    text = re.sub(r'\s+', ' ', text)
-    text = re.sub(r' +', ' ', text)
+    text = re.sub(r"\s+", " ", text)
+    text = re.sub(r" +", " ", text)
     # 去除首尾空白
     text = text.strip()
     return text
@@ -313,7 +320,7 @@ def _html_to_text(html: str) -> str:
 
 def _extract_title_from_html(html: str) -> str:
     """从HTML中提取title标签内容"""
-    match = re.search(r'<title[^>]*>(.*?)</title>', html, re.DOTALL | re.IGNORECASE)
+    match = re.search(r"<title[^>]*>(.*?)</title>", html, re.DOTALL | re.IGNORECASE)
     if match:
         return match.group(1).strip()
     return ""

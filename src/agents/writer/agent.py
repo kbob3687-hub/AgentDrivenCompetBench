@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Any
 
 from agents.base import AgentConfig, BaseAgent
-from agents.writer.prompts import WRITER_SYSTEM_PROMPT, WRITE_USER_PROMPT_TEMPLATE
+from agents.writer.prompts import WRITE_USER_PROMPT_TEMPLATE, WRITER_SYSTEM_PROMPT
 from schemas.message import AgentMessage, MessageType
 
 
@@ -49,11 +49,16 @@ class WriterAgent(BaseAgent):
         profile = args.get("profile", {})
 
         if not profile or not profile.get("company_name"):
-            print(f"  [Writer] Profile is empty or missing company_name. Keys: {list(profile.keys()) if profile else 'None'}")
+            print(
+                f"  [Writer] Profile is empty or missing company_name. Keys: {list(profile.keys()) if profile else 'None'}"
+            )
             return self.build_message(
                 to_agent="orchestrator",
                 function_name="write_result",
-                arguments={"error": "no profile data to write report", "profile_keys": list(profile.keys()) if profile else []},
+                arguments={
+                    "error": "no profile data to write report",
+                    "profile_keys": list(profile.keys()) if profile else [],
+                },
                 trace_id=message.trace_id,
                 message_type=MessageType.TASK_RESULT,
                 parent_message_id=message.message_id,
@@ -71,9 +76,7 @@ class WriterAgent(BaseAgent):
         )
 
         # 调用Claude生成报告
-        response = await self.call_llm(
-            messages=[{"role": "user", "content": user_prompt}]
-        )
+        response = await self.call_llm(messages=[{"role": "user", "content": user_prompt}])
 
         report_md = response.text
 
@@ -126,11 +129,13 @@ class WriterAgent(BaseAgent):
                         url = src.get("url", "")
                         if url and url not in seen_urls:
                             seen_urls.add(url)
-                            sources.append({
-                                "url": url,
-                                "title": src.get("title", ""),
-                                "snippet": src.get("snippet", ""),
-                            })
+                            sources.append(
+                                {
+                                    "url": url,
+                                    "title": src.get("title", ""),
+                                    "snippet": src.get("snippet", ""),
+                                }
+                            )
                 for v in obj.values():
                     _walk(v)
             elif isinstance(obj, list):

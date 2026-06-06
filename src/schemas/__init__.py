@@ -10,9 +10,9 @@ from schemas.competitor import (
     UserPersona,
 )
 from schemas.extensions import (
+    TEMPLATE_REGISTRY,
     ExtensionFieldDef,
     IndustryTemplate,
-    TEMPLATE_REGISTRY,
     load_template,
 )
 from schemas.message import (

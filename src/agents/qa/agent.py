@@ -71,16 +71,16 @@ class QAAgent(BaseAgent):
         )
 
         # ====== 第二轮：LLM深度审查 ======
-        llm_issues = await self._llm_review(
-            competitor_name, profile, report_markdown
-        )
+        llm_issues = await self._llm_review(competitor_name, profile, report_markdown)
 
         # ====== 合并结果 ======
         all_issues = rule_issues + llm_issues
 
         # 计算overall_score
         overall_score = self._calculate_score(
-            avg_confidence, all_issues, checked,
+            avg_confidence,
+            all_issues,
+            checked,
             llm_issue_count=len(llm_issues),
         )
 
@@ -97,7 +97,9 @@ class QAAgent(BaseAgent):
 
         # 根据问题类型决定打回给谁
         target_agent = self._determine_target_agent(
-            all_issues, missing_dimensions, verdict,
+            all_issues,
+            missing_dimensions,
+            verdict,
         )
 
         # 自适应策略降级：核心维度（pricing/features）缺失且当前在官网模式
@@ -164,9 +166,7 @@ class QAAgent(BaseAgent):
             report_markdown=report_markdown or "(报告尚未生成)",
         )
 
-        response = await self.call_llm(
-            messages=[{"role": "user", "content": user_prompt}]
-        )
+        response = await self.call_llm(messages=[{"role": "user", "content": user_prompt}])
 
         return self._parse_llm_issues(response.text)
 
@@ -179,14 +179,16 @@ class QAAgent(BaseAgent):
         issues = []
         for item in parsed.get("issues", []):
             try:
-                issues.append(QAIssue(
-                    field_path=item.get("field_path", "*"),
-                    issue_type=item.get("issue_type", "factual_error"),
-                    severity=item.get("severity", "minor"),
-                    description=item.get("description", ""),
-                    suggestion=item.get("suggestion"),
-                    evidence=item.get("evidence"),
-                ))
+                issues.append(
+                    QAIssue(
+                        field_path=item.get("field_path", "*"),
+                        issue_type=item.get("issue_type", "factual_error"),
+                        severity=item.get("severity", "minor"),
+                        description=item.get("description", ""),
+                        suggestion=item.get("suggestion"),
+                        evidence=item.get("evidence"),
+                    )
+                )
             except Exception:
                 continue
 
@@ -211,7 +213,7 @@ class QAAgent(BaseAgent):
         last = text.rfind("}")
         if first != -1 and last != -1:
             try:
-                return json.loads(text[first:last + 1])
+                return json.loads(text[first : last + 1])
             except json.JSONDecodeError:
                 pass
 
@@ -239,7 +241,7 @@ class QAAgent(BaseAgent):
         penalty_map = {"critical": 0.10, "major": 0.04, "minor": 0.01}
 
         rule_issues = issues[: len(issues) - llm_issue_count]
-        llm_issues = issues[len(issues) - llm_issue_count:]
+        llm_issues = issues[len(issues) - llm_issue_count :]
 
         rule_penalty = min(
             sum(penalty_map.get(i.severity, 0.01) for i in rule_issues),
@@ -304,7 +306,10 @@ class QAAgent(BaseAgent):
         return max(scores, key=scores.get)
 
     def _build_summary(
-        self, verdict: str, issues: list[QAIssue], score: float,
+        self,
+        verdict: str,
+        issues: list[QAIssue],
+        score: float,
         missing_dimensions: list[str] | None = None,
     ) -> str:
         """生成质检总结"""
@@ -320,4 +325,6 @@ class QAAgent(BaseAgent):
         elif verdict == "revise":
             return f"需要修改(score={score:.2f})。发现{critical}个严重问题、{major}个主要问题需修复后重新提交。"
         else:
-            return f"质量不达标(score={score:.2f})。存在{critical}个严重问题，建议重新采集数据并分析。"
+            return (
+                f"质量不达标(score={score:.2f})。存在{critical}个严重问题，建议重新采集数据并分析。"
+            )
