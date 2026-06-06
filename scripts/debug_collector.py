@@ -1,7 +1,12 @@
 """Quick debug: test Collector.run() directly to see errors"""
-import sys, asyncio, uuid
+
+import asyncio
+import sys
+import uuid
 from pathlib import Path
+
 from dotenv import load_dotenv
+
 load_dotenv(Path(__file__).parent.parent / ".env")
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 if sys.platform == "win32":
@@ -9,6 +14,7 @@ if sys.platform == "win32":
 
 from agents.collector.agent import CollectorAgent
 from schemas.message import AgentMessage, CollectRequest, MessageContext, MessageType
+
 
 async def test():
     collector = CollectorAgent()
@@ -19,7 +25,9 @@ async def test():
         from_agent="orchestrator",
         to_agent="collector",
         function_name="collect",
-        arguments=CollectRequest(target="Notion", collect_type="web_scrape", scope=["pricing"], max_sources=1).model_dump(),
+        arguments=CollectRequest(
+            target="Notion", collect_type="web_scrape", scope=["pricing"], max_sources=1
+        ).model_dump(),
         context=MessageContext(competitor_name="Notion"),
     )
     try:
@@ -28,8 +36,10 @@ async def test():
         print(f"Sources failed: {result.arguments.get('sources_failed')}")
         print(f"Errors: {result.arguments.get('errors')}")
         print(f"Claims count: {len(result.arguments.get('claims', []))}")
-    except Exception as e:
+    except Exception:
         import traceback
+
         traceback.print_exc()
+
 
 asyncio.run(test())

@@ -10,7 +10,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 import sys
 import uuid
@@ -35,7 +34,12 @@ async def main():
     print("Collector -> Analyst Pipeline Test")
     print("=" * 70)
 
-    required = ["LANGFUSE_SECRET_KEY", "LANGFUSE_PUBLIC_KEY", "ANTHROPIC_API_KEY", "DEEPSEEK_API_KEY"]
+    required = [
+        "LANGFUSE_SECRET_KEY",
+        "LANGFUSE_PUBLIC_KEY",
+        "ANTHROPIC_API_KEY",
+        "DEEPSEEK_API_KEY",
+    ]
     missing = [k for k in required if not os.getenv(k)]
     if missing:
         print(f"[FAIL] Missing env vars: {missing}")
@@ -120,27 +124,33 @@ async def main():
 
     pricing = profile.get("pricing")
     if pricing:
-        print(f"\n=== Pricing ===")
+        print("\n=== Pricing ===")
         print(f"Model type: {pricing.get('model_type')}")
         print(f"Currency: {pricing.get('currency')}")
         print(f"Confidence: {pricing.get('evidence', {}).get('confidence')}")
         for tier in pricing.get("tiers", []):
-            print(f"  - {tier.get('name')}: {tier.get('price')} ({tier.get('billing_cycle', 'N/A')})")
+            print(
+                f"  - {tier.get('name')}: {tier.get('price')} ({tier.get('billing_cycle', 'N/A')})"
+            )
             features = tier.get("features", [])
             if features:
-                print(f"      features: {', '.join(features[:3])}{'...' if len(features) > 3 else ''}")
+                print(
+                    f"      features: {', '.join(features[:3])}{'...' if len(features) > 3 else ''}"
+                )
 
     feature_tree = profile.get("feature_tree", [])
     if feature_tree:
         print(f"\n=== Feature Tree ({len(feature_tree)} nodes) ===")
         for node in feature_tree[:5]:
-            print(f"  - {node.get('name')} (confidence: {node.get('description', {}).get('confidence')})")
+            print(
+                f"  - {node.get('name')} (confidence: {node.get('description', {}).get('confidence')})"
+            )
             for sub in node.get("sub_features", [])[:3]:
                 print(f"      * {sub.get('name')}")
 
     swot = profile.get("swot", [])
     if swot:
-        print(f"\n=== SWOT ===")
+        print("\n=== SWOT ===")
         for item in swot:
             cat = item.get("category")
             count = len(item.get("items", []))

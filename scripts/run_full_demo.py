@@ -18,7 +18,6 @@ import asyncio
 import json
 import os
 import sys
-import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -31,7 +30,7 @@ ROOT = Path(__file__).parent.parent
 load_dotenv(ROOT / ".env")
 sys.path.insert(0, str(ROOT / "src"))
 
-from orchestrator.graph import build_graph, _make_trace_id
+from orchestrator.graph import _make_trace_id, build_graph
 from orchestrator.state import GraphState
 
 # ============================================================
@@ -175,7 +174,7 @@ async def generate_comparison_report(profiles: list[dict]) -> str:
 
     compare_prompt = f"""请基于以下三个竞品的结构化数据，生成一份竞品对比报告。
 
-竞品列表: {', '.join(names)}
+竞品列表: {", ".join(names)}
 
 ## 各竞品数据
 {profiles_json}
@@ -208,9 +207,7 @@ async def generate_comparison_report(profiles: list[dict]) -> str:
 """
 
     writer = WriterAgent()
-    response = await writer.call_llm(
-        messages=[{"role": "user", "content": compare_prompt}]
-    )
+    response = await writer.call_llm(messages=[{"role": "user", "content": compare_prompt}])
     return response.text
 
 
@@ -228,7 +225,7 @@ async def main():
 
     print(f"Start time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Competitors: {', '.join(c['name'] for c in COMPETITORS)}")
-    print(f"Graph: orchestrator.graph.build_graph() — StateGraph with conditional_edges")
+    print("Graph: orchestrator.graph.build_graph() — StateGraph with conditional_edges")
     print(f"Max QA iterations: {MAX_QA_ITERATIONS}")
 
     # 编译一次LangGraph，三个竞品复用同一个graph实例
@@ -239,12 +236,10 @@ async def main():
 
     for comp in COMPETITORS:
         sep(f"[{comp['name']}] Running through LangGraph StateGraph")
-        print(f"  Nodes: collector → analyst → writer → qa (→ collector on revise)")
+        print("  Nodes: collector → analyst → writer → qa (→ collector on revise)")
         print(f"  Scope: {comp['scope']}")
 
-        final_state, node_path = await run_via_graph(
-            app, comp["name"], comp["scope"]
-        )
+        final_state, node_path = await run_via_graph(app, comp["name"], comp["scope"])
 
         all_paths[comp["name"]] = node_path
 
@@ -261,9 +256,7 @@ async def main():
             "feedback_history": final_state.get("feedback_history", []),
             "final_status": final_state.get("final_status", ""),
         }
-        result["iterations"] = len(
-            [f for f in result["feedback_history"] if f]
-        ) or 1
+        result["iterations"] = len([f for f in result["feedback_history"] if f]) or 1
         all_results.append(result)
 
         # 打印节点路径
@@ -295,17 +288,19 @@ async def main():
     print("  " + "-" * 60)
     for r in all_results:
         status = "[OK]" if r["qa_verdict"] == "pass" else "[--]"
-        print(f"  {status} {r['name']:10s}  claims={len(r['claims']):3d}  "
-              f"complete={r['completeness']:.0%}  qa_score={r['qa_score']:.2f}  "
-              f"iter={r['iterations']}  status={r['final_status']}")
+        print(
+            f"  {status} {r['name']:10s}  claims={len(r['claims']):3d}  "
+            f"complete={r['completeness']:.0%}  qa_score={r['qa_score']:.2f}  "
+            f"iter={r['iterations']}  status={r['final_status']}"
+        )
     print("  " + "-" * 60)
 
     # 构建并保存报告
     summary_lines = []
     summary_lines.append("# 竞品分析完整Pipeline演示报告\n")
     summary_lines.append(f"**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-    summary_lines.append(f"**编排引擎**: LangGraph StateGraph (`orchestrator.graph.build_graph`)\n")
-    summary_lines.append(f"**竞品**: Notion vs Feishu vs ClickUp\n\n")
+    summary_lines.append("**编排引擎**: LangGraph StateGraph (`orchestrator.graph.build_graph`)\n")
+    summary_lines.append("**竞品**: Notion vs Feishu vs ClickUp\n\n")
 
     # 节点路径
     summary_lines.append("## Graph执行路径\n")
@@ -331,7 +326,9 @@ async def main():
     for r in all_results:
         summary_lines.append(f"## {r['name']} 详细报告\n")
         summary_lines.append(f"**Trace ID**: `{r['trace_id']}`\n")
-        summary_lines.append(f"**QA Score**: {r['qa_score']:.2f} | **Verdict**: {r['qa_verdict']} | **Iterations**: {r['iterations']}\n")
+        summary_lines.append(
+            f"**QA Score**: {r['qa_score']:.2f} | **Verdict**: {r['qa_verdict']} | **Iterations**: {r['iterations']}\n"
+        )
         if r["report_markdown"]:
             summary_lines.append(r["report_markdown"])
         summary_lines.append("\n---\n")
@@ -348,7 +345,7 @@ async def main():
     report_path = reports_dir / "full_demo.md"
     report_path.write_text(final_report, encoding="utf-8")
     print(f"\n  Report saved: {report_path}")
-    print(f"  Check Langfuse: https://cloud.langfuse.com")
+    print("  Check Langfuse: https://cloud.langfuse.com")
 
 
 if __name__ == "__main__":

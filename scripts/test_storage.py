@@ -1,4 +1,5 @@
 """Quick integration test for storage layer"""
+
 import asyncio
 import sys
 import uuid
@@ -7,9 +8,9 @@ sys.path.insert(0, "src")
 
 
 async def test():
-    from storage.engine import init_engine, dispose_engine, get_engine
+    from storage.crud import get_run, list_runs, save_run
+    from storage.engine import dispose_engine, init_engine
     from storage.models import Base
-    from storage.crud import save_run, get_run, list_runs
 
     engine = await init_engine()
     async with engine.begin() as conn:

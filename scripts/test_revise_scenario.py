@@ -34,6 +34,7 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
 from dotenv import load_dotenv
+
 load_dotenv(ROOT / ".env")
 
 from orchestrator.graph import build_graph
@@ -56,11 +57,11 @@ def print_iteration_header(iteration: int, node: str) -> None:
 async def main():
     print_banner("竞品分析多Agent系统 - 真实Revise场景测试")
     print(f"  时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"  目标: Notion")
-    print(f"  初始scope: ['pricing'] (故意不完整)")
-    print(f"  期望维度: ['pricing', 'features', 'integrations']")
-    print(f"  max_iterations: 3")
-    print(f"  预期: QA发现缺失维度 → revise → 补采 → 最终pass")
+    print("  目标: Notion")
+    print("  初始scope: ['pricing'] (故意不完整)")
+    print("  期望维度: ['pricing', 'features', 'integrations']")
+    print("  max_iterations: 3")
+    print("  预期: QA发现缺失维度 → revise → 补采 → 最终pass")
     print()
 
     required_keys = ["DEEPSEEK_API_KEY"]
@@ -129,7 +130,9 @@ async def main():
             action = record.get("action_taken", "")
             summary = record.get("feedback_summary", "")
 
-            icon = {"pass": "[PASS]", "revise": "[REVISE]", "reject": "[REJECT]"}.get(verdict, "[?]")
+            icon = {"pass": "[PASS]", "revise": "[REVISE]", "reject": "[REJECT]"}.get(
+                verdict, "[?]"
+            )
             print(f"\n  第{i}轮 {icon}")
             print(f"    verdict:  {verdict}")
             print(f"    score:    {score:.2f}")
@@ -145,18 +148,18 @@ async def main():
 
     if revise_count > 0:
         print(f"  [OK] Revise触发成功！共{revise_count}次revise")
-        print(f"  [OK] 反馈循环工作正常：QA检测到缺失维度并打回Collector补采")
+        print("  [OK] 反馈循环工作正常：QA检测到缺失维度并打回Collector补采")
     else:
-        print(f"  [WARN] 未触发revise - 可能原因：")
-        print(f"    - Collector第一轮就采到了所有维度的数据")
-        print(f"    - QA评分直接>=0.80通过了")
+        print("  [WARN] 未触发revise - 可能原因：")
+        print("    - Collector第一轮就采到了所有维度的数据")
+        print("    - QA评分直接>=0.80通过了")
 
     if pass_count > 0:
-        print(f"  [OK] 最终通过QA质检")
+        print("  [OK] 最终通过QA质检")
     elif final_status.startswith("max_iterations"):
-        print(f"  [INFO] 达到最大迭代次数后结束")
+        print("  [INFO] 达到最大迭代次数后结束")
     elif final_status.startswith("rejected"):
-        print(f"  [WARN] 被QA拒绝")
+        print("  [WARN] 被QA拒绝")
 
     # ====== 数据统计 ======
     print_banner("数据统计", char="─")
@@ -184,7 +187,8 @@ async def main():
 
     state_path = output_dir / f"revise_test_state_{ts}.json"
     serializable = {
-        k: v for k, v in final_state.items()
+        k: v
+        for k, v in final_state.items()
         if isinstance(v, (str, int, float, bool, list, dict, type(None)))
     }
     state_path.write_text(

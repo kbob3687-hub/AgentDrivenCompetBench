@@ -14,7 +14,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 import sys
 import uuid
@@ -157,6 +156,7 @@ async def main():
     except Exception as e:
         print(f"\n[FAIL] Agent test error: {type(e).__name__}: {e}")
         import traceback
+
         traceback.print_exc()
 
 
