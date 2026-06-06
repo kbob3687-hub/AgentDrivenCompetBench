@@ -10,6 +10,7 @@ const props = defineProps<{
   isPaused: boolean
   pauseVerdict: 'pass' | 'revise' | null
   pauseContext: PauseContext | null
+  embedded?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -197,8 +198,8 @@ const forcePassHint = computed(() => {
 </script>
 
 <template>
-  <div class="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
-    <h3 class="text-sm font-medium text-slate-600 mb-3">QA 反馈循环</h3>
+  <div :class="embedded ? 'p-4' : 'bg-white rounded-lg border border-slate-200 p-4 shadow-sm'">
+    <h3 v-if="!embedded" class="text-sm font-medium text-slate-600 mb-3">QA 反馈循环</h3>
     <div v-if="iterations.length" class="overflow-x-auto rounded-md border border-slate-200">
       <table class="min-w-full text-left text-xs">
         <thead class="bg-slate-50 text-slate-500">

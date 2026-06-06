@@ -82,6 +82,14 @@ class ComparePersona(BaseModel):
     usage_scenarios: list[str]
 
 
+class CompareExtensionField(BaseModel):
+    field_name: str
+    label: str
+    field_type: str
+    required: bool = False
+    description: str = ""
+
+
 class CompareSWOT(BaseModel):
     strength: list[str] = Field(default_factory=list)
     weakness: list[str] = Field(default_factory=list)
@@ -110,3 +118,6 @@ class CompareCompetitor(BaseModel):
 class CompareResponse(BaseModel):
     competitors: list[CompareCompetitor]
     dimensions: list[str] = Field(description="有数据的维度列表")
+    common_industry: str | None = None
+    mixed_industries: bool = False
+    extension_fields: list[CompareExtensionField] = Field(default_factory=list)

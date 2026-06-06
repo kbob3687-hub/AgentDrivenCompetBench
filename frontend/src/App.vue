@@ -3,8 +3,8 @@ import { ref, computed, onMounted } from 'vue'
 import AnalysisForm from './components/AnalysisForm.vue'
 import DagView from './components/DagView.vue'
 import LogStream from './components/LogStream.vue'
-import IterationTimeline from './components/IterationTimeline.vue'
 import CompareView from './components/CompareView.vue'
+import ProcessObservabilityPanel from './components/ProcessObservabilityPanel.vue'
 import ReportWorkspace from './components/ReportWorkspace.vue'
 import { useAnalysis } from './composables/useAnalysis'
 import type { InterventionAction, InterventionPayload } from './types'
@@ -75,7 +75,12 @@ onMounted(() => {
       <template v-else>
         <div class="grid gap-5 xl:grid-cols-[minmax(680px,48%)_minmax(0,1fr)] xl:items-start">
           <div class="space-y-5 min-w-0">
-            <AnalysisForm :disabled="isRunning" @submit="handleSubmit" />
+            <AnalysisForm
+              :disabled="isRunning"
+              :competitor-name="state.competitorName"
+              :industry="state.industry"
+              @submit="handleSubmit"
+            />
 
             <div v-if="state.status !== 'idle'" class="grid gap-4">
               <div class="h-[360px] min-h-0 overflow-hidden">
@@ -86,9 +91,11 @@ onMounted(() => {
               </div>
             </div>
 
-            <IterationTimeline
+            <ProcessObservabilityPanel
               v-if="state.status !== 'idle' && (state.iterations.length > 0 || state.currentIteration > 0)"
               class="relative z-10"
+              :result="state.result"
+              :task-id="state.taskId"
               :iterations="state.iterations"
               :current-iteration="state.currentIteration"
               :is-running="isRunning"

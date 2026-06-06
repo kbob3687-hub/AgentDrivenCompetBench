@@ -6,6 +6,8 @@ import pytest
 
 from api.runner import (
     _apply_manual_url_resume,
+    _langfuse_trace_id,
+    _langfuse_trace_url,
     _normalize_manual_urls,
     _usable_pre_fetched_content,
     collector_node,
@@ -16,6 +18,30 @@ from orchestrator.graph import build_graph
 from orchestrator.nodes import qa_node
 from orchestrator.routing import classify_no_profile_failure
 from orchestrator.state import FeedbackRecord, GraphState
+
+
+class TestLangfuseTraceLinks:
+    def test_langfuse_trace_id_is_task_uuid_without_dashes(self):
+        task_id = "48aea9f9-789c-4651-a257-ede9ffaf498c"
+
+        assert _langfuse_trace_id(task_id) == "48aea9f9789c4651a257ede9ffaf498c"
+
+    def test_langfuse_trace_url_uses_sdk_generated_project_url(self, monkeypatch):
+        class FakeLangfuse:
+            def __init__(self, timeout):
+                self.timeout = timeout
+
+            def get_trace_url(self, *, trace_id=None):
+                return f"https://cloud.langfuse.com/project/project-1/traces/{trace_id}"
+
+        monkeypatch.setattr("langfuse.Langfuse", FakeLangfuse)
+
+        url = _langfuse_trace_url("48aea9f9-789c-4651-a257-ede9ffaf498c")
+
+        assert url == (
+            "https://cloud.langfuse.com/project/project-1/traces/"
+            "48aea9f9789c4651a257ede9ffaf498c"
+        )
 
 
 class TestQARouting:

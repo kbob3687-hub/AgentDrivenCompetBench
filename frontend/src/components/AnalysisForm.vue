@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const emit = defineEmits<{
   submit: [payload: { competitorName: string; dimensions: string[]; industry: string; targetUrls: string[] }]
 }>()
 
-defineProps<{
+const props = defineProps<{
   disabled: boolean
+  competitorName: string
+  industry: string
 }>()
 
-const competitorName = ref('Notion')
+const competitorName = ref(props.competitorName || 'Notion')
 const allDimensions = [
   { id: 'pricing', label: '定价策略' },
   { id: 'features', label: '核心功能' },
@@ -23,9 +25,27 @@ const industries = [
   { id: 'consumer', label: '消费品' },
   { id: 'hardware', label: '硬件/智能设备' }
 ]
-const selectedIndustry = ref('saas')
+const selectedIndustry = ref(props.industry || 'saas')
 const targetUrlsInput = ref('')
 const showUrlInput = ref(false)
+
+watch(
+  () => props.competitorName,
+  value => {
+    if (value && value !== competitorName.value) {
+      competitorName.value = value
+    }
+  }
+)
+
+watch(
+  () => props.industry,
+  value => {
+    if (value && value !== selectedIndustry.value) {
+      selectedIndustry.value = value
+    }
+  }
+)
 
 function toggleDimension(id: string) {
   const idx = selectedDimensions.value.indexOf(id)

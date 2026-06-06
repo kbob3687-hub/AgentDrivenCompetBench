@@ -56,9 +56,20 @@ interface CompareCompetitor {
   }
 }
 
+interface CompareExtensionField {
+  field_name: string
+  label: string
+  field_type: string
+  required: boolean
+  description: string
+}
+
 interface CompareResponse {
   competitors: CompareCompetitor[]
   dimensions: string[]
+  common_industry: string | null
+  mixed_industries: boolean
+  extension_fields: CompareExtensionField[]
 }
 
 const emit = defineEmits<{ close: [] }>()
@@ -157,21 +168,63 @@ function resetToSelection() {
   compareResult.value = null
 }
 
-function getScenarios(comp: CompareCompetitor): string[] {
-  // 优先从 user_personas.usage_scenarios 聚合
-  const scenarios: string[] = []
-  for (const p of comp.profile.user_personas) {
-    for (const s of p.usage_scenarios) {
-      if (s && !scenarios.includes(s)) scenarios.push(s)
+function formatIndustry(industry: string | null): string {
+  const labels: Record<string, string> = {
+    saas: '项目管理/SaaS产品',
+    consumer: '消费品',
+    hardware: '硬件/智能设备',
+  }
+  return industry ? labels[industry] || industry : '公共'
+}
+
+function isBlankValue(value: any): boolean {
+  return value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0)
+}
+
+function formatExtensionValue(value: any): string {
+  if (isBlankValue(value)) return '—'
+  if (typeof value === 'string') return value.trim() || '—'
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+
+  if (Array.isArray(value)) {
+    const items = value
+      .map(item => formatExtensionValue(item))
+      .filter(item => item && item !== '—')
+    return items.length ? items.slice(0, 8).join('；') : '—'
+  }
+
+  if (typeof value === 'object') {
+    if ('claim' in value) return formatExtensionValue(value.claim)
+    if ('value' in value && 'spec' in value) return `${value.spec}: ${formatExtensionValue(value.value)}`
+    if ('value' in value) return formatExtensionValue(value.value)
+    if ('summary' in value) return formatExtensionValue(value.summary)
+    if ('items' in value) return formatExtensionValue(value.items)
+
+    const compact = Object.entries(value)
+      .filter(([key, val]) => !['sources', 'source', 'evidence', 'confidence', 'reasoning'].includes(key) && !isBlankValue(val))
+      .map(([key, val]) => `${key}: ${formatExtensionValue(val)}`)
+      .slice(0, 5)
+    return compact.length ? compact.join('；') : '—'
+  }
+
+  return String(value)
+}
+
+function getExtensionSourceUrl(value: any): string | null {
+  if (!value) return null
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const url = getExtensionSourceUrl(item)
+      if (url) return url
     }
+    return null
   }
-  if (scenarios.length) return scenarios.slice(0, 5)
-  // fallback: 从 feature_tree 的 category 推断
-  const categories = new Set<string>()
-  for (const f of comp.profile.feature_tree) {
-    if (f.category) categories.add(f.category)
-  }
-  return [...categories].slice(0, 5)
+  if (typeof value !== 'object') return null
+  if (typeof value.source_url === 'string') return value.source_url
+  if (typeof value.url === 'string') return value.url
+  if (Array.isArray(value.sources) && value.sources[0]?.url) return value.sources[0].url
+  if (value.evidence) return getExtensionSourceUrl(value.evidence)
+  return null
 }
 </script>
 
@@ -291,9 +344,22 @@ function getScenarios(comp: CompareCompetitor): string[] {
     <div v-if="compareResult" class="p-6">
       <!-- Back to selection -->
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-base font-semibold text-slate-800">
-          对比结果（{{ compareResult.competitors.length }} 个竞品）
-        </h3>
+        <div>
+          <h3 class="text-base font-semibold text-slate-800">
+            对比结果（{{ compareResult.competitors.length }} 个竞品）
+          </h3>
+          <p class="mt-1 text-xs text-slate-500">
+            <template v-if="compareResult.mixed_industries">
+              混选行业，只展示公共字段。
+            </template>
+            <template v-else-if="compareResult.extension_fields.length">
+              已启用{{ formatIndustry(compareResult.common_industry) }}模板字段（{{ compareResult.extension_fields.length }} 项）。
+            </template>
+            <template v-else>
+              当前任务没有可展开的行业模板字段。
+            </template>
+          </p>
+        </div>
         <button
           @click="resetToSelection"
           class="px-3 py-1.5 text-xs font-medium rounded border border-slate-300 text-slate-600 hover:bg-slate-50 transition-colors"
@@ -393,35 +459,6 @@ function getScenarios(comp: CompareCompetitor): string[] {
               </td>
             </tr>
 
-            <!-- SWOT -->
-            <tr class="border-b border-slate-100">
-              <td class="py-3 px-4 font-medium text-slate-700 bg-slate-50">SWOT</td>
-              <td
-                v-for="comp in compareResult.competitors"
-                :key="comp.task_id"
-                class="py-3 px-4 text-slate-600"
-              >
-                <div class="space-y-2 text-xs">
-                  <div v-if="comp.profile.swot.strength.length">
-                    <span class="font-medium text-emerald-700">S:</span>
-                    <span class="text-slate-600 ml-1">{{ comp.profile.swot.strength.join('; ') }}</span>
-                  </div>
-                  <div v-if="comp.profile.swot.weakness.length">
-                    <span class="font-medium text-red-700">W:</span>
-                    <span class="text-slate-600 ml-1">{{ comp.profile.swot.weakness.join('; ') }}</span>
-                  </div>
-                  <div v-if="comp.profile.swot.opportunity.length">
-                    <span class="font-medium text-blue-700">O:</span>
-                    <span class="text-slate-600 ml-1">{{ comp.profile.swot.opportunity.join('; ') }}</span>
-                  </div>
-                  <div v-if="comp.profile.swot.threat.length">
-                    <span class="font-medium text-amber-700">T:</span>
-                    <span class="text-slate-600 ml-1">{{ comp.profile.swot.threat.join('; ') }}</span>
-                  </div>
-                </div>
-              </td>
-            </tr>
-
             <!-- User Personas -->
             <tr class="border-b border-slate-100">
               <td class="py-3 px-4 font-medium text-slate-700 bg-slate-50">用户画像</td>
@@ -444,47 +481,41 @@ function getScenarios(comp: CompareCompetitor): string[] {
               </td>
             </tr>
 
-            <!-- Extensions -->
-            <!-- 竞争优劣势总结 -->
-            <tr class="border-b border-slate-100">
-              <td class="py-3 px-4 font-medium text-slate-700 bg-slate-50">竞争优劣势</td>
-              <td
-                v-for="comp in compareResult.competitors"
-                :key="comp.task_id"
-                class="py-3 px-4 text-slate-600"
-              >
-                <div class="space-y-1.5 text-xs">
-                  <div v-if="comp.profile.swot.strength.length">
-                    <span class="inline-block px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-medium mr-1">优势</span>
-                    <span class="text-slate-600">{{ comp.profile.swot.strength.slice(0, 2).join('；') }}</span>
-                  </div>
-                  <div v-if="comp.profile.swot.weakness.length">
-                    <span class="inline-block px-1.5 py-0.5 rounded bg-red-50 text-red-700 font-medium mr-1">短板</span>
-                    <span class="text-slate-600">{{ comp.profile.swot.weakness.slice(0, 2).join('；') }}</span>
-                  </div>
-                  <div v-if="!comp.profile.swot.strength.length && !comp.profile.swot.weakness.length">
-                    <span class="text-slate-400">—</span>
-                  </div>
+            <!-- Dynamic industry fields -->
+            <tr
+              v-for="field in compareResult.extension_fields"
+              :key="field.field_name"
+              class="border-b border-slate-100"
+            >
+              <td class="py-3 px-4 font-medium text-slate-700 bg-slate-50 align-top">
+                <div>{{ field.label }}</div>
+                <div class="mt-1 flex flex-wrap items-center gap-1.5">
+                  <span class="text-[10px] font-normal text-slate-400">{{ field.field_type }}</span>
+                  <span
+                    v-if="field.required"
+                    class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700"
+                  >
+                    必填
+                  </span>
                 </div>
               </td>
-            </tr>
-
-            <!-- 适用场景推荐 -->
-            <tr>
-              <td class="py-3 px-4 font-medium text-slate-700 bg-slate-50">适用场景</td>
               <td
                 v-for="comp in compareResult.competitors"
                 :key="comp.task_id"
-                class="py-3 px-4 text-slate-600"
+                class="py-3 px-4 text-slate-600 align-top"
               >
-                <div v-if="getScenarios(comp).length" class="space-y-1">
-                  <span
-                    v-for="(s, i) in getScenarios(comp)"
-                    :key="i"
-                    class="inline-block mr-1.5 mb-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs"
-                  >{{ s }}</span>
+                <div class="text-xs leading-5 text-slate-700 whitespace-pre-wrap break-words">
+                  {{ formatExtensionValue(comp.profile.extensions?.[field.field_name]) }}
                 </div>
-                <span v-else class="text-slate-400 text-xs">—</span>
+                <a
+                  v-if="getExtensionSourceUrl(comp.profile.extensions?.[field.field_name])"
+                  :href="getExtensionSourceUrl(comp.profile.extensions?.[field.field_name]) || undefined"
+                  target="_blank"
+                  rel="noreferrer"
+                  class="mt-1 inline-block max-w-full truncate text-[11px] text-blue-600 hover:text-blue-700"
+                >
+                  查看来源
+                </a>
               </td>
             </tr>
           </tbody>
