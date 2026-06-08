@@ -1,11 +1,13 @@
-"""CollectorAgent采集工具 - Jina Reader + Playwright + 直接HTTP抓取
+"""CollectorAgent采集工具 - Jina Reader + Playwright + 直接HTTP抓取 + Reddit JSON
 
 降级链：Jina Reader → 直接HTTP抓取 → Playwright（JS渲染页面）
+Reddit 走专用 JSON API，不经过降级链。
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
 import re
 from datetime import datetime
@@ -385,6 +387,53 @@ async def playwright_fetch(url: str, timeout: float = 30000) -> FetchResult:
             error=error_msg,
             fetch_method="playwright",
         )
+
+
+async def reddit_fetch(url: str, timeout: float = 20.0) -> FetchResult:
+    """通过 Reddit JSON API 获取帖子/评论，无需 Firecrawl。
+    URL 格式: https://www.reddit.com/r/.../search.json?q=...
+    """
+    import os
+
+    proxy = os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY")
+    headers = {"User-Agent": "Mozilla/5.0 competitive-analysis-bot/1.0"}
+
+    try:
+        async with httpx.AsyncClient(timeout=timeout, follow_redirects=True, proxy=proxy) as client:
+            resp = await client.get(url, headers=headers)
+            resp.raise_for_status()
+            data = resp.json()
+
+        posts = data.get("data", {}).get("children", [])
+        if not posts:
+            return FetchResult(url=url, success=False, error="Reddit 无结果", fetch_method="reddit")
+
+        lines: list[str] = []
+        for post in posts[:20]:
+            p = post.get("data", {})
+            title = p.get("title", "")
+            selftext = p.get("selftext", "").strip()
+            score = p.get("score", 0)
+            permalink = "https://www.reddit.com" + p.get("permalink", "")
+            if title:
+                lines.append(f"### {title} (score:{score})")
+            if selftext:
+                lines.append(selftext[:800])
+            lines.append(f"Source: {permalink}\n")
+
+        content = "\n".join(lines)
+        snapshot_hash = hashlib.sha256(content.encode()).hexdigest()[:16]
+        return FetchResult(
+            url=url,
+            title="Reddit 用户讨论",
+            content=content,
+            accessed_at=datetime.now(),
+            snapshot_hash=snapshot_hash,
+            success=True,
+            fetch_method="reddit",
+        )
+    except Exception as e:
+        return FetchResult(url=url, success=False, error=f"{type(e).__name__}: {e}", fetch_method="reddit")
 
 
 def _extract_title(markdown_content: str) -> str:

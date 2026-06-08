@@ -237,9 +237,6 @@ DOMAIN_GUESS_SUFFIXES = (
 )
 
 SEARCH_EXCLUDE_DOMAINS = {
-    "g2.com",
-    "capterra.com",
-    "trustradius.com",
     "wikipedia.org",
     "crunchbase.com",
     "linkedin.com",
@@ -247,9 +244,27 @@ SEARCH_EXCLUDE_DOMAINS = {
     "x.com",
     "youtube.com",
     "github.com",
-    "reddit.com",
     "medium.com",
     "techcrunch.com",
+}
+
+# 用户评价平台：warm-path URL 模板（按竞品名填充）
+USER_REVIEW_PLATFORMS: dict[str, str] = {
+    "g2": "https://www.g2.com/products/{slug}/reviews",
+    "capterra": "https://www.capterra.com/p/1/{slug}/",
+    "reddit_saas": "https://www.reddit.com/r/projectmanagement/search.json?q={name}&sort=top&limit=25",
+    "reddit_software": "https://www.reddit.com/r/software/search.json?q={name}+review&sort=top&limit=25",
+    "zhihu": "https://www.zhihu.com/search?type=content&q={name}+使用体验",
+    "sspai": "https://sspai.com/search/post/{name}",
+}
+
+# 已知竞品的评价页 slug（G2/Capterra URL 里的 slug 不一定等于产品名）
+REVIEW_SLUGS: dict[str, dict[str, str]] = {
+    "notion": {"g2": "notion", "capterra": "notion"},
+    "clickup": {"g2": "clickup", "capterra": "clickup"},
+    "feishu": {"g2": "feishu", "capterra": "feishu"},
+    "monday": {"g2": "monday-com", "capterra": "monday-com"},
+    "shopify": {"g2": "shopify", "capterra": "shopify"},
 }
 
 _PROXY = os.getenv("HTTPS_PROXY") or os.getenv("HTTP_PROXY") or None
@@ -384,6 +399,16 @@ class DiscoveryAgent:
         # 始终注入客户案例页
         if "customers" not in dimensions:
             urls.extend(entry["urls"].get("customers", []))
+
+        # 注入用户评价平台 URL（Reddit JSON 直接可解析，G2/Capterra 走 Firecrawl）
+        slugs = REVIEW_SLUGS.get(key, {})
+        name_encoded = key.replace(" ", "+")
+        if slugs.get("g2"):
+            urls.append(USER_REVIEW_PLATFORMS["g2"].format(slug=slugs["g2"]))
+        if slugs.get("capterra"):
+            urls.append(USER_REVIEW_PLATFORMS["capterra"].format(slug=slugs["capterra"]))
+        urls.append(USER_REVIEW_PLATFORMS["reddit_saas"].format(name=name_encoded))
+        urls.append(USER_REVIEW_PLATFORMS["reddit_software"].format(name=name_encoded))
 
         urls = list(dict.fromkeys(urls))
 
