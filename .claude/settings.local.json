@@ -10,7 +10,14 @@
       "Bash(findstr \":8000\")",
       "Bash(findstr \"LISTENING\")",
       "PowerShell(Get-NetTCPConnection *)",
-      "Bash(python -c \"import ast; ast.parse\\(open\\('src/api/routes/analyze.py'\\).read\\(\\)\\); print\\('OK'\\)\")"
+      "Bash(python -c \"import ast; ast.parse\\(open\\('src/api/routes/analyze.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(dir /s /b \"E:\\\\java\\\\dreamdance -demo\\\\frontend\\\\src\")",
+      "Bash(dir /s /b \"E:\\\\java\\\\dreamdance -demo\\\\tests\")",
+      "Bash(dir /s /b \"E:\\\\java\\\\dreamdance -demo\\\\scripts\")",
+      "Bash(dir /s /b \"E:\\\\java\\\\dreamdance -demo\\\\templates\")",
+      "Bash(dir /s /b \"E:\\\\java\\\\dreamdance -demo\\\\output\")",
+      "Bash(python *)"
     ]
   }
 }
