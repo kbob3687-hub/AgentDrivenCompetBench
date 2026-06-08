@@ -121,3 +121,4 @@ class CompareResponse(BaseModel):
     common_industry: str | None = None
     mixed_industries: bool = False
     extension_fields: list[CompareExtensionField] = Field(default_factory=list)
+    whitespace_analysis: str = Field(default="", description="市场白地分析（LLM生成）")

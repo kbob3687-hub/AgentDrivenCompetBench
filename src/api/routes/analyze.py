@@ -169,6 +169,56 @@ async def list_history(
     )
 
 
+async def _generate_whitespace_analysis(competitors: list[dict]) -> str:
+    import asyncio
+    import os
+
+    from openai import OpenAI
+
+    lines = []
+    for c in competitors:
+        name = c["company_name"]
+        weaknesses = c["profile"]["swot"].get("weakness", [])
+        reviews = c["profile"].get("user_reviews", [])
+        if weaknesses:
+            lines.append(f"**{name}** 弱点: " + "；".join(weaknesses[:5]))
+        if reviews:
+            lines.append(f"**{name}** 用户差评: " + "；".join(str(r) for r in reviews[:5]))
+
+    if not lines:
+        return ""
+
+    prompt = f"""以下是多个竞品的用户差评和SWOT弱点数据：
+
+{chr(10).join(lines)}
+
+基于以上数据，生成一段"市场白地"分析（150字以内），回答：
+1. 这些竞品共同存在的核心痛点是什么
+2. 哪个细分需求目前被严重忽视（即白地机会）
+3. 新产品应优先切入哪个点
+
+直接输出结论，不要前言，不要标题，不要编号。"""
+
+    def _call() -> str:
+        client = OpenAI(
+            api_key=os.getenv("DEEPSEEK_API_KEY", ""),
+            base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
+        )
+        resp = client.chat.completions.create(
+            model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
+            max_tokens=512,
+            temperature=0.5,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return resp.choices[0].message.content or ""
+
+    loop = asyncio.get_event_loop()
+    try:
+        return await loop.run_in_executor(None, _call)
+    except Exception:
+        return ""
+
+
 @router.post("/compare", response_model=CompareResponse)
 async def compare_tasks(req: CompareRequest) -> CompareResponse:
     """多任务竞品对比 - 提取各任务profile进行结构化对比"""
@@ -294,12 +344,15 @@ async def compare_tasks(req: CompareRequest) -> CompareResponse:
     common_industry = industry_keys[0] if not mixed_industries else None
     extension_fields = _compare_extension_fields(common_industry)
 
+    whitespace_analysis = await _generate_whitespace_analysis(competitors)
+
     return CompareResponse(
         competitors=competitors,
         dimensions=dimensions,
         common_industry=common_industry,
         mixed_industries=mixed_industries,
         extension_fields=extension_fields,
+        whitespace_analysis=whitespace_analysis,
     )
 
 

@@ -70,6 +70,7 @@ interface CompareResponse {
   common_industry: string | null
   mixed_industries: boolean
   extension_fields: CompareExtensionField[]
+  whitespace_analysis: string
 }
 
 const emit = defineEmits<{ close: [] }>()
@@ -520,6 +521,12 @@ function getExtensionSourceUrl(value: any): string | null {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Whitespace Analysis -->
+      <div v-if="compareResult.whitespace_analysis" class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+        <div class="text-xs font-semibold text-amber-700 mb-1">市场白地分析</div>
+        <p class="text-sm text-amber-900 leading-relaxed">{{ compareResult.whitespace_analysis }}</p>
       </div>
     </div>
   </div>
