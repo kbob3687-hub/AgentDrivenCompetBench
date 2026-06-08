@@ -273,12 +273,7 @@ def _env_flag(name: str, default: bool = False) -> bool:
 
 
 async def _web_search(client: httpx.AsyncClient, query: str) -> list[dict[str, Any]]:
-    """通过 Firecrawl Search API 获取搜索结果，含完整页面 markdown。
-
-    使用 scrape_options 在搜索的同时抓取页面内容，无需单独 fetch，
-    也不受 robots.txt 限制（Firecrawl 服务端处理合规）。
-    返回的 content 字段包含完整页面 markdown，可直接供 Collector 提取 claim。
-    """
+    """通过 Firecrawl Search API 获取搜索结果（仅URL+摘要，不抓全文节省credits）。"""
     api_key = os.getenv("FIRECRAWL_API_KEY", "")
     if not api_key:
         logger.warning("FIRECRAWL_API_KEY 未配置，搜索不可用")
@@ -291,16 +286,11 @@ async def _web_search(client: httpx.AsyncClient, query: str) -> list[dict[str, A
         loop = asyncio.get_event_loop()
         response = await loop.run_in_executor(
             None,
-            lambda: app.search(
-                query=query,
-                limit=8,
-                scrape_options={"formats": ["markdown"]},
-            ),
+            lambda: app.search(query=query, limit=8),
         )
 
         results: list[dict[str, Any]] = []
 
-        # scrape_options 时返回 Document 对象列表，url 在 metadata.url
         items: list[Any] = []
         if hasattr(response, "web") and response.web:
             items = response.web
@@ -308,39 +298,23 @@ async def _web_search(client: httpx.AsyncClient, query: str) -> list[dict[str, A
             items = response
 
         for item in items:
-            url = ""
-            title = ""
-            content = ""
-
-            # scrape_options 模式：Document 对象，url 在 metadata
-            if hasattr(item, "metadata") and item.metadata:
-                md = item.metadata
-                url = getattr(md, "url", "") or getattr(md, "source_url", "") or ""
-                title = getattr(md, "title", "") or ""
-                content = getattr(item, "markdown", "") or ""
-            elif hasattr(item, "url"):
-                # 无 scrape_options 的 SearchResultWeb 对象
+            if hasattr(item, "url"):
                 url = getattr(item, "url", "")
                 title = getattr(item, "title", "") or ""
                 content = getattr(item, "description", "") or ""
             elif isinstance(item, dict):
                 url = item.get("url", "")
                 title = item.get("title", "")
-                content = item.get("markdown", "") or item.get("description", "") or ""
-
-            if not url:
+                content = item.get("description", "") or ""
+            else:
                 continue
-            if any(skip in url for skip in _UNFETCHABLE_DOMAINS):
+
+            if not url or any(skip in url for skip in _UNFETCHABLE_DOMAINS):
                 continue
 
             results.append({"url": url, "title": title, "content": content})
 
-        logger.info(
-            "firecrawl_search: query=%r found %d results (with_content=%d)",
-            query,
-            len(results),
-            sum(1 for r in results if r["content"]),
-        )
+        logger.info("firecrawl_search: query=%r found %d results", query, len(results))
         return results
 
     except ImportError:
