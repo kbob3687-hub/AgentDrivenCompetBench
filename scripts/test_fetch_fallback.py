@@ -19,16 +19,22 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 # Load .env
 from dotenv import load_dotenv
+
 load_dotenv()
 
-from src.agents.collector.tools import jina_reader, firecrawl_fetch, direct_http_fetch, playwright_fetch
+from src.agents.collector.tools import (
+    direct_http_fetch,
+    firecrawl_fetch,
+    jina_reader,
+    playwright_fetch,
+)
 
 
 async def test_url(url: str):
     """Test all fetch methods for a URL."""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Testing: {url}")
-    print('='*60)
+    print("=" * 60)
 
     # Test Jina Reader
     print("\n[1] Testing Jina Reader...")

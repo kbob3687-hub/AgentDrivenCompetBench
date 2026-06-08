@@ -8,21 +8,21 @@ from __future__ import annotations
 
 import json
 import os
-import uuid
 from datetime import datetime
 from typing import Any
 
-from agents.base import BaseAgent, AgentConfig
+from agents.base import AgentConfig, BaseAgent
 from agents.collector.compliance import is_allowed_by_robots, redact_pii
-from agents.collector.prompts import COLLECTOR_SYSTEM_PROMPT, COLLECT_USER_PROMPT_TEMPLATE
+from agents.collector.prompts import COLLECT_USER_PROMPT_TEMPLATE, COLLECTOR_SYSTEM_PROMPT
 from agents.collector.tools import (
     FetchResult,
     direct_http_fetch,
     firecrawl_fetch,
     jina_reader,
     playwright_fetch,
+    reddit_fetch,
 )
-from schemas.competitor import EvidencedClaim, SourceReference, SourceType
+from schemas.competitor import SourceType
 from schemas.message import AgentMessage, CollectRequest, MessageType
 
 
@@ -119,15 +119,14 @@ class CollectorAgent(BaseAgent):
         )
 
     async def _fetch_url(self, url: str) -> FetchResult:
-        """获取URL内容，默认免费链路，付费抓取由显式环境变量打开。
+        """获取URL内容。
 
-        默认链路：直接HTTP抓取 → Playwright。
-        可选付费兜底：ENABLE_JINA=true 时调用 Jina Reader；
-        ENABLE_FIRECRAWL=true 时调用 Firecrawl。
-
-        每一步都记录失败原因，便于诊断。
-        最后做 PII 脱敏。
+        Reddit JSON API → Firecrawl（有key时）→ 直接HTTP → Playwright。
         """
+        # Reddit JSON API 直接走专用工具，跳过 robots 检查
+        if "reddit.com" in url and ".json" in url:
+            return await reddit_fetch(url)
+
         allowed, reason = await is_allowed_by_robots(url)
         if not allowed:
             return FetchResult(
@@ -138,56 +137,42 @@ class CollectorAgent(BaseAgent):
                 fetch_method="blocked",
             )
 
-        # 第1级：直接HTTP抓取（免费，无外部付费依赖）
+        def _apply_pii(r: FetchResult) -> FetchResult:
+            r.robots_status = reason
+            if r.content:
+                r.content, r.pii_redactions = redact_pii(r.content)
+            return r
+
+        # 第1级：Firecrawl（最可靠，反爬能力强）
+        firecrawl_error = "disabled (no FIRECRAWL_API_KEY)"
+        if os.getenv("FIRECRAWL_API_KEY"):
+            result = await firecrawl_fetch(url)
+            if result.success:
+                return _apply_pii(result)
+            firecrawl_error = result.error or "unknown"
+            print(f"  [Collector] Firecrawl失败 ({url[:50]}): {firecrawl_error}，降级到HTTP")
+
+        # 第2级：直接HTTP（静态页面兜底）
         result = await direct_http_fetch(url)
         if result.success:
-            result.robots_status = reason
-            if result.content:
-                redacted, counts = redact_pii(result.content)
-                result.content = redacted
-                result.pii_redactions = counts
-            return result
+            return _apply_pii(result)
 
         http_error = result.error or "unknown"
-        print(f"  [Collector] 直接HTTP抓取失败 ({url[:50]}): {http_error}，降级到Playwright")
+        print(f"  [Collector] 直接HTTP失败 ({url[:50]}): {http_error}，降级到Playwright")
 
-        # 第2级：Playwright（本地浏览器渲染，免费兜底）
+        # 第3级：Playwright（JS渲染兜底）
         result = await playwright_fetch(url)
-        result.robots_status = reason
-
         if result.success and result.content:
-            redacted, counts = redact_pii(result.content)
-            result.content = redacted
-            result.pii_redactions = counts
-            return result
+            return _apply_pii(result)
 
         playwright_error = result.error or "unknown"
 
-        jina_error = "disabled (set ENABLE_JINA=true to enable)"
+        jina_error = "disabled"
         if _env_flag("ENABLE_JINA"):
-            print(f"  [Collector] Playwright 失败 ({url[:50]}): {playwright_error}，降级到Jina Reader")
             result = await jina_reader(url)
             if result.success:
-                result.robots_status = reason
-                if result.content:
-                    redacted, counts = redact_pii(result.content)
-                    result.content = redacted
-                    result.pii_redactions = counts
-                return result
+                return _apply_pii(result)
             jina_error = result.error or "unknown"
-
-        firecrawl_error = "disabled (set ENABLE_FIRECRAWL=true to enable)"
-        if _env_flag("ENABLE_FIRECRAWL"):
-            print(f"  [Collector] Jina Reader 失败 ({url[:50]}): {jina_error}，降级到Firecrawl")
-            result = await firecrawl_fetch(url)
-            if result.success:
-                result.robots_status = reason
-                if result.content:
-                    redacted, counts = redact_pii(result.content)
-                    result.content = redacted
-                    result.pii_redactions = counts
-                return result
-            firecrawl_error = result.error or "unknown"
 
         return FetchResult(
             url=url,
@@ -244,9 +229,7 @@ class CollectorAgent(BaseAgent):
             industry_fields_section=industry_fields_section,
         )
 
-        response = await self.call_llm(
-            messages=[{"role": "user", "content": user_prompt}]
-        )
+        response = await self.call_llm(messages=[{"role": "user", "content": user_prompt}])
 
         # 解析LLM输出
         parsed = self._parse_llm_output(response.text)
@@ -309,11 +292,7 @@ class CollectorAgent(BaseAgent):
         if len(content) <= max_chars:
             return content
         half = max_chars // 2
-        return (
-            content[:half]
-            + "\n\n... [内容过长，中间部分已省略] ...\n\n"
-            + content[-half:]
-        )
+        return content[:half] + "\n\n... [内容过长，中间部分已省略] ...\n\n" + content[-half:]
 
     def _get_default_urls(self, target: str, scope: list[str]) -> list[str]:
         """已知竞品的 warm-path URL 兜底（warm-path map）。

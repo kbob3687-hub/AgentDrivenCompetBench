@@ -54,13 +54,15 @@ def build_pricing_model(
 
     tiers = []
     for tier_data in llm_pricing.get("tiers", []):
-        tiers.append(PricingTier(
-            name=tier_data.get("name", ""),
-            price=tier_data.get("price", ""),
-            billing_cycle=tier_data.get("billing_cycle"),
-            features=tier_data.get("features", []),
-            limitations=tier_data.get("limitations", []),
-        ))
+        tiers.append(
+            PricingTier(
+                name=tier_data.get("name", ""),
+                price=tier_data.get("price", ""),
+                billing_cycle=tier_data.get("billing_cycle"),
+                features=tier_data.get("features", []),
+                limitations=tier_data.get("limitations", []),
+            )
+        )
 
     evidence = EvidencedClaim(
         claim=_claim_text(supporting_claims),
@@ -102,12 +104,14 @@ def build_feature_tree(
                 sources=sources,
                 reasoning="direct_claim_evidence",
             )
-            sub_features.append(FeatureNode(
-                name=sub.get("name", ""),
-                description=sub_evidence,
-                maturity=sub.get("maturity"),
-                category=sub.get("category"),
-            ))
+            sub_features.append(
+                FeatureNode(
+                    name=sub.get("name", ""),
+                    description=sub_evidence,
+                    maturity=sub.get("maturity"),
+                    category=sub.get("category"),
+                )
+            )
 
         description_claim = EvidencedClaim(
             claim=_claim_text(supporting_claims),
@@ -116,13 +120,15 @@ def build_feature_tree(
             reasoning="direct_claim_evidence",
         )
 
-        nodes.append(FeatureNode(
-            name=feat.get("name", ""),
-            description=description_claim,
-            sub_features=sub_features,
-            maturity=feat.get("maturity"),
-            category=feat.get("category"),
-        ))
+        nodes.append(
+            FeatureNode(
+                name=feat.get("name", ""),
+                description=description_claim,
+                sub_features=sub_features,
+                maturity=feat.get("maturity"),
+                category=feat.get("category"),
+            )
+        )
 
     return nodes
 
@@ -155,12 +161,14 @@ def build_swot(
             confidence = item.get("confidence", 0.5)
             sources = _collect_sources(supporting)
 
-            evidenced_claims.append(EvidencedClaim(
-                claim=_claim_text(supporting),
-                confidence=confidence,
-                sources=sources,
-                reasoning="direct_claim_evidence",
-            ))
+            evidenced_claims.append(
+                EvidencedClaim(
+                    claim=_claim_text(supporting),
+                    confidence=confidence,
+                    sources=sources,
+                    reasoning="direct_claim_evidence",
+                )
+            )
 
         if evidenced_claims:
             swot_items.append(SWOTItem(category=category, items=evidenced_claims))
@@ -187,18 +195,22 @@ def build_user_personas(
 
         pain_claims = []
         for pain in p.get("pain_points", []):
-            pain_claims.append(EvidencedClaim(
-                claim=pain if isinstance(pain, str) else pain.get("claim", ""),
-                confidence=confidence,
-                sources=sources,
-                reasoning="direct_claim_evidence",
-            ))
+            pain_claims.append(
+                EvidencedClaim(
+                    claim=pain if isinstance(pain, str) else pain.get("claim", ""),
+                    confidence=confidence,
+                    sources=sources,
+                    reasoning="direct_claim_evidence",
+                )
+            )
 
-        personas.append(UserPersona(
-            segment=p.get("segment", "未知用户群"),
-            pain_points=pain_claims,
-            usage_scenarios=p.get("usage_scenarios", []),
-        ))
+        personas.append(
+            UserPersona(
+                segment=p.get("segment", "未知用户群"),
+                pain_points=pain_claims,
+                usage_scenarios=p.get("usage_scenarios", []),
+            )
+        )
     return personas
 
 
@@ -261,14 +273,18 @@ def _build_extensions(
             extensions[dim] = {
                 "claim": claims[0].get("claim", ""),
                 "confidence": claims[0].get("confidence", 0.5),
-                "source_url": claims[0].get("sources", [{}])[0].get("url", "") if claims[0].get("sources") else "",
+                "source_url": claims[0].get("sources", [{}])[0].get("url", "")
+                if claims[0].get("sources")
+                else "",
             }
         else:
             extensions[dim] = [
                 {
                     "claim": c.get("claim", ""),
                     "confidence": c.get("confidence", 0.5),
-                    "source_url": c.get("sources", [{}])[0].get("url", "") if c.get("sources") else "",
+                    "source_url": c.get("sources", [{}])[0].get("url", "")
+                    if c.get("sources")
+                    else "",
                 }
                 for c in claims
             ]
@@ -301,11 +317,13 @@ def _collect_sources(claims: list[dict[str, Any]]) -> list[SourceReference]:
             url = src.get("url", "")
             if url and url not in seen_urls:
                 seen_urls.add(url)
-                sources.append(SourceReference(
-                    source_type=SourceType(src.get("source_type", "web_page")),
-                    url=url,
-                    title=src.get("title", ""),
-                    snippet=src.get("snippet", ""),
-                    accessed_at=src.get("accessed_at", datetime.now().isoformat()),
-                ))
+                sources.append(
+                    SourceReference(
+                        source_type=SourceType(src.get("source_type", "web_page")),
+                        url=url,
+                        title=src.get("title", ""),
+                        snippet=src.get("snippet", ""),
+                        accessed_at=src.get("accessed_at", datetime.now().isoformat()),
+                    )
+                )
     return sources

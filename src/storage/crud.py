@@ -101,9 +101,7 @@ async def list_runs(
             count_query = select(func.count()).select_from(AnalysisRun)
 
             if competitor_name:
-                query = query.where(
-                    AnalysisRun.competitor_name.ilike(f"%{competitor_name}%")
-                )
+                query = query.where(AnalysisRun.competitor_name.ilike(f"%{competitor_name}%"))
                 count_query = count_query.where(
                     AnalysisRun.competitor_name.ilike(f"%{competitor_name}%")
                 )

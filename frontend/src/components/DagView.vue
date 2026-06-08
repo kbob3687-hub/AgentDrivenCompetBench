@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { VueFlow, Position } from '@vue-flow/core'
 import { Background, BackgroundVariant } from '@vue-flow/background'
-import { Controls } from '@vue-flow/controls'
 import type { AgentName, NodeStatus, SubAgentState } from '../types'
 import DagNode from './DagNode.vue'
 
@@ -23,46 +22,11 @@ function getUrlLabel(rawUrl: string): string {
 }
 
 const agentNodes = computed(() => [
-  {
-    id: 'discovery',
-    type: 'agent',
-    position: { x: 30, y: 110 },
-    data: { label: 'Discovery', status: props.nodeStates.discovery },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left
-  },
-  {
-    id: 'collector',
-    type: 'agent',
-    position: { x: 175, y: 110 },
-    data: { label: 'Collector', status: props.nodeStates.collector },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left
-  },
-  {
-    id: 'analyst',
-    type: 'agent',
-    position: { x: 320, y: 110 },
-    data: { label: 'Analyst', status: props.nodeStates.analyst },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left
-  },
-  {
-    id: 'writer',
-    type: 'agent',
-    position: { x: 465, y: 110 },
-    data: { label: 'Writer', status: props.nodeStates.writer },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left
-  },
-  {
-    id: 'qa',
-    type: 'agent',
-    position: { x: 610, y: 110 },
-    data: { label: 'QA', status: props.nodeStates.qa },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left
-  }
+  { id: 'discovery', type: 'agent', position: { x: 30,  y: 110 }, data: { label: 'Discovery', status: props.nodeStates.discovery }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  { id: 'collector', type: 'agent', position: { x: 175, y: 110 }, data: { label: 'Collector',  status: props.nodeStates.collector }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  { id: 'analyst',   type: 'agent', position: { x: 320, y: 110 }, data: { label: 'Analyst',    status: props.nodeStates.analyst   }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  { id: 'writer',    type: 'agent', position: { x: 465, y: 110 }, data: { label: 'Writer',     status: props.nodeStates.writer    }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  { id: 'qa',        type: 'agent', position: { x: 610, y: 110 }, data: { label: 'QA',         status: props.nodeStates.qa        }, sourcePosition: Position.Right, targetPosition: Position.Left },
 ])
 
 const subNodes = computed(() =>
@@ -72,7 +36,7 @@ const subNodes = computed(() =>
     position: { x: 60 + i * 140, y: 245 },
     data: { label: getUrlLabel(sa.url), status: sa.status, claims: sa.claims_count },
     sourcePosition: Position.Top,
-    targetPosition: Position.Top
+    targetPosition: Position.Top,
   }))
 )
 
@@ -80,7 +44,7 @@ const overflowNode = computed(() => {
   const hiddenCount = props.subAgents.length - 4
   if (hiddenCount <= 0) return []
   const failed = props.subAgents.filter(sa => sa.status === 'error').length
-  const done = props.subAgents.filter(sa => sa.status === 'done').length
+  const done   = props.subAgents.filter(sa => sa.status === 'done').length
   return [{
     id: 'sub-overflow',
     type: 'sub-agent',
@@ -91,75 +55,59 @@ const overflowNode = computed(() => {
       claims: props.subAgents.reduce((sum, sa) => sum + (sa.claims_count || 0), 0),
     },
     sourcePosition: Position.Top,
-    targetPosition: Position.Top
+    targetPosition: Position.Top,
   }]
 })
 
 const nodes = computed(() => [...agentNodes.value, ...subNodes.value, ...overflowNode.value])
 
+function edgeStyle(animated: boolean) {
+  return animated
+    ? { stroke: '#60a5fa', strokeWidth: 2 }
+    : { stroke: '#334155', strokeWidth: 1.5 }
+}
+
 const mainEdges = computed(() => [
+  { id: 'e-disc-coll', source: 'discovery', target: 'collector', animated: props.nodeStates.discovery === 'running', style: edgeStyle(props.nodeStates.discovery === 'running') },
+  { id: 'e-coll-anal', source: 'collector', target: 'analyst',   animated: props.nodeStates.collector === 'running', style: edgeStyle(props.nodeStates.collector === 'running') },
+  { id: 'e-anal-writ', source: 'analyst',   target: 'writer',    animated: props.nodeStates.analyst   === 'running', style: edgeStyle(props.nodeStates.analyst === 'running') },
+  { id: 'e-writ-qa',   source: 'writer',    target: 'qa',        animated: props.nodeStates.writer    === 'running', style: edgeStyle(props.nodeStates.writer === 'running') },
   {
-    id: 'e-discovery-collector',
-    source: 'discovery',
-    target: 'collector',
-    animated: props.nodeStates.discovery === 'running'
-  },
-  {
-    id: 'e-collector-analyst',
-    source: 'collector',
-    target: 'analyst',
-    animated: props.nodeStates.collector === 'running'
-  },
-  {
-    id: 'e-analyst-writer',
-    source: 'analyst',
-    target: 'writer',
-    animated: props.nodeStates.analyst === 'running'
-  },
-  {
-    id: 'e-writer-qa',
-    source: 'writer',
-    target: 'qa',
-    animated: props.nodeStates.writer === 'running'
-  },
-  {
-    id: 'e-qa-collector',
-    source: 'qa',
-    target: 'collector',
+    id: 'e-qa-coll',
+    source: 'qa', target: 'collector',
     label: 'revise',
     type: 'smoothstep',
-    style: { stroke: '#f97316', strokeDasharray: '5 5' },
-    labelStyle: { fill: '#f97316', fontWeight: 600 },
-    labelBgStyle: { fill: '#1e293b' },
-    animated: props.nodeStates.qa === 'done' && props.nodeStates.collector === 'revise'
-  }
+    style: { stroke: '#fb923c', strokeWidth: 1.5, strokeDasharray: '5 5' },
+    labelStyle: { fill: '#fb923c', fontWeight: 600, fontSize: 10 },
+    labelBgStyle: { fill: '#0f172a', fillOpacity: 0.9 },
+    animated: props.nodeStates.qa === 'done' && props.nodeStates.collector === 'revise',
+  },
 ])
 
-const subEdges = computed(() =>
-  props.subAgents.slice(0, 4).map(sa => ({
-    id: `e-collector-${sa.sub_id}`,
+const subEdges = computed(() => [
+  ...props.subAgents.slice(0, 4).map(sa => ({
+    id: `e-coll-${sa.sub_id}`,
     source: 'collector',
     target: `sub-${sa.sub_id}`,
     type: 'smoothstep',
-    style: { stroke: '#a855f7', strokeWidth: 1.5 },
-    animated: sa.status === 'running'
-  })).concat(
-    overflowNode.value.map(node => ({
-      id: 'e-collector-overflow',
-      source: 'collector',
-      target: node.id,
-      type: 'smoothstep',
-      style: { stroke: '#a855f7', strokeWidth: 1.5 },
-      animated: node.data.status === 'running'
-    }))
-  )
-)
+    style: { stroke: sa.status === 'running' ? '#a78bfa' : '#334155', strokeWidth: 1.5 },
+    animated: sa.status === 'running',
+  })),
+  ...overflowNode.value.map(node => ({
+    id: 'e-coll-overflow',
+    source: 'collector',
+    target: node.id,
+    type: 'smoothstep',
+    style: { stroke: node.data.status === 'running' ? '#a78bfa' : '#334155', strokeWidth: 1.5 },
+    animated: node.data.status === 'running',
+  })),
+])
 
 const edges = computed(() => [...mainEdges.value, ...subEdges.value])
 </script>
 
 <template>
-  <div class="h-full bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+  <div class="h-full rounded-lg overflow-hidden shadow-sm" style="background: #0b1120; border: 1px solid #1e293b;">
     <VueFlow
       :nodes="nodes"
       :edges="edges"
@@ -169,53 +117,50 @@ const edges = computed(() => [...mainEdges.value, ...subEdges.value])
       :nodes-connectable="false"
       :zoom-on-scroll="false"
       :pan-on-drag="false"
-      class="vue-flow-light"
+      class="dag-dark"
     >
       <template #node-agent="nodeProps">
         <DagNode :data="nodeProps.data" />
       </template>
+
       <template #node-sub-agent="nodeProps">
         <div
-          class="px-2 py-1.5 rounded border text-center text-[10px] w-[118px] shadow-sm"
-          :class="[
-            nodeProps.data.status === 'running' ? 'bg-purple-50 border-purple-400 animate-pulse text-purple-700' :
-            nodeProps.data.status === 'done' ? 'bg-emerald-50 border-emerald-400 text-emerald-700' :
-            'bg-red-50 border-red-400 text-red-700'
-          ]"
+          class="px-2 py-1.5 rounded-lg text-center text-[10px] w-[118px] transition-all duration-300"
+          :style="{
+            background: '#0f172a',
+            border: `1px solid ${nodeProps.data.status === 'running' ? '#7c3aed' : nodeProps.data.status === 'done' ? '#065f46' : '#7f1d1d'}`,
+            boxShadow: nodeProps.data.status === 'running' ? '0 0 10px 2px rgba(124,58,237,0.4)' : 'none',
+            color: nodeProps.data.status === 'running' ? '#c4b5fd' : nodeProps.data.status === 'done' ? '#6ee7b7' : '#fca5a5',
+          }"
         >
           <div class="truncate font-medium" :title="nodeProps.data.label">{{ nodeProps.data.label }}</div>
-          <div v-if="nodeProps.data.claims != null" class="text-[9px] opacity-70">
+          <div v-if="nodeProps.data.claims != null" class="text-[9px] opacity-60 mt-0.5">
             {{ nodeProps.data.claims }} claims
           </div>
         </div>
       </template>
-      <Background :variant="BackgroundVariant.Lines" :gap="24" :size="0.4" color="#e2e8f0" />
-      <Controls />
+
+      <Background :variant="BackgroundVariant.Dots" :gap="20" :size="0.8" color="#1e293b" />
     </VueFlow>
   </div>
 </template>
 
 <style>
-.vue-flow-light {
+.dag-dark {
   --vf-node-bg: transparent;
-  --vf-node-text: #334155;
+  --vf-node-text: #cbd5e1;
+  background: transparent;
 }
-.vue-flow__edge-path {
-  stroke: #94a3b8;
-  stroke-width: 2;
+.dag-dark .vue-flow__edge-path {
+  stroke: #334155;
+  stroke-width: 1.5;
 }
-.vue-flow__controls {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+/* animated edge glowing particle */
+.dag-dark .vue-flow__edge.animated .vue-flow__edge-path {
+  animation: flow-dash 1.4s linear infinite;
 }
-.vue-flow__controls-button {
-  background: #fff;
-  border-bottom: 1px solid #e2e8f0;
-  fill: #64748b;
-}
-.vue-flow__controls-button:hover {
-  background: #f1f5f9;
+@keyframes flow-dash {
+  from { stroke-dashoffset: 40; }
+  to   { stroke-dashoffset: 0; }
 }
 </style>

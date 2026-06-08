@@ -1,7 +1,5 @@
 """Tests for QA rule-based validators."""
 
-import pytest
-
 from agents.qa.validators import (
     check_consistency,
     check_dimension_coverage,
@@ -9,6 +7,7 @@ from agents.qa.validators import (
     check_snippet_existence,
     check_source_coverage,
     check_untraceable_sources,
+    check_user_persona_sourcing,
     run_all_validators,
 )
 
@@ -25,9 +24,7 @@ class TestDimensionCoverage:
             {"claim": f"features claim {i}", "dimension": "features", "sources": [{"snippet": "x"}]}
             for i in range(3)
         ]
-        issues, missing = check_dimension_coverage(
-            extra_claims, ["pricing", "features"]
-        )
+        issues, missing = check_dimension_coverage(extra_claims, ["pricing", "features"])
         assert missing == []
         assert len(issues) == 0
 
@@ -40,9 +37,7 @@ class TestDimensionCoverage:
 
     def test_shallow_dimension_triggers_supplement(self, sample_claims):
         # "features" has only 1 claim, threshold is 3
-        issues, missing = check_dimension_coverage(
-            sample_claims, ["features"]
-        )
+        issues, missing = check_dimension_coverage(sample_claims, ["features"])
         assert "features" in missing
         assert any("不充分" in i.description for i in issues)
 
@@ -149,6 +144,60 @@ class TestOverallConfidence:
         avg, issues = check_overall_confidence(sample_profile)
         assert avg < 0.75
         assert any(i.severity == "critical" for i in issues)
+
+
+class TestUserPersonaSourcing:
+    def test_solution_page_can_support_persona(self):
+        profile = {
+            "user_personas": [
+                {
+                    "segment": "企业团队",
+                    "pain_points": [
+                        {
+                            "claim": "面向企业团队的协作场景",
+                            "confidence": 0.8,
+                            "sources": [
+                                {
+                                    "url": "https://example.com/solutions/enterprise",
+                                    "snippet": "Built for enterprise teams and complex workflows.",
+                                }
+                            ],
+                        }
+                    ],
+                }
+            ]
+        }
+
+        issues = check_user_persona_sourcing(profile)
+
+        assert issues == []
+
+    def test_weak_persona_source_is_minor_not_reject(self):
+        profile = {
+            "user_personas": [
+                {
+                    "segment": "企业团队",
+                    "pain_points": [
+                        {
+                            "claim": "协作能力丰富",
+                            "confidence": 0.8,
+                            "sources": [
+                                {
+                                    "url": "https://example.com/pricing",
+                                    "snippet": "Advanced collaboration features are included.",
+                                }
+                            ],
+                        }
+                    ],
+                }
+            ]
+        }
+
+        issues = check_user_persona_sourcing(profile)
+
+        assert len(issues) == 1
+        assert issues[0].issue_type == "weak_source"
+        assert issues[0].severity == "minor"
 
 
 class TestRunAllValidators:

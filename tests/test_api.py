@@ -37,7 +37,12 @@ async def test_compare_requires_min_two_tasks(client):
 async def test_compare_not_found_tasks(client):
     resp = await client.post(
         "/api/analyze/compare",
-        json={"task_ids": ["00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"]},
+        json={
+            "task_ids": [
+                "00000000-0000-0000-0000-000000000001",
+                "00000000-0000-0000-0000-000000000002",
+            ]
+        },
     )
     assert resp.status_code == 404
 

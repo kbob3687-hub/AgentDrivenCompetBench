@@ -7,6 +7,8 @@
 from __future__ import annotations
 
 import asyncio
+import logging
+import os
 import time
 import uuid
 from datetime import datetime
@@ -26,6 +28,8 @@ from orchestrator.scoring import iteration_improvement_bonus
 from orchestrator.state import FeedbackRecord, GraphState
 from schemas.message import AgentMessage, MessageContext, MessageType
 
+logger = logging.getLogger(__name__)
+
 # Per-task trace accumulator (avoids LangGraph state propagation issues)
 _task_traces: dict[str, list[dict[str, Any]]] = {}
 
@@ -43,14 +47,33 @@ def _langfuse_trace_url(task_id: str) -> str:
 
     The frontend must not hard-code Langfuse project ids or URL shape.
     """
+    trace_id = _langfuse_trace_id(task_id)
     try:
         from langfuse import Langfuse
 
-        return Langfuse(timeout=10).get_trace_url(
-            trace_id=_langfuse_trace_id(task_id)
-        ) or ""
-    except Exception:
-        return ""
+        return Langfuse(timeout=10).get_trace_url(trace_id=trace_id) or ""
+    except Exception as exc:
+        logger.warning("Langfuse SDK trace URL generation failed: %s", exc)
+
+    project_id = os.getenv("LANGFUSE_PROJECT_ID", "").strip().strip('"')
+    host = (
+        (
+            os.getenv("LANGFUSE_HOST")
+            or os.getenv("LANGFUSE_BASE_URL")
+            or "https://cloud.langfuse.com"
+        )
+        .strip()
+        .strip('"')
+        .rstrip("/")
+    )
+    if project_id:
+        return f"{host}/project/{project_id}/traces/{trace_id}"
+
+    logger.warning(
+        "Langfuse trace URL unavailable: SDK could not resolve project id and "
+        "LANGFUSE_PROJECT_ID is not set."
+    )
+    return ""
 
 
 def _normalize_manual_urls(urls: list[str] | None) -> list[str]:
@@ -211,7 +234,11 @@ def _qa_reason_label(issue_type: str, target_agent: str) -> str:
         "schema_violation": "输出结构不符合要求",
     }
     base = mapping.get(issue_type, "质量检查未通过")
-    if target_agent == "collector" and issue_type in {"missing_source", "factual_error", "outdated"}:
+    if target_agent == "collector" and issue_type in {
+        "missing_source",
+        "factual_error",
+        "outdated",
+    }:
         return f"{base}，所以打回 Collector 补数据"
     if target_agent == "analyst":
         return f"{base}，所以打回 Analyst 重做分析"
@@ -255,7 +282,9 @@ def _enrich_qa_issue(
     enriched["reason_label"] = reason_label
     enriched["action_hint"] = _qa_action_hint(issue, field_label, target_agent)
     if persisted_fields and issue.get("field_path") in persisted_fields:
-        enriched["iteration_hint"] = "上一轮已经存在，本轮仍未解决；继续只重复同样 URL 大概率不会改善。"
+        enriched["iteration_hint"] = (
+            "上一轮已经存在，本轮仍未解决；继续只重复同样 URL 大概率不会改善。"
+        )
     return enriched
 
 
@@ -299,21 +328,36 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
     scope = state.get("collect_scope", ["pricing", "features"])
     target_urls = state.get("target_urls", [])
 
-    await _publish(task_id, EventType.AGENT_START, {
-        "agent": "discovery", "iteration": 1,
-    })
+    await _publish(
+        task_id,
+        EventType.AGENT_START,
+        {
+            "agent": "discovery",
+            "iteration": 1,
+        },
+    )
     start = time.time()
 
     # 如果用户指定了URL，跳过discovery
     if target_urls:
-        await _publish(task_id, EventType.LOG, {
-            "message": f"用户指定了 {len(target_urls)} 个URL，跳过自动发现",
-            "agent": "discovery",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": f"用户指定了 {len(target_urls)} 个URL，跳过自动发现",
+                "agent": "discovery",
+            },
+        )
         duration = time.time() - start
-        await _publish(task_id, EventType.AGENT_END, {
-            "agent": "discovery", "iteration": 1, "duration_ms": round(duration * 1000),
-        })
+        await _publish(
+            task_id,
+            EventType.AGENT_END,
+            {
+                "agent": "discovery",
+                "iteration": 1,
+                "duration_ms": round(duration * 1000),
+            },
+        )
         return {
             "discovered_urls": target_urls,
             "discovery_path": "user_specified",
@@ -328,10 +372,14 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
     # QA 自适应降级：上一轮 QA 建议切换策略
     suggested = state.get("suggested_strategy", "")
     if suggested and suggested != strategy:
-        await _publish(task_id, EventType.LOG, {
-            "message": f"QA 反馈触发策略切换: {strategy} → {suggested}",
-            "agent": "discovery",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": f"QA 反馈触发策略切换: {strategy} → {suggested}",
+                "agent": "discovery",
+            },
+        )
         strategy = suggested
 
     result = await agent.discover(target, scope, strategy=strategy, trusted_domains=trusted_domains)
@@ -342,47 +390,67 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
     queries = result.get("search_queries", [])
     duration = time.time() - start
 
-    await _publish(task_id, EventType.LOG, {
-        "message": f"Discovery [{path}]: 发现 {len(urls)} 个URL (domain: {domain})",
-        "agent": "discovery",
-    })
+    await _publish(
+        task_id,
+        EventType.LOG,
+        {
+            "message": f"Discovery [{path}]: 发现 {len(urls)} 个URL (domain: {domain})",
+            "agent": "discovery",
+        },
+    )
 
     # 0 URL 时把搜索 query 和命中明细暴露到 SSE 流，便于定位
     # （搜索本身没出错但搜不到 vs 配额耗尽 vs 全被排除域名过滤掉）
     if not urls and queries:
         trusted_count = result.get("trusted_count", 0)
         other_count = result.get("other_count", 0)
-        await _publish(task_id, EventType.LOG, {
-            "message": (
-                f"⚠ Discovery 0 URL 详情: 已尝试 {len(queries)} 条 search query, "
-                f"trusted_hits={trusted_count}, other_hits={other_count}. "
-                f"Queries: {queries[:5]}{'...' if len(queries) > 5 else ''}"
-            ),
-            "agent": "discovery",
-        })
-        if path == "open_search" and trusted_count == 0 and other_count == 0:
-            await _publish(task_id, EventType.LOG, {
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
                 "message": (
-                    "💡 提示: open_search 策略 0 命中。常见原因：1) ENABLE_FIRECRAWL=false，"
-                    "当前只做免费域名猜测和URL验证；2) Firecrawl 未配置、额度不足或搜索不可用；"
-                    "3) 候选URL不可达、被站点拦截或 robots.txt 限制。"
-                    "建议补充 2-3 个可直接访问的权威源，或在演示模式下开启受控付费抓取。"
+                    f"⚠ Discovery 0 URL 详情: 已尝试 {len(queries)} 条 search query, "
+                    f"trusted_hits={trusted_count}, other_hits={other_count}. "
+                    f"Queries: {queries[:5]}{'...' if len(queries) > 5 else ''}"
                 ),
                 "agent": "discovery",
-            })
+            },
+        )
+        if path == "open_search" and trusted_count == 0 and other_count == 0:
+            await _publish(
+                task_id,
+                EventType.LOG,
+                {
+                    "message": (
+                        "💡 提示: open_search 策略 0 命中。常见原因：1) ENABLE_FIRECRAWL=false，"
+                        "当前只做免费域名猜测和URL验证；2) Firecrawl 未配置、额度不足或搜索不可用；"
+                        "3) 候选URL不可达、被站点拦截或 robots.txt 限制。"
+                        "建议补充 2-3 个可直接访问的权威源，或在演示模式下开启受控付费抓取。"
+                    ),
+                    "agent": "discovery",
+                },
+            )
 
-    await _publish(task_id, EventType.AGENT_END, {
-        "agent": "discovery", "iteration": 1, "duration_ms": round(duration * 1000),
-    })
+    await _publish(
+        task_id,
+        EventType.AGENT_END,
+        {
+            "agent": "discovery",
+            "iteration": 1,
+            "duration_ms": round(duration * 1000),
+        },
+    )
 
-    _task_traces.setdefault(task_id, []).append(_build_trace_entry(
-        agent="discovery",
-        iteration=1,
-        duration_ms=round(duration * 1000),
-        model="none (logic + search API)",
-        prompt_preview=f"发现 {target} 的数据源，scope: {scope}, strategy: {strategy}",
-        output_preview=f"path={path}, domain={domain}, urls={len(urls)}",
-    ))
+    _task_traces.setdefault(task_id, []).append(
+        _build_trace_entry(
+            agent="discovery",
+            iteration=1,
+            duration_ms=round(duration * 1000),
+            model="none (logic + search API)",
+            prompt_preview=f"发现 {target} 的数据源，scope: {scope}, strategy: {strategy}",
+            output_preview=f"path={path}, domain={domain}, urls={len(urls)}",
+        )
+    )
 
     return {
         "discovered_urls": urls,
@@ -406,9 +474,15 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     if missing:
         scope = list(set(scope + missing))
 
-    await _publish(task_id, EventType.AGENT_START, {
-        "agent": "collector", "iteration": iteration, "scope": scope,
-    })
+    await _publish(
+        task_id,
+        EventType.AGENT_START,
+        {
+            "agent": "collector",
+            "iteration": iteration,
+            "scope": scope,
+        },
+    )
     start = time.time()
 
     agent = CollectorAgent()
@@ -423,57 +497,100 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     # QA 自适应降级：上一轮建议切换策略 → 重跑 Discovery 拿新数据源
     if manual_urls:
         urls = manual_urls[:10]
-        await _publish(task_id, EventType.LOG, {
-            "message": f"使用人工补充的数据源: {len(urls)} 个URL",
-            "agent": "collector",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": f"使用人工补充的数据源: {len(urls)} 个URL",
+                "agent": "collector",
+            },
+        )
     elif suggested and suggested != new_strategy:
-        await _publish(task_id, EventType.LOG, {
-            "message": f"QA 反馈触发策略降级: {new_strategy} → {suggested}，重新发现数据源",
-            "agent": "collector",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": f"QA 反馈触发策略降级: {new_strategy} → {suggested}，重新发现数据源",
+                "agent": "collector",
+            },
+        )
         new_strategy = suggested
         rediscover = DiscoveryAgent()
         rediscover_result = await rediscover.discover(
-            target, scope,
+            target,
+            scope,
             strategy=new_strategy,
             trusted_domains=state.get("trusted_domains", []),
         )
         urls = rediscover_result["urls"][:10]
         pre_fetched_updates.update(rediscover_result.get("pre_fetched", {}))
-        await _publish(task_id, EventType.LOG, {
-            "message": f"新数据源 [{rediscover_result['path']}]: {len(urls)} 个URL",
-            "agent": "collector",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": f"新数据源 [{rediscover_result['path']}]: {len(urls)} 个URL",
+                "agent": "collector",
+            },
+        )
     elif iteration > 1 and not state.get("claims"):
         # 上一轮无任何证据（URL全失败或Discovery找到0个URL）→ 重跑 Discovery
         failed_urls = set()
         for err in state.get("collect_errors", []):
             if ": " in err:
                 failed_urls.add(err.split(": ", 1)[0])
-        await _publish(task_id, EventType.LOG, {
-            "message": (
-                f"上轮 0 条证据（失败URL: {len(failed_urls)}），"
-                f"重新搜索数据源"
-            ),
-            "agent": "collector",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": (f"上轮 0 条证据（失败URL: {len(failed_urls)}），重新搜索数据源"),
+                "agent": "collector",
+            },
+        )
         rediscover = DiscoveryAgent()
         rediscover_result = await rediscover.discover(
-            target, scope,
+            target,
+            scope,
             strategy=new_strategy,
             trusted_domains=state.get("trusted_domains", []),
         )
         new_urls = [u for u in rediscover_result.get("urls", []) if u not in failed_urls]
         urls = new_urls[:10]
         pre_fetched_updates.update(rediscover_result.get("pre_fetched", {}))
-        await _publish(task_id, EventType.LOG, {
-            "message": (
-                f"重新发现 [{rediscover_result['path']}]: "
-                f"{len(urls)} 个URL（排除 {len(failed_urls)} 个死链）"
-            ),
-            "agent": "collector",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": (
+                    f"重新发现 [{rediscover_result['path']}]: "
+                    f"{len(urls)} 个URL（排除 {len(failed_urls)} 个死链）"
+                ),
+                "agent": "collector",
+            },
+        )
+    elif iteration > 1 and missing:
+        # 有claims但QA打回说缺维度 → 排除上轮已抓URL，重新发现新数据源
+        already_tried = set(discovered)
+        rediscover = DiscoveryAgent()
+        rediscover_result = await rediscover.discover(
+            target,
+            scope,
+            strategy=new_strategy,
+            trusted_domains=state.get("trusted_domains", []),
+        )
+        new_urls = [u for u in rediscover_result.get("urls", []) if u not in already_tried]
+        urls = (new_urls or discovered)[:10]
+        pre_fetched_updates.update(rediscover_result.get("pre_fetched", {}))
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": (
+                    f"缺少维度 {missing}，重新发现数据源: {len(new_urls)} 个新URL"
+                    f"（排除 {len(already_tried)} 个已抓）"
+                ),
+                "agent": "collector",
+            },
+        )
     elif discovered:
         # Discovery 已发现 URL（首轮或补采），直接复用
         urls = discovered[:10]
@@ -481,22 +598,30 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         # 未知竞品 + Discovery 未给出 URL → 走 warm-path 兜底（仅已知竞品有效）
         urls = agent._get_default_urls(target, scope)[:10]
         if urls:
-            await _publish(task_id, EventType.LOG, {
-                "message": f"Warm-path 兜底: 命中已知竞品库，使用 {len(urls)} 个 URL",
-                "agent": "collector",
-            })
+            await _publish(
+                task_id,
+                EventType.LOG,
+                {
+                    "message": f"Warm-path 兜底: 命中已知竞品库，使用 {len(urls)} 个 URL",
+                    "agent": "collector",
+                },
+            )
         else:
             # 未知竞品 + Discovery 无结果 → 不再自拼搜索端点，明确报错
-            await _publish(task_id, EventType.LOG, {
-                "message": (
-                    f"⚠ Discovery 未发现可采集的 URL，"
-                    f"且 {target!r} 不在已知竞品库中。"
-                    f"建议：1) 切换 discovery_strategy 重试；"
-                    f"2) 通过 target_urls 提供候选 URL；"
-                    f"3) 该领域信息源可能不足以自动分析。"
-                ),
-                "agent": "collector",
-            })
+            await _publish(
+                task_id,
+                EventType.LOG,
+                {
+                    "message": (
+                        f"⚠ Discovery 未发现可采集的 URL，"
+                        f"且 {target!r} 不在已知竞品库中。"
+                        f"建议：1) 切换 discovery_strategy 重试；"
+                        f"2) 通过 target_urls 提供候选 URL；"
+                        f"3) 该领域信息源可能不足以自动分析。"
+                    ),
+                    "agent": "collector",
+                },
+            )
 
     # 行业模板扩展字段注入采集指令
     industry_fields = state.get("industry_fields", [])
@@ -504,9 +629,14 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     if industry_fields:
         extra_scope_hint = f" (行业扩展字段: {', '.join(industry_fields[:5])})"
 
-    await _publish(task_id, EventType.LOG, {
-        "message": f"Fan-out: 并行采集 {len(urls)} 个数据源{extra_scope_hint}", "agent": "collector",
-    })
+    await _publish(
+        task_id,
+        EventType.LOG,
+        {
+            "message": f"Fan-out: 并行采集 {len(urls)} 个数据源{extra_scope_hint}",
+            "agent": "collector",
+        },
+    )
 
     # Fan-out: 并行 fetch + extract
     semaphore = asyncio.Semaphore(4)
@@ -518,21 +648,32 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     }
 
     async def process_url(url: str, sub_id: str) -> list[dict]:
-        await _publish(task_id, EventType.SUB_AGENT_START, {
-            "parent": "collector", "sub_id": sub_id, "url": url, "iteration": iteration,
-        })
+        await _publish(
+            task_id,
+            EventType.SUB_AGENT_START,
+            {
+                "parent": "collector",
+                "sub_id": sub_id,
+                "url": url,
+                "iteration": iteration,
+            },
+        )
         sub_start = time.time()
 
         async with semaphore:
             cached_content = _usable_pre_fetched_content(pre_fetched.get(url))
             if cached_content:
-                await _publish(task_id, EventType.LOG, {
-                    "message": (
-                        f"复用 Discovery 预抓取内容: {url} "
-                        f"({len(cached_content)} 字符)，跳过重复抓取"
-                    ),
-                    "agent": "collector",
-                })
+                await _publish(
+                    task_id,
+                    EventType.LOG,
+                    {
+                        "message": (
+                            f"复用 Discovery 预抓取内容: {url} "
+                            f"({len(cached_content)} 字符)，跳过重复抓取"
+                        ),
+                        "agent": "collector",
+                    },
+                )
                 content = agent._truncate_content(cached_content, max_chars=12000)
                 extracted = await agent._extract_info(
                     competitor_name=target,
@@ -544,12 +685,19 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
                     industry_fields=industry_fields,
                     priority_dimensions=missing if iteration > 1 else None,
                 )
-                await _publish(task_id, EventType.SUB_AGENT_END, {
-                    "parent": "collector", "sub_id": sub_id, "url": url,
-                    "iteration": iteration, "success": True,
-                    "claims_count": len(extracted),
-                    "duration_ms": round((time.time() - sub_start) * 1000),
-                })
+                await _publish(
+                    task_id,
+                    EventType.SUB_AGENT_END,
+                    {
+                        "parent": "collector",
+                        "sub_id": sub_id,
+                        "url": url,
+                        "iteration": iteration,
+                        "success": True,
+                        "claims_count": len(extracted),
+                        "duration_ms": round((time.time() - sub_start) * 1000),
+                    },
+                )
                 return extracted
 
             fetch_result = await agent._fetch_url(url)
@@ -557,17 +705,19 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
             if not fetch_result.success:
                 # robots.txt 拦截：尝试用 Discovery 搜索结果中的内容兜底
                 if fetch_result.robots_status == "disallowed" and url in pre_fetched:
-                    fallback_content = _usable_pre_fetched_content(
-                        pre_fetched[url], min_chars=50
-                    )
+                    fallback_content = _usable_pre_fetched_content(pre_fetched[url], min_chars=50)
                     if fallback_content:
-                        await _publish(task_id, EventType.LOG, {
-                            "message": (
-                                f"⛔ robots.txt 禁止抓取: {url}，"
-                                f"使用搜索摘要兜底 ({len(fallback_content)} 字符)"
-                            ),
-                            "agent": "collector",
-                        })
+                        await _publish(
+                            task_id,
+                            EventType.LOG,
+                            {
+                                "message": (
+                                    f"⛔ robots.txt 禁止抓取: {url}，"
+                                    f"使用搜索摘要兜底 ({len(fallback_content)} 字符)"
+                                ),
+                                "agent": "collector",
+                            },
+                        )
                         content = agent._truncate_content(fallback_content, max_chars=12000)
                         extracted = await agent._extract_info(
                             competitor_name=target,
@@ -579,43 +729,69 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
                             industry_fields=industry_fields,
                             priority_dimensions=missing if iteration > 1 else None,
                         )
-                        await _publish(task_id, EventType.SUB_AGENT_END, {
-                            "parent": "collector", "sub_id": sub_id, "url": url,
-                            "iteration": iteration, "success": True,
-                            "claims_count": len(extracted),
-                            "duration_ms": round((time.time() - sub_start) * 1000),
-                        })
+                        await _publish(
+                            task_id,
+                            EventType.SUB_AGENT_END,
+                            {
+                                "parent": "collector",
+                                "sub_id": sub_id,
+                                "url": url,
+                                "iteration": iteration,
+                                "success": True,
+                                "claims_count": len(extracted),
+                                "duration_ms": round((time.time() - sub_start) * 1000),
+                            },
+                        )
                         return extracted
 
                 fetch_errors.append(f"{url}: {fetch_result.error}")
                 if fetch_result.robots_status == "disallowed":
-                    await _publish(task_id, EventType.LOG, {
-                        "message": f"⛔ robots.txt 禁止抓取: {url}（已跳过）",
-                        "agent": "collector",
-                    })
+                    await _publish(
+                        task_id,
+                        EventType.LOG,
+                        {
+                            "message": f"⛔ robots.txt 禁止抓取: {url}（已跳过）",
+                            "agent": "collector",
+                        },
+                    )
                 else:
                     # 抓取失败的真实错误也发到流，便于前端定位 quota / 网络 / 鉴权
-                    await _publish(task_id, EventType.LOG, {
-                        "message": f"❌ 抓取失败: {url} — {fetch_result.error}",
-                        "agent": "collector",
-                    })
-                await _publish(task_id, EventType.SUB_AGENT_END, {
-                    "parent": "collector", "sub_id": sub_id, "url": url,
-                    "iteration": iteration, "success": False,
-                    "duration_ms": round((time.time() - sub_start) * 1000),
-                    "claims_count": 0,
-                    "error": fetch_result.error or "",
-                })
+                    await _publish(
+                        task_id,
+                        EventType.LOG,
+                        {
+                            "message": f"❌ 抓取失败: {url} — {fetch_result.error}",
+                            "agent": "collector",
+                        },
+                    )
+                await _publish(
+                    task_id,
+                    EventType.SUB_AGENT_END,
+                    {
+                        "parent": "collector",
+                        "sub_id": sub_id,
+                        "url": url,
+                        "iteration": iteration,
+                        "success": False,
+                        "duration_ms": round((time.time() - sub_start) * 1000),
+                        "claims_count": 0,
+                        "error": fetch_result.error or "",
+                    },
+                )
                 return []
 
             if fetch_result.pii_redactions:
                 redact_summary = "、".join(
                     f"{k.strip('[]')}×{v}" for k, v in fetch_result.pii_redactions.items()
                 )
-                await _publish(task_id, EventType.LOG, {
-                    "message": f"🔒 PII 脱敏: {url} 已掩码 {redact_summary}",
-                    "agent": "collector",
-                })
+                await _publish(
+                    task_id,
+                    EventType.LOG,
+                    {
+                        "message": f"🔒 PII 脱敏: {url} 已掩码 {redact_summary}",
+                        "agent": "collector",
+                    },
+                )
 
             content = agent._truncate_content(fetch_result.content, max_chars=12000)
             extracted = await agent._extract_info(
@@ -629,12 +805,19 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
                 priority_dimensions=missing if iteration > 1 else None,
             )
 
-            await _publish(task_id, EventType.SUB_AGENT_END, {
-                "parent": "collector", "sub_id": sub_id, "url": url,
-                "iteration": iteration, "success": True,
-                "claims_count": len(extracted),
-                "duration_ms": round((time.time() - sub_start) * 1000),
-            })
+            await _publish(
+                task_id,
+                EventType.SUB_AGENT_END,
+                {
+                    "parent": "collector",
+                    "sub_id": sub_id,
+                    "url": url,
+                    "iteration": iteration,
+                    "success": True,
+                    "claims_count": len(extracted),
+                    "duration_ms": round((time.time() - sub_start) * 1000),
+                },
+            )
             return extracted
 
     tasks = [process_url(url, f"fetch-{i}") for i, url in enumerate(urls)]
@@ -669,33 +852,45 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         added += 1
 
     if iteration > 1:
-        await _publish(task_id, EventType.LOG, {
-            "message": (
-                f"增量累积: 旧证据 {len(prev_claims)} 条保留 + 本轮新增 {added} 条 "
-                f"(本轮抽到 {len(new_claims_this_iter)} 条，去重 {len(new_claims_this_iter) - added} 条)"
-            ),
-            "agent": "collector",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": (
+                    f"增量累积: 旧证据 {len(prev_claims)} 条保留 + 本轮新增 {added} 条 "
+                    f"(本轮抽到 {len(new_claims_this_iter)} 条，去重 {len(new_claims_this_iter) - added} 条)"
+                ),
+                "agent": "collector",
+            },
+        )
 
     all_claims = merged_claims
     duration = time.time() - start
 
-    await _publish(task_id, EventType.AGENT_END, {
-        "agent": "collector", "iteration": iteration, "duration_ms": round(duration * 1000),
-    })
+    await _publish(
+        task_id,
+        EventType.AGENT_END,
+        {
+            "agent": "collector",
+            "iteration": iteration,
+            "duration_ms": round(duration * 1000),
+        },
+    )
 
-    _task_traces.setdefault(task_id, []).append(_build_trace_entry(
-        agent="collector",
-        iteration=iteration,
-        duration_ms=round(duration * 1000),
-        model=agent.config.model,
-        input_tokens=len(all_claims) * 800,
-        output_tokens=len(all_claims) * 200,
-        prompt_preview=f"采集 {target} 的 {scope} 维度数据，共 {len(urls)} 个URL",
-        output_preview=(
-            f"累计 {len(all_claims)} 条claims（本轮 +{added}），失败 {len(fetch_errors)} 个源"
-        ),
-    ))
+    _task_traces.setdefault(task_id, []).append(
+        _build_trace_entry(
+            agent="collector",
+            iteration=iteration,
+            duration_ms=round(duration * 1000),
+            model=agent.config.model,
+            input_tokens=len(all_claims) * 800,
+            output_tokens=len(all_claims) * 200,
+            prompt_preview=f"采集 {target} 的 {scope} 维度数据，共 {len(urls)} 个URL",
+            output_preview=(
+                f"累计 {len(all_claims)} 条claims（本轮 +{added}），失败 {len(fetch_errors)} 个源"
+            ),
+        )
+    )
 
     return {
         "claims": all_claims,
@@ -718,17 +913,29 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
     iteration = state.get("iteration", 1)
     claims = state.get("claims", [])
 
-    await _publish(task_id, EventType.AGENT_START, {
-        "agent": "analyst", "iteration": iteration, "claims_count": len(claims),
-    })
+    await _publish(
+        task_id,
+        EventType.AGENT_START,
+        {
+            "agent": "analyst",
+            "iteration": iteration,
+            "claims_count": len(claims),
+        },
+    )
     start = time.time()
 
     agent = AnalystAgent()
 
     if not claims:
-        await _publish(task_id, EventType.AGENT_END, {
-            "agent": "analyst", "iteration": iteration, "duration_ms": 0,
-        })
+        await _publish(
+            task_id,
+            EventType.AGENT_END,
+            {
+                "agent": "analyst",
+                "iteration": iteration,
+                "duration_ms": 0,
+            },
+        )
         return {"error": "no claims available for analysis", "profile": {}}
 
     message = _make_message(
@@ -748,9 +955,15 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
     args = result.arguments
     duration = time.time() - start
 
-    await _publish(task_id, EventType.AGENT_END, {
-        "agent": "analyst", "iteration": iteration, "duration_ms": round(duration * 1000),
-    })
+    await _publish(
+        task_id,
+        EventType.AGENT_END,
+        {
+            "agent": "analyst",
+            "iteration": iteration,
+            "duration_ms": round(duration * 1000),
+        },
+    )
 
     if args.get("error"):
         print(f"  [Analyst][iter={iteration}] ERROR: {args.get('error')}")
@@ -768,16 +981,18 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
         if not profile_data:
             return {"error": "analyst returned empty profile", "profile": {}}
 
-    _task_traces.setdefault(task_id, []).append(_build_trace_entry(
-        agent="analyst",
-        iteration=iteration,
-        duration_ms=round(duration * 1000),
-        model=agent.config.model,
-        input_tokens=len(str(claims)) // 4,
-        output_tokens=len(str(args.get("profile", {}))) // 4,
-        prompt_preview=f"分析 {len(claims)} 条claims，维度: {state.get('collect_scope', [])}",
-        output_preview=f"生成 CompetitorProfile，完整度 {args.get('completeness_score', 0):.0%}",
-    ))
+    _task_traces.setdefault(task_id, []).append(
+        _build_trace_entry(
+            agent="analyst",
+            iteration=iteration,
+            duration_ms=round(duration * 1000),
+            model=agent.config.model,
+            input_tokens=len(str(claims)) // 4,
+            output_tokens=len(str(args.get("profile", {}))) // 4,
+            prompt_preview=f"分析 {len(claims)} 条claims，维度: {state.get('collect_scope', [])}",
+            output_preview=f"生成 CompetitorProfile，完整度 {args.get('completeness_score', 0):.0%}",
+        )
+    )
 
     return {
         "profile": args.get("profile", {}),
@@ -791,18 +1006,29 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
     task_id = state.get("trace_id", "")
     iteration = state.get("iteration", 1)
 
-    await _publish(task_id, EventType.AGENT_START, {
-        "agent": "writer", "iteration": iteration,
-    })
+    await _publish(
+        task_id,
+        EventType.AGENT_START,
+        {
+            "agent": "writer",
+            "iteration": iteration,
+        },
+    )
     start = time.time()
 
     agent = WriterAgent()
     profile = state.get("profile", {})
 
     if not profile:
-        await _publish(task_id, EventType.AGENT_END, {
-            "agent": "writer", "iteration": iteration, "duration_ms": 0,
-        })
+        await _publish(
+            task_id,
+            EventType.AGENT_END,
+            {
+                "agent": "writer",
+                "iteration": iteration,
+                "duration_ms": 0,
+            },
+        )
         return {"error": "no profile available for writing", "report_markdown": ""}
 
     message = _make_message(
@@ -819,23 +1045,31 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
     args = result.arguments
     duration = time.time() - start
 
-    await _publish(task_id, EventType.AGENT_END, {
-        "agent": "writer", "iteration": iteration, "duration_ms": round(duration * 1000),
-    })
+    await _publish(
+        task_id,
+        EventType.AGENT_END,
+        {
+            "agent": "writer",
+            "iteration": iteration,
+            "duration_ms": round(duration * 1000),
+        },
+    )
 
     if args.get("error"):
         return {"error": args["error"], "report_markdown": ""}
 
-    _task_traces.setdefault(task_id, []).append(_build_trace_entry(
-        agent="writer",
-        iteration=iteration,
-        duration_ms=round(duration * 1000),
-        model=agent.config.model,
-        input_tokens=len(str(state.get("profile", {}))) // 4,
-        output_tokens=len(args.get("report_markdown", "")) // 4,
-        prompt_preview=f"将 {state['competitor_name']} 的 profile 转为 Markdown 报告",
-        output_preview=f"生成报告 {args.get('report_length', 0)} 字，{args.get('footnote_count', 0)} 个脚注",
-    ))
+    _task_traces.setdefault(task_id, []).append(
+        _build_trace_entry(
+            agent="writer",
+            iteration=iteration,
+            duration_ms=round(duration * 1000),
+            model=agent.config.model,
+            input_tokens=len(str(state.get("profile", {}))) // 4,
+            output_tokens=len(args.get("report_markdown", "")) // 4,
+            prompt_preview=f"将 {state['competitor_name']} 的 profile 转为 Markdown 报告",
+            output_preview=f"生成报告 {args.get('report_length', 0)} 字，{args.get('footnote_count', 0)} 个脚注",
+        )
+    )
 
     return {
         "report_markdown": args.get("report_markdown", ""),
@@ -849,9 +1083,14 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     task_id = state.get("trace_id", "")
     iteration = state.get("iteration", 1)
 
-    await _publish(task_id, EventType.AGENT_START, {
-        "agent": "qa", "iteration": iteration,
-    })
+    await _publish(
+        task_id,
+        EventType.AGENT_START,
+        {
+            "agent": "qa",
+            "iteration": iteration,
+        },
+    )
     start = time.time()
 
     profile = state.get("profile", {})
@@ -875,12 +1114,24 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         await _publish(task_id, EventType.ITERATION_SUMMARY, record.model_dump(mode="json"))
 
         duration = time.time() - start
-        await _publish(task_id, EventType.AGENT_END, {
-            "agent": "qa", "iteration": iteration, "duration_ms": round(duration * 1000),
-        })
-        await _publish(task_id, EventType.QA_VERDICT, {
-            "verdict": "reject", "score": 0.0, "iteration": iteration,
-        })
+        await _publish(
+            task_id,
+            EventType.AGENT_END,
+            {
+                "agent": "qa",
+                "iteration": iteration,
+                "duration_ms": round(duration * 1000),
+            },
+        )
+        await _publish(
+            task_id,
+            EventType.QA_VERDICT,
+            {
+                "verdict": "reject",
+                "score": 0.0,
+                "iteration": iteration,
+            },
+        )
 
         max_iter = state.get("max_iterations", 3)
         suggested_strategy = failure.get("suggested_strategy", "")
@@ -912,23 +1163,27 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             }
             for sample in error_samples[:3]
         ]
-        await _publish(task_id, EventType.HITL_PAUSE, {
-            "verdict": "reject",
-            "score": 0.0,
-            "iteration": iteration,
-            "missing_dimensions": missing_dimensions,
-            "message": f"{failure_message}（第 {iteration}/{max_iter} 轮）。",
-            "issues": pause_issues,
-            "score_trend": score_trend,
-            "suggested_strategy": suggested_strategy,
-            "current_strategy": state.get("discovery_strategy", "official_only"),
-            "reason": failure["reason"],
-            "report_preview": "",
-            "iterations_left": max(0, max_iter - iteration),
-            "target_agent": target_agent,
-            "resolved_fields": [],
-            "regressed_fields": [],
-        })
+        await _publish(
+            task_id,
+            EventType.HITL_PAUSE,
+            {
+                "verdict": "reject",
+                "score": 0.0,
+                "iteration": iteration,
+                "missing_dimensions": missing_dimensions,
+                "message": f"{failure_message}（第 {iteration}/{max_iter} 轮）。",
+                "issues": pause_issues,
+                "score_trend": score_trend,
+                "suggested_strategy": suggested_strategy,
+                "current_strategy": state.get("discovery_strategy", "official_only"),
+                "reason": failure["reason"],
+                "report_preview": "",
+                "iterations_left": max(0, max_iter - iteration),
+                "target_agent": target_agent,
+                "resolved_fields": [],
+                "regressed_fields": [],
+            },
+        )
         gate = asyncio.Event()
         _hitl_gates[task_id] = gate
         _hitl_decisions.pop(task_id, None)
@@ -943,17 +1198,23 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             current_iteration=iteration,
             max_iterations=max_iter,
         )
-        await _publish(task_id, EventType.HITL_RESUME, {
-            "decision": decision,
-            "iteration": iteration,
-            "urls_count": len(hitl_payload.get("urls", [])),
-        })
+        await _publish(
+            task_id,
+            EventType.HITL_RESUME,
+            {
+                "decision": decision,
+                "iteration": iteration,
+                "urls_count": len(hitl_payload.get("urls", [])),
+            },
+        )
 
         if decision == "abort" or iteration >= max_iter:
             if decision == "continue" and hitl_payload.get("urls"):
                 update.pop("completed_at", None)
             else:
-                update["final_status"] = "human_abort" if decision == "abort" else "max_iterations_reached(no_profile)"
+                update["final_status"] = (
+                    "human_abort" if decision == "abort" else "max_iterations_reached(no_profile)"
+                )
                 update["completed_at"] = datetime.now().isoformat()
         elif decision == "force_pass":
             # 强制通过 + 空 profile 没意义，按 abort 处理
@@ -987,25 +1248,36 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     if args.get("error"):
         error_message = args.get("error", "unknown QA error")
         error_type = args.get("error_type", "QAError")
-        await _publish(task_id, EventType.AGENT_END, {
-            "agent": "qa", "iteration": iteration, "duration_ms": round(duration * 1000),
-        })
-        await _publish(task_id, EventType.ERROR, {
-            "message": (
-                f"QA 质检自身失败，不是 Collector 数据质量不达标: "
-                f"{error_type}: {error_message}"
+        await _publish(
+            task_id,
+            EventType.AGENT_END,
+            {
+                "agent": "qa",
+                "iteration": iteration,
+                "duration_ms": round(duration * 1000),
+            },
+        )
+        await _publish(
+            task_id,
+            EventType.ERROR,
+            {
+                "message": (
+                    f"QA 质检自身失败，不是 Collector 数据质量不达标: {error_type}: {error_message}"
+                )
+            },
+        )
+        _task_traces.setdefault(task_id, []).append(
+            _build_trace_entry(
+                agent="qa",
+                iteration=iteration,
+                duration_ms=round(duration * 1000),
+                model=agent.config.model,
+                input_tokens=len(str(profile)) // 4 + len(report_markdown) // 4,
+                output_tokens=0,
+                prompt_preview=f"质检 {state['competitor_name']} profile + 报告",
+                output_preview=f"QA failed: {error_type}: {error_message}",
             )
-        })
-        _task_traces.setdefault(task_id, []).append(_build_trace_entry(
-            agent="qa",
-            iteration=iteration,
-            duration_ms=round(duration * 1000),
-            model=agent.config.model,
-            input_tokens=len(str(profile)) // 4 + len(report_markdown) // 4,
-            output_tokens=0,
-            prompt_preview=f"质检 {state['competitor_name']} profile + 报告",
-            output_preview=f"QA failed: {error_type}: {error_message}",
-        ))
+        )
         return {
             "qa_verdict": "reject",
             "qa_score": 0.0,
@@ -1026,16 +1298,31 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     feedback = args.get("feedback", {})
     summary = feedback.get("summary", "") if isinstance(feedback, dict) else ""
     missing_dims = args.get("missing_dimensions", [])
-    target_agent = (feedback.get("target_agent", "collector") if isinstance(feedback, dict) else "collector")
+    target_agent = (
+        feedback.get("target_agent", "collector") if isinstance(feedback, dict) else "collector"
+    )
 
-    await _publish(task_id, EventType.AGENT_END, {
-        "agent": "qa", "iteration": iteration, "duration_ms": round(duration * 1000),
-    })
-    await _publish(task_id, EventType.QA_VERDICT, {
-        "verdict": verdict, "score": score, "iteration": iteration,
-        "issues_count": issues_count, "missing_dimensions": missing_dims,
-        "target_agent": target_agent,
-    })
+    await _publish(
+        task_id,
+        EventType.AGENT_END,
+        {
+            "agent": "qa",
+            "iteration": iteration,
+            "duration_ms": round(duration * 1000),
+        },
+    )
+    await _publish(
+        task_id,
+        EventType.QA_VERDICT,
+        {
+            "verdict": verdict,
+            "score": score,
+            "iteration": iteration,
+            "issues_count": issues_count,
+            "missing_dimensions": missing_dims,
+            "target_agent": target_agent,
+        },
+    )
 
     # Build feedback record
     if missing_dims:
@@ -1052,18 +1339,22 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     if isinstance(feedback, dict):
         for issue in feedback.get("issues", []):
             if isinstance(issue, dict):
-                qa_issues_list.append({
-                    "field_path": issue.get("field_path", ""),
-                    "severity": issue.get("severity", "minor"),
-                    "issue_type": issue.get("issue_type", ""),
-                    "description": issue.get("description", ""),
-                    "suggestion": issue.get("suggestion") or "",
-                })
+                qa_issues_list.append(
+                    {
+                        "field_path": issue.get("field_path", ""),
+                        "severity": issue.get("severity", "minor"),
+                        "issue_type": issue.get("issue_type", ""),
+                        "description": issue.get("description", ""),
+                        "suggestion": issue.get("suggestion") or "",
+                    }
+                )
 
     # 与上一轮做 field_path 级 diff，标记 resolved / regressed / persisted
     prev_history = state.get("feedback_history", [])
     prev_fields: set[str] = set()
-    previous_record = prev_history[-1] if prev_history and isinstance(prev_history[-1], dict) else None
+    previous_record = (
+        prev_history[-1] if prev_history and isinstance(prev_history[-1], dict) else None
+    )
     if prev_history:
         last = prev_history[-1]
         if isinstance(last, dict):
@@ -1085,7 +1376,9 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         for issue in qa_issues_list
     ]
 
-    previous_claims_count = int(previous_record.get("claims_count", 0) or 0) if previous_record else 0
+    previous_claims_count = (
+        int(previous_record.get("claims_count", 0) or 0) if previous_record else 0
+    )
     current_claims_count = len(state.get("claims", []))
     improvement_bonus = iteration_improvement_bonus(
         raw_score=raw_score,
@@ -1107,15 +1400,19 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
                 f"问题数 {previous_record.get('issues_count', 0)}→{issues_count}）。"
             )
             feedback["summary"] = summary
-        await _publish(task_id, EventType.LOG, {
-            "message": (
-                f"QA 迭代改善奖励: 原始分 {raw_score:.2f} → 展示分 {score:.2f}；"
-                f"严重问题 {previous_record.get('critical_issues', 0)}→{critical_issues}，"
-                f"问题数 {previous_record.get('issues_count', 0)}→{issues_count}，"
-                f"claims {previous_claims_count}→{current_claims_count}"
-            ),
-            "agent": "qa",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": (
+                    f"QA 迭代改善奖励: 原始分 {raw_score:.2f} → 展示分 {score:.2f}；"
+                    f"严重问题 {previous_record.get('critical_issues', 0)}→{critical_issues}，"
+                    f"问题数 {previous_record.get('issues_count', 0)}→{issues_count}，"
+                    f"claims {previous_claims_count}→{current_claims_count}"
+                ),
+                "agent": "qa",
+            },
+        )
 
     if verdict != "pass":
         route_reason = (
@@ -1123,40 +1420,53 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             if missing_dims
             else "QA 判断主要问题属于当前打回对象负责"
         )
-        await _publish(task_id, EventType.LOG, {
-            "message": (
-                f"QA 打回 {target_agent}: {route_reason}；"
-                f"score={score:.2f}；issues={issues_count}；critical={critical_issues}"
-            ),
-            "agent": "qa",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": (
+                    f"QA 打回 {target_agent}: {route_reason}；"
+                    f"score={score:.2f}；issues={issues_count}；critical={critical_issues}"
+                ),
+                "agent": "qa",
+            },
+        )
         if missing_dims:
             missing_labels = [_qa_field_label(dim, field_labels) for dim in missing_dims]
-            await _publish(task_id, EventType.LOG, {
-                "message": f"Collector 质量不达标: 缺少/不足 {', '.join(missing_labels)} 的可验证证据",
-                "agent": "qa",
-            })
+            await _publish(
+                task_id,
+                EventType.LOG,
+                {
+                    "message": f"Collector 质量不达标: 缺少/不足 {', '.join(missing_labels)} 的可验证证据",
+                    "agent": "qa",
+                },
+            )
         for issue in sorted(
             qa_issues_list,
             key=lambda i: {"critical": 0, "major": 1, "minor": 2}.get(i.get("severity", ""), 9),
         )[:3]:
-            await _publish(task_id, EventType.LOG, {
-                "message": f"QA 主要问题: {_brief_qa_issue(issue)}",
-                "agent": "qa",
-            })
+            await _publish(
+                task_id,
+                EventType.LOG,
+                {
+                    "message": f"QA 主要问题: {_brief_qa_issue(issue)}",
+                    "agent": "qa",
+                },
+            )
         if iteration > 1:
-            unresolved = [
-                _qa_field_label(field, field_labels)
-                for field in persisted_fields[:5]
-            ]
-            await _publish(task_id, EventType.LOG, {
-                "message": (
-                    f"QA 迭代变化: 已解决 {len(resolved_fields)} 个，"
-                    f"新增 {len(regressed_fields)} 个，仍未解决 {len(persisted_fields)} 个"
-                    + (f"（仍卡在: {', '.join(unresolved)}）" if unresolved else "")
-                ),
-                "agent": "qa",
-            })
+            unresolved = [_qa_field_label(field, field_labels) for field in persisted_fields[:5]]
+            await _publish(
+                task_id,
+                EventType.LOG,
+                {
+                    "message": (
+                        f"QA 迭代变化: 已解决 {len(resolved_fields)} 个，"
+                        f"新增 {len(regressed_fields)} 个，仍未解决 {len(persisted_fields)} 个"
+                        + (f"（仍卡在: {', '.join(unresolved)}）" if unresolved else "")
+                    ),
+                    "agent": "qa",
+                },
+            )
 
     record = FeedbackRecord(
         iteration=iteration,
@@ -1195,21 +1505,27 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     current_strategy = state.get("discovery_strategy", "official_only")
     if suggested_strategy and suggested_strategy != current_strategy:
         update["suggested_strategy"] = suggested_strategy
-        await _publish(task_id, EventType.LOG, {
-            "message": f"QA 触发策略降级建议: {current_strategy} → {suggested_strategy}（下一轮 Collector 重新发现数据源）",
-            "agent": "qa",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": f"QA 触发策略降级建议: {current_strategy} → {suggested_strategy}（下一轮 Collector 重新发现数据源）",
+                "agent": "qa",
+            },
+        )
 
-    _task_traces.setdefault(task_id, []).append(_build_trace_entry(
-        agent="qa",
-        iteration=iteration,
-        duration_ms=round(duration * 1000),
-        model=agent.config.model,
-        input_tokens=len(str(profile)) // 4 + len(report_markdown) // 4,
-        output_tokens=500,
-        prompt_preview=f"质检 {state['competitor_name']} profile + 报告，期望维度: {state.get('expected_dimensions', [])}",
-        output_preview=f"verdict={verdict}, score={score:.2f}, issues={issues_count}, missing={missing_dims}",
-    ))
+    _task_traces.setdefault(task_id, []).append(
+        _build_trace_entry(
+            agent="qa",
+            iteration=iteration,
+            duration_ms=round(duration * 1000),
+            model=agent.config.model,
+            input_tokens=len(str(profile)) // 4 + len(report_markdown) // 4,
+            output_tokens=500,
+            prompt_preview=f"质检 {state['competitor_name']} profile + 报告，期望维度: {state.get('expected_dimensions', [])}",
+            output_preview=f"verdict={verdict}, score={score:.2f}, issues={issues_count}, missing={missing_dims}",
+        )
+    )
 
     max_iter = state.get("max_iterations", 3)
 
@@ -1240,9 +1556,11 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
 
     if verdict == "pass":
         # HITL: pause for human confirmation before completing
-        await _publish(task_id, EventType.HITL_PAUSE, _hitl_payload(
-            f"QA通过(score={score:.2f})，等待人工确认发布..."
-        ))
+        await _publish(
+            task_id,
+            EventType.HITL_PAUSE,
+            _hitl_payload(f"QA通过(score={score:.2f})，等待人工确认发布..."),
+        )
         gate = asyncio.Event()
         _hitl_gates[task_id] = gate
         _hitl_decisions.pop(task_id, None)
@@ -1257,11 +1575,15 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             current_iteration=iteration,
             max_iterations=max_iter,
         )
-        await _publish(task_id, EventType.HITL_RESUME, {
-            "decision": decision,
-            "iteration": iteration,
-            "urls_count": len(hitl_payload.get("urls", [])),
-        })
+        await _publish(
+            task_id,
+            EventType.HITL_RESUME,
+            {
+                "decision": decision,
+                "iteration": iteration,
+                "urls_count": len(hitl_payload.get("urls", [])),
+            },
+        )
 
         if decision == "abort":
             update["qa_verdict"] = "reject"
@@ -1280,9 +1602,13 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
 
     elif iteration >= max_iter:
         # 达到最大迭代次数，仍需人工审核（不能静默终止）
-        await _publish(task_id, EventType.HITL_PAUSE, _hitl_payload(
-            f"已达最大迭代次数({max_iter}轮)，最终 score={score:.2f}，等待人工决策..."
-        ))
+        await _publish(
+            task_id,
+            EventType.HITL_PAUSE,
+            _hitl_payload(
+                f"已达最大迭代次数({max_iter}轮)，最终 score={score:.2f}，等待人工决策..."
+            ),
+        )
         gate = asyncio.Event()
         _hitl_gates[task_id] = gate
         _hitl_decisions.pop(task_id, None)
@@ -1297,11 +1623,15 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             current_iteration=iteration,
             max_iterations=max_iter,
         )
-        await _publish(task_id, EventType.HITL_RESUME, {
-            "decision": decision,
-            "iteration": iteration,
-            "urls_count": len(hitl_payload.get("urls", [])),
-        })
+        await _publish(
+            task_id,
+            EventType.HITL_RESUME,
+            {
+                "decision": decision,
+                "iteration": iteration,
+                "urls_count": len(hitl_payload.get("urls", [])),
+            },
+        )
 
         if decision == "force_pass":
             update["qa_verdict"] = "pass"
@@ -1340,11 +1670,15 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             current_iteration=iteration,
             max_iterations=max_iter,
         )
-        await _publish(task_id, EventType.HITL_RESUME, {
-            "decision": decision,
-            "iteration": iteration,
-            "urls_count": len(hitl_payload.get("urls", [])),
-        })
+        await _publish(
+            task_id,
+            EventType.HITL_RESUME,
+            {
+                "decision": decision,
+                "iteration": iteration,
+                "urls_count": len(hitl_payload.get("urls", [])),
+            },
+        )
 
         if decision == "force_pass":
             update["qa_verdict"] = "pass"
@@ -1402,7 +1736,7 @@ async def run_analysis(
     Args:
         task_id: Unique task identifier (used as trace_id for event routing)
         competitor_name: Name of the competitor to analyze
-        dimensions: Analysis dimensions, defaults to ["pricing", "features"]
+        dimensions: Analysis dimensions, defaults to ["pricing", "features", "user_personas"]
         industry: Industry template to apply (saas/consumer/hardware)
         max_iterations: Max QA feedback loops
 
@@ -1411,7 +1745,7 @@ async def run_analysis(
     """
     from schemas.extensions import TEMPLATE_REGISTRY, load_template
 
-    dims = dimensions or ["pricing", "features"]
+    dims = dimensions or ["pricing", "features", "user_personas"]
 
     # Load industry template and inject extra dimensions
     industry_fields: list[str] = []
@@ -1425,13 +1759,17 @@ async def run_analysis(
         # 行业模板的扩展字段也加入 collect_scope，让 Discovery 搜索词匹配行业
         # 例如消费品模板: distribution_channels, brand_sentiment, market_share 等
         dims = list(set(dims) | set(industry_fields))
-        await _publish(task_id, EventType.LOG, {
-            "message": f"已加载行业模板: {template.display_name} ({len(template.fields)}个扩展字段, 策略: {discovery_strategy})",
-            "agent": "collector",
-        })
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": f"已加载行业模板: {template.display_name} ({len(template.fields)}个扩展字段, 策略: {discovery_strategy})",
+                "agent": "collector",
+            },
+        )
 
     # expected_dimensions 只含核心维度，行业扩展字段由 check_extensions_coverage 单独检查
-    all_dimensions = ["pricing", "features", "integrations"]
+    all_dimensions = ["pricing", "features", "integrations", "user_personas"]
     expected = list(set(all_dimensions) | set(dims))
 
     try:
@@ -1472,18 +1810,22 @@ async def run_analysis(
         final_state["langfuse_trace_id"] = langfuse_trace_id
         final_state["langfuse_trace_url"] = langfuse_trace_url
 
-        await _publish(task_id, EventType.COMPLETE, {
-            "final_status": final_state.get("final_status", "ended"),
-            "competitor_name": final_state.get("competitor_name", competitor_name),
-            "industry": final_state.get("industry", industry),
-            "qa_score": final_state.get("qa_score", 0.0),
-            "report_markdown": final_state.get("report_markdown", ""),
-            "feedback_history": final_state.get("feedback_history", []),
-            "agent_traces": traces,
-            "trace_id": task_id,
-            "langfuse_trace_id": langfuse_trace_id,
-            "langfuse_trace_url": langfuse_trace_url,
-        })
+        await _publish(
+            task_id,
+            EventType.COMPLETE,
+            {
+                "final_status": final_state.get("final_status", "ended"),
+                "competitor_name": final_state.get("competitor_name", competitor_name),
+                "industry": final_state.get("industry", industry),
+                "qa_score": final_state.get("qa_score", 0.0),
+                "report_markdown": final_state.get("report_markdown", ""),
+                "feedback_history": final_state.get("feedback_history", []),
+                "agent_traces": traces,
+                "trace_id": task_id,
+                "langfuse_trace_id": langfuse_trace_id,
+                "langfuse_trace_url": langfuse_trace_url,
+            },
+        )
 
         return final_state
 

@@ -10,7 +10,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 import sys
 import uuid
@@ -25,10 +24,10 @@ ROOT = Path(__file__).parent.parent
 load_dotenv(ROOT / ".env")
 sys.path.insert(0, str(ROOT / "src"))
 
-from agents.collector.agent import CollectorAgent
 from agents.analyst.agent import AnalystAgent
-from agents.writer.agent import WriterAgent
+from agents.collector.agent import CollectorAgent
 from agents.qa.agent import QAAgent
+from agents.writer.agent import WriterAgent
 from schemas.message import AgentMessage, CollectRequest, MessageContext, MessageType
 
 
@@ -41,7 +40,12 @@ def separator(title: str) -> None:
 async def main():
     separator("FULL PIPELINE TEST: Collector -> Analyst -> Writer -> QA")
 
-    required = ["LANGFUSE_SECRET_KEY", "LANGFUSE_PUBLIC_KEY", "ANTHROPIC_API_KEY", "DEEPSEEK_API_KEY"]
+    required = [
+        "LANGFUSE_SECRET_KEY",
+        "LANGFUSE_PUBLIC_KEY",
+        "ANTHROPIC_API_KEY",
+        "DEEPSEEK_API_KEY",
+    ]
     missing = [k for k in required if not os.getenv(k)]
     if missing:
         print(f"[FAIL] Missing env vars: {missing}")
@@ -49,7 +53,7 @@ async def main():
 
     trace_id = f"pipeline_{uuid.uuid4().hex[:8]}"
     print(f"Trace ID: {trace_id}")
-    print(f"Target: Notion (pricing)")
+    print("Target: Notion (pricing)")
 
     # ====================================================
     # STAGE 1: Collector (DeepSeek)
@@ -113,7 +117,7 @@ async def main():
 
     profile = analyze_result.arguments.get("profile", {})
     completeness = analyze_result.arguments.get("completeness_score", 0)
-    print(f"  [OK] Profile generated")
+    print("  [OK] Profile generated")
     print(f"  Completeness: {completeness:.0%}")
     print(f"  Pricing tiers: {len(profile.get('pricing', {}).get('tiers', []))}")
     print(f"  Feature nodes: {len(profile.get('feature_tree', []))}")
@@ -146,12 +150,12 @@ async def main():
         return
 
     report_md = write_result.arguments.get("report_markdown", "")
-    print(f"  [OK] Report generated")
+    print("  [OK] Report generated")
     print(f"  Length: {len(report_md)} chars")
     print(f"  Footnotes: {write_result.arguments.get('footnote_count', 0)}")
-    print(f"\n  --- Report Preview (first 500 chars) ---")
+    print("\n  --- Report Preview (first 500 chars) ---")
     print(f"  {report_md[:500]}")
-    print(f"  --- End Preview ---")
+    print("  --- End Preview ---")
 
     # ====================================================
     # STAGE 4: QA (Claude)
@@ -191,7 +195,7 @@ async def main():
         print(f"  Summary: {feedback.get('summary', '')}")
         issues = feedback.get("issues", [])
         if issues:
-            print(f"\n  Top issues:")
+            print("\n  Top issues:")
             for issue in issues[:5]:
                 sev = issue.get("severity", "?")
                 desc = issue.get("description", "")[:80]
@@ -232,7 +236,7 @@ async def main():
     report_path = output_dir / f"notion_report_{trace_id}.md"
     report_path.write_text(report_md, encoding="utf-8")
     print(f"\n  Report saved: {report_path}")
-    print(f"\n  Check Langfuse: https://cloud.langfuse.com")
+    print("\n  Check Langfuse: https://cloud.langfuse.com")
     print("=" * 70)
 
 

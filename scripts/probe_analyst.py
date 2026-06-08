@@ -1,9 +1,13 @@
 """Quick probe: feed minimal claims to AnalystAgent, see if profile builds."""
-import sys, asyncio, json, uuid
+
+import asyncio
+import sys
+import uuid
 from pathlib import Path
 
 sys.path.insert(0, "src")
 from dotenv import load_dotenv
+
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 
@@ -16,22 +20,40 @@ async def main():
             "dimension": "pricing",
             "claim": "Notion Free plan offers unlimited blocks for personal use",
             "confidence": 0.9,
-            "sources": [{"url": "https://notion.so/pricing", "snippet": "Free Forever",
-                         "source_type": "official_doc", "title": "Notion Pricing"}],
+            "sources": [
+                {
+                    "url": "https://notion.so/pricing",
+                    "snippet": "Free Forever",
+                    "source_type": "official_doc",
+                    "title": "Notion Pricing",
+                }
+            ],
         },
         {
             "dimension": "pricing",
             "claim": "Plus plan is $10/user/month billed annually",
             "confidence": 0.9,
-            "sources": [{"url": "https://notion.so/pricing", "snippet": "Plus $10",
-                         "source_type": "official_doc", "title": "Notion Pricing"}],
+            "sources": [
+                {
+                    "url": "https://notion.so/pricing",
+                    "snippet": "Plus $10",
+                    "source_type": "official_doc",
+                    "title": "Notion Pricing",
+                }
+            ],
         },
         {
             "dimension": "features",
             "claim": "Notion AI provides writing assistance and Q&A",
             "confidence": 0.85,
-            "sources": [{"url": "https://notion.so/product/ai", "snippet": "AI assistant",
-                         "source_type": "official_doc", "title": "Notion AI"}],
+            "sources": [
+                {
+                    "url": "https://notion.so/product/ai",
+                    "snippet": "AI assistant",
+                    "source_type": "official_doc",
+                    "title": "Notion AI",
+                }
+            ],
         },
     ]
 

@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Any
 
 from agents.base import AgentConfig, BaseAgent
-from agents.writer.prompts import WRITER_SYSTEM_PROMPT, WRITE_USER_PROMPT_TEMPLATE
+from agents.writer.prompts import WRITE_USER_PROMPT_TEMPLATE, WRITER_SYSTEM_PROMPT
 from schemas.message import AgentMessage, MessageType
 
 
@@ -49,11 +49,16 @@ class WriterAgent(BaseAgent):
         profile = args.get("profile", {})
 
         if not profile or not profile.get("company_name"):
-            print(f"  [Writer] Profile is empty or missing company_name. Keys: {list(profile.keys()) if profile else 'None'}")
+            print(
+                f"  [Writer] Profile is empty or missing company_name. Keys: {list(profile.keys()) if profile else 'None'}"
+            )
             return self.build_message(
                 to_agent="orchestrator",
                 function_name="write_result",
-                arguments={"error": "no profile data to write report", "profile_keys": list(profile.keys()) if profile else []},
+                arguments={
+                    "error": "no profile data to write report",
+                    "profile_keys": list(profile.keys()) if profile else [],
+                },
                 trace_id=message.trace_id,
                 message_type=MessageType.TASK_RESULT,
                 parent_message_id=message.message_id,
@@ -71,11 +76,9 @@ class WriterAgent(BaseAgent):
         )
 
         # 调用Claude生成报告
-        response = await self.call_llm(
-            messages=[{"role": "user", "content": user_prompt}]
-        )
+        response = await self.call_llm(messages=[{"role": "user", "content": user_prompt}])
 
-        report_md = response.text
+        report_md = self._strip_preamble(response.text)
 
         # 后处理：提取sources列表用于QA验证
         sources = self._extract_all_sources(profile)
@@ -98,6 +101,25 @@ class WriterAgent(BaseAgent):
             parent_message_id=message.message_id,
             context=message.context,
         )
+
+    @staticmethod
+    def _strip_preamble(text: str) -> str:
+        """去除LLM输出的前言客套话，直接从报告标题开始"""
+        lines = text.strip().splitlines()
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            # 找到第一个标题行（# 开头）或第一个非空正文行
+            if stripped.startswith("#"):
+                return "\n".join(lines[i:]).strip()
+        # 没找到标题，跳过开头的客套话行
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if stripped and not any(
+                stripped.startswith(p)
+                for p in ("好的", "以下是", "根据", "基于您", "这是", "下面", "以下是根据")
+            ):
+                return "\n".join(lines[i:]).strip()
+        return text.strip()
 
     def _compact_profile(self, profile: dict[str, Any]) -> str:
         """压缩过长的profile，保留关键字段"""
@@ -126,11 +148,13 @@ class WriterAgent(BaseAgent):
                         url = src.get("url", "")
                         if url and url not in seen_urls:
                             seen_urls.add(url)
-                            sources.append({
-                                "url": url,
-                                "title": src.get("title", ""),
-                                "snippet": src.get("snippet", ""),
-                            })
+                            sources.append(
+                                {
+                                    "url": url,
+                                    "title": src.get("title", ""),
+                                    "snippet": src.get("snippet", ""),
+                                }
+                            )
                 for v in obj.values():
                     _walk(v)
             elif isinstance(obj, list):

@@ -22,17 +22,11 @@ class MessageType(str, Enum):
 class MessageContext(BaseModel):
     """消息上下文 - 携带共享状态，避免Agent间信息丢失"""
 
-    competitor_name: str | None = Field(
-        default=None, description="当前处理的竞品名称"
-    )
+    competitor_name: str | None = Field(default=None, description="当前处理的竞品名称")
     schema_version: str = Field(default="1.0", description="当前使用的Schema版本")
     iteration: int = Field(default=1, ge=1, description="当前迭代轮次")
-    max_iterations: int = Field(
-        default=3, ge=1, description="最大迭代次数，防止死循环"
-    )
-    constraints: list[str] = Field(
-        default_factory=list, description="约束条件列表"
-    )
+    max_iterations: int = Field(default=3, ge=1, description="最大迭代次数，防止死循环")
+    constraints: list[str] = Field(default_factory=list, description="约束条件列表")
     previous_feedback: list[str] = Field(
         default_factory=list, description="历史反馈摘要，避免重复犯错"
     )
@@ -66,12 +60,8 @@ class AgentMessage(BaseModel):
     priority: int = Field(default=0, ge=0, le=10, description="优先级，0最低10最高")
 
     # ---- 溯源链 ----
-    parent_message_id: str | None = Field(
-        default=None, description="上游消息ID，构成消息链"
-    )
-    retry_of: str | None = Field(
-        default=None, description="如果是重试，指向原始消息ID"
-    )
+    parent_message_id: str | None = Field(default=None, description="上游消息ID，构成消息链")
+    retry_of: str | None = Field(default=None, description="如果是重试，指向原始消息ID")
 
     class Config:
         json_schema_extra = {
@@ -116,16 +106,12 @@ class CollectRequest(BaseModel):
         default="standard",
         description="采集深度: quick(仅首页)/standard(主要页面)/deep(全站)",
     )
-    max_sources: int = Field(
-        default=10, ge=1, le=50, description="最大采集源数量"
-    )
+    max_sources: int = Field(default=10, ge=1, le=50, description="最大采集源数量")
     target_urls: list[str] = Field(
         default_factory=list,
         description="指定采集的URL列表（可选，为空则自动发现）",
     )
-    language: str = Field(
-        default="zh", description="优先采集的语言: zh/en/auto"
-    )
+    language: str = Field(default="zh", description="优先采集的语言: zh/en/auto")
 
 
 class AnalyzeRequest(BaseModel):
@@ -134,19 +120,13 @@ class AnalyzeRequest(BaseModel):
     analysis_type: str = Field(
         description="分析类型: feature_compare/swot/user_persona/pricing_analysis/full"
     )
-    input_data_refs: list[str] = Field(
-        description="输入数据的引用ID列表（指向Collector的输出）"
-    )
+    input_data_refs: list[str] = Field(description="输入数据的引用ID列表（指向Collector的输出）")
     focus_dimensions: list[str] = Field(
         default_factory=list,
         description="重点关注的维度，如['ai_features', 'collaboration']",
     )
-    our_product: str | None = Field(
-        default=None, description="我方产品名称，用于对比分析"
-    )
-    competitors: list[str] = Field(
-        default_factory=list, description="参与对比的竞品列表"
-    )
+    our_product: str | None = Field(default=None, description="我方产品名称，用于对比分析")
+    competitors: list[str] = Field(default_factory=list, description="参与对比的竞品列表")
     output_format: str = Field(
         default="competitor_profile",
         description="输出格式: competitor_profile/comparison_matrix/swot_only",
@@ -167,13 +147,9 @@ class WriteRequest(BaseModel):
         default="professional",
         description="报告语气: professional/executive/technical",
     )
-    max_length: int | None = Field(
-        default=None, description="最大字数限制（可选）"
-    )
+    max_length: int | None = Field(default=None, description="最大字数限制（可选）")
     language: str = Field(default="zh", description="报告语言: zh/en")
-    include_charts: bool = Field(
-        default=True, description="是否包含对比图表（Markdown表格）"
-    )
+    include_charts: bool = Field(default=True, description="是否包含对比图表（Markdown表格）")
 
 
 class QAIssue(BaseModel):
@@ -187,39 +163,21 @@ class QAIssue(BaseModel):
     )
     description: str = Field(description="问题描述")
     severity: str = Field(description="严重程度: critical/major/minor")
-    suggestion: str | None = Field(
-        default=None, description="修改建议"
-    )
-    evidence: str | None = Field(
-        default=None, description="发现问题的依据"
-    )
+    suggestion: str | None = Field(default=None, description="修改建议")
+    evidence: str | None = Field(default=None, description="发现问题的依据")
 
 
 class QAFeedback(BaseModel):
     """质检Agent的反馈结果"""
 
-    target_agent: str = Field(
-        description="反馈目标Agent: collector/analyst/writer"
-    )
+    target_agent: str = Field(description="反馈目标Agent: collector/analyst/writer")
     issues: list[QAIssue] = Field(description="发现的问题列表")
-    overall_score: float = Field(
-        ge=0.0, le=1.0, description="整体质量评分"
-    )
-    pass_threshold: float = Field(
-        default=0.7, description="通过阈值"
-    )
-    verdict: str = Field(
-        description="判定结果: pass/revise/reject"
-    )
-    summary: str = Field(
-        default="", description="质检总结"
-    )
-    checked_claims_count: int = Field(
-        default=0, description="本次检查的claim总数"
-    )
-    verified_claims_count: int = Field(
-        default=0, description="验证通过的claim数"
-    )
+    overall_score: float = Field(ge=0.0, le=1.0, description="整体质量评分")
+    pass_threshold: float = Field(default=0.7, description="通过阈值")
+    verdict: str = Field(description="判定结果: pass/revise/reject")
+    summary: str = Field(default="", description="质检总结")
+    checked_claims_count: int = Field(default=0, description="本次检查的claim总数")
+    verified_claims_count: int = Field(default=0, description="验证通过的claim数")
 
     @property
     def verification_rate(self) -> float:

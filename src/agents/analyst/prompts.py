@@ -89,7 +89,7 @@ ANALYST_SYSTEM_PROMPT = """你是一个专业的竞品分析Agent。你的职责
 - feature_tree 按功能类别分组，每个类别下可有sub_features
 - SWOT中任何条目如果claims中没有直接证据，必须省略，不要低置信度推测
 - 如果某个维度的claims不足以得出结论，在该字段标注null并说明原因
-- **user_personas 溯源规则**：用户画像必须基于来自客户案例页（URL含/customers或/customer-stories）的claims。每个persona的evidence_claim_indices必须指向这类claims。如果没有客户案例类claims，user_personas输出空列表[]，严禁凭空臆测。
+- **user_personas 溯源规则**：用户画像必须基于明确描述用户群体、客户类型、使用场景、评价或案例的claims。优先使用 `can_support_user_persona=true` 的claims；这些claims可能来自客户案例、成功案例、解决方案、use case、评论/评测、社区或产品页中明确写出的目标用户。每个persona的evidence_claim_indices必须指向这些claims。如果没有明确用户/场景证据，user_personas输出空列表[]，严禁凭空臆测。
 - **禁止输出综合推理来源**：不得输出“基于多条claims推理”“无单一原文对应”“综合判断”等结论或来源。
 """
 
@@ -109,6 +109,6 @@ ANALYZE_USER_PROMPT_TEMPLATE = """请分析以下关于 **{competitor_name}** �
 2. feature_tree按功能类别分组
 3. 每条结论都通过evidence_claim_indices引用原始claims，且该claim必须带真实source_url
 4. SWOT只允许列出claims中直接出现的事实，不要推理机会/威胁/战略判断
-5. user_personas必须且仅能基于来源URL含"/customers"或"/customer-stories"的claims提取，每个segment/pain_point/usage_scenario都必须有对应的evidence_claim_indices。如果没有客户案例类claims则输出空列表[]
+5. user_personas必须基于明确描述用户群体/客户类型/使用场景/评价/案例的claims提取，优先使用can_support_user_persona=true的claims；每个segment/pain_point/usage_scenario都必须有对应的evidence_claim_indices。如果没有这类可溯源claims则输出空列表[]
 6. 不要输出“关键洞察”式总结；analysis_summary.key_insights 输出空数组
 """

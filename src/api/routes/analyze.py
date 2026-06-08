@@ -23,15 +23,15 @@ from api.schemas import (
     TaskStatus,
 )
 from schemas.extensions import (
-    list_templates,
-    get_template_schema,
     TEMPLATE_REGISTRY,
-    load_template,
-    create_template,
-    update_template,
-    delete_template,
     compare_templates,
+    create_template,
+    delete_template,
     get_changelog,
+    get_template_schema,
+    list_templates,
+    load_template,
+    update_template,
 )
 
 router = APIRouter(prefix="/api/analyze", tags=["analyze"])
@@ -86,11 +86,13 @@ async def _run_task(task_id: str, req: AnalyzeRequest) -> None:
         _tasks[task_id]["result"] = result
         # 持久化到PostgreSQL
         from storage.crud import save_run
+
         await save_run(result, task_id, "completed")
     except Exception as e:
         _tasks[task_id]["status"] = "failed"
         _tasks[task_id]["result"] = {"error": str(e)}
         from storage.crud import save_run
+
         await save_run(
             {"error": str(e), "competitor_name": req.competitor_name, "industry": req.industry},
             task_id,
@@ -133,26 +135,31 @@ async def list_history(
             if info["status"] not in ("completed", "failed"):
                 continue
             result = info.get("result") or {}
-            if competitor_name and competitor_name.lower() not in result.get("competitor_name", "").lower():
+            if (
+                competitor_name
+                and competitor_name.lower() not in result.get("competitor_name", "").lower()
+            ):
                 continue
             if industry and industry != result.get("industry", "saas"):
                 continue
-            mem_items.append({
-                "task_id": tid,
-                "competitor_name": result.get("competitor_name", "unknown"),
-                "industry": result.get("industry", "saas"),
-                "status": info["status"],
-                "qa_score": result.get("qa_score"),
-                "qa_verdict": result.get("qa_verdict"),
-                "iteration": result.get("iteration", 1),
-                "report_length": len(result.get("report_markdown", "")),
-                "sources_fetched": result.get("sources_fetched", 0),
-                "started_at": None,
-                "completed_at": None,
-            })
+            mem_items.append(
+                {
+                    "task_id": tid,
+                    "competitor_name": result.get("competitor_name", "unknown"),
+                    "industry": result.get("industry", "saas"),
+                    "status": info["status"],
+                    "qa_score": result.get("qa_score"),
+                    "qa_verdict": result.get("qa_verdict"),
+                    "iteration": result.get("iteration", 1),
+                    "report_length": len(result.get("report_markdown", "")),
+                    "sources_fetched": result.get("sources_fetched", 0),
+                    "started_at": None,
+                    "completed_at": None,
+                }
+            )
         total = len(mem_items)
         start = (page - 1) * page_size
-        items = mem_items[start:start + page_size]
+        items = mem_items[start : start + page_size]
 
     return PaginatedHistory(
         items=[HistoryItem(**item) for item in items],
@@ -160,6 +167,56 @@ async def list_history(
         page=page,
         page_size=page_size,
     )
+
+
+async def _generate_whitespace_analysis(competitors: list[dict]) -> str:
+    import asyncio
+    import os
+
+    from openai import OpenAI
+
+    lines = []
+    for c in competitors:
+        name = c["company_name"]
+        weaknesses = c["profile"]["swot"].get("weakness", [])
+        reviews = c["profile"].get("user_reviews", [])
+        if weaknesses:
+            lines.append(f"**{name}** 弱点: " + "；".join(weaknesses[:5]))
+        if reviews:
+            lines.append(f"**{name}** 用户差评: " + "；".join(str(r) for r in reviews[:5]))
+
+    if not lines:
+        return ""
+
+    prompt = f"""以下是多个竞品的用户差评和SWOT弱点数据：
+
+{chr(10).join(lines)}
+
+基于以上数据，生成一段"市场白地"分析（150字以内），回答：
+1. 这些竞品共同存在的核心痛点是什么
+2. 哪个细分需求目前被严重忽视（即白地机会）
+3. 新产品应优先切入哪个点
+
+直接输出结论，不要前言，不要标题，不要编号。"""
+
+    def _call() -> str:
+        client = OpenAI(
+            api_key=os.getenv("DEEPSEEK_API_KEY", ""),
+            base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
+        )
+        resp = client.chat.completions.create(
+            model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
+            max_tokens=512,
+            temperature=0.5,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return resp.choices[0].message.content or ""
+
+    loop = asyncio.get_event_loop()
+    try:
+        return await loop.run_in_executor(None, _call)
+    except Exception:
+        return ""
 
 
 @router.post("/compare", response_model=CompareResponse)
@@ -176,7 +233,9 @@ async def compare_tasks(req: CompareRequest) -> CompareResponse:
         else:
             run = await get_run(task_id)
             if not run or not run.get("result"):
-                raise HTTPException(status_code=404, detail=f"Task {task_id} not found or incomplete")
+                raise HTTPException(
+                    status_code=404, detail=f"Task {task_id} not found or incomplete"
+                )
             result = run["result"]
 
         profile = result.get("profile")
@@ -209,17 +268,29 @@ async def compare_tasks(req: CompareRequest) -> CompareResponse:
 
         # Extract SWOT — stored as list of SWOTItem: [{"category": "strength", "items": [...]}]
         swot_raw = profile.get("swot", [])
-        swot: dict[str, list[str]] = {"strength": [], "weakness": [], "opportunity": [], "threat": []}
+        swot: dict[str, list[str]] = {
+            "strength": [],
+            "weakness": [],
+            "opportunity": [],
+            "threat": [],
+        }
         if isinstance(swot_raw, list):
             for item in swot_raw:
                 cat = item.get("category", "")
                 for claim_obj in item.get("items", []):
-                    text = claim_obj.get("claim", "") if isinstance(claim_obj, dict) else str(claim_obj)
+                    text = (
+                        claim_obj.get("claim", "")
+                        if isinstance(claim_obj, dict)
+                        else str(claim_obj)
+                    )
                     if text and cat in swot:
                         swot[cat].append(text)
         elif isinstance(swot_raw, dict):
             for cat in swot:
-                swot[cat] = [s.get("claim", s) if isinstance(s, dict) else str(s) for s in swot_raw.get(cat, [])]
+                swot[cat] = [
+                    s.get("claim", s) if isinstance(s, dict) else str(s)
+                    for s in swot_raw.get(cat, [])
+                ]
 
         # Extract user_personas
         user_personas = [
@@ -230,21 +301,23 @@ async def compare_tasks(req: CompareRequest) -> CompareResponse:
             for p in profile.get("user_personas", [])
         ]
 
-        competitors.append({
-            "task_id": task_id,
-            "company_name": result.get("competitor_name", ""),
-            "product_name": profile.get("product_name", result.get("competitor_name", "")),
-            "industry": result.get("industry", ""),
-            "qa_score": result.get("qa_score", 0.0),
-            "profile": {
-                "one_liner": profile.get("one_liner"),
-                "pricing": pricing,
-                "feature_tree": feature_tree,
-                "swot": swot,
-                "user_personas": user_personas,
-                "extensions": profile.get("extensions", {}),
-            },
-        })
+        competitors.append(
+            {
+                "task_id": task_id,
+                "company_name": result.get("competitor_name", ""),
+                "product_name": profile.get("product_name", result.get("competitor_name", "")),
+                "industry": result.get("industry", ""),
+                "qa_score": result.get("qa_score", 0.0),
+                "profile": {
+                    "one_liner": profile.get("one_liner"),
+                    "pricing": pricing,
+                    "feature_tree": feature_tree,
+                    "swot": swot,
+                    "user_personas": user_personas,
+                    "extensions": profile.get("extensions", {}),
+                },
+            }
+        )
 
     # Determine which dimensions have data across all competitors
     dimensions = []
@@ -253,8 +326,10 @@ async def compare_tasks(req: CompareRequest) -> CompareResponse:
     if any(c["profile"]["feature_tree"] for c in competitors):
         dimensions.append("features")
     if any(
-        c["profile"]["swot"]["strength"] or c["profile"]["swot"]["weakness"]
-        or c["profile"]["swot"]["opportunity"] or c["profile"]["swot"]["threat"]
+        c["profile"]["swot"]["strength"]
+        or c["profile"]["swot"]["weakness"]
+        or c["profile"]["swot"]["opportunity"]
+        or c["profile"]["swot"]["threat"]
         for c in competitors
     ):
         dimensions.append("swot")
@@ -269,12 +344,15 @@ async def compare_tasks(req: CompareRequest) -> CompareResponse:
     common_industry = industry_keys[0] if not mixed_industries else None
     extension_fields = _compare_extension_fields(common_industry)
 
+    whitespace_analysis = await _generate_whitespace_analysis(competitors)
+
     return CompareResponse(
         competitors=competitors,
         dimensions=dimensions,
         common_industry=common_industry,
         mixed_industries=mixed_industries,
         extension_fields=extension_fields,
+        whitespace_analysis=whitespace_analysis,
     )
 
 
@@ -340,25 +418,30 @@ async def schema_changelog(limit: int = Query(50, ge=1, le=200)) -> list[dict[st
 @router.post("/{task_id}/intervene")
 async def intervene_task(task_id: str, req: InterveneRequest) -> dict[str, str]:
     """人工介入 - 强制通过/继续迭代/终止任务"""
-    from api.runner import hitl_resume
+    from api.runner import _hitl_gates, hitl_resume
 
     task_info = _tasks.get(task_id)
     if not task_info:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    if req.action == "force_pass":
-        hitl_resume(task_id, "force_pass", urls=req.urls, reason=req.reason)
-        return {"status": "ok", "message": "Task force-passed by human"}
+    if task_info.get("status") != "running":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Task is '{task_info.get('status')}', not running. Cannot intervene.",
+        )
 
-    elif req.action == "continue":
-        hitl_resume(task_id, "continue", urls=req.urls, reason=req.reason)
-        return {"status": "ok", "message": "Pipeline resumed, continuing iteration"}
+    if task_id not in _hitl_gates:
+        raise HTTPException(
+            status_code=409,
+            detail="Task is running but not at a HITL pause point. Wait for QA to finish.",
+        )
 
-    elif req.action == "abort":
-        hitl_resume(task_id, "abort", urls=req.urls, reason=req.reason)
-        return {"status": "ok", "message": "Task aborted by human"}
+    valid_actions = {"force_pass", "continue", "abort"}
+    if req.action not in valid_actions:
+        raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
 
-    raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
+    hitl_resume(task_id, req.action, urls=req.urls, reason=req.reason)
+    return {"status": "ok", "message": f"Intervention '{req.action}' applied"}
 
 
 @router.get("/{task_id}/metrics")
@@ -370,6 +453,7 @@ async def get_task_metrics(task_id: str) -> dict[str, Any]:
         result = task_info["result"]
     else:
         from storage.crud import get_run
+
         run = await get_run(task_id)
         if run and run.get("result"):
             result = run["result"]
@@ -386,7 +470,12 @@ async def get_task_metrics(task_id: str) -> dict[str, Any]:
     for t in traces:
         name = t.get("agent", "unknown")
         if name not in agent_stats:
-            agent_stats[name] = {"duration_ms": 0, "input_tokens": 0, "output_tokens": 0, "calls": 0}
+            agent_stats[name] = {
+                "duration_ms": 0,
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "calls": 0,
+            }
         agent_stats[name]["duration_ms"] += t.get("duration_ms", 0)
         agent_stats[name]["input_tokens"] += t.get("input_tokens", 0)
         agent_stats[name]["output_tokens"] += t.get("output_tokens", 0)
@@ -406,7 +495,10 @@ async def get_task_metrics(task_id: str) -> dict[str, Any]:
     revision_rate = revise_rounds / max(total_rounds, 1)
 
     # QA score trend across iterations
-    qa_trend = [{"iteration": f.get("iteration", i + 1), "score": f.get("score", 0)} for i, f in enumerate(feedback)]
+    qa_trend = [
+        {"iteration": f.get("iteration", i + 1), "score": f.get("score", 0)}
+        for i, f in enumerate(feedback)
+    ]
 
     # Sources fetched count
     sources_count = len(result.get("claims", []))

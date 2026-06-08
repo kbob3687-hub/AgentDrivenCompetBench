@@ -1,6 +1,7 @@
 """Full 3-competitor pipeline test with auto HITL pass."""
-import sys
+
 import asyncio
+import sys
 import time
 import uuid
 from pathlib import Path
@@ -8,18 +9,21 @@ from pathlib import Path
 sys.path.insert(0, "src")
 
 from dotenv import load_dotenv
+
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 
 async def main():
-    from api.runner import build_sse_graph, _task_traces, _hitl_gates, _hitl_decisions
-    from api.events import event_bus, EventType
     from datetime import datetime
+
+    from api.events import EventType, event_bus
+    from api.runner import _task_traces, build_sse_graph
 
     competitors = ["Notion"]
     results = {}
 
     import api.runner as runner
+
     original_publish = runner._publish
 
     async def auto_publish(tid, etype, data):
@@ -37,9 +41,9 @@ async def main():
         event_bus.create_task(task_id)
         _task_traces[task_id] = []
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Starting: {name} (task: {task_id[:8]}...)")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         initial_state = {
             "competitor_name": name,
@@ -91,7 +95,9 @@ async def main():
             print(f"  Report: {report_len} chars")
             print(f"  Traces: {len(traces)} agent calls")
             for t in traces:
-                print(f"    [{t['agent']}] iter={t['iteration']} {t['duration_ms']}ms | {t.get('output_preview', '')[:80]}")
+                print(
+                    f"    [{t['agent']}] iter={t['iteration']} {t['duration_ms']}ms | {t.get('output_preview', '')[:80]}"
+                )
             print(f"  Feedback history: {len(feedback)} rounds")
             for fb in feedback:
                 print(f"    Round {fb['iteration']}: {fb['verdict']} (score={fb['score']:.2f})")
@@ -108,20 +114,23 @@ async def main():
             elapsed = time.time() - start
             print(f"  FAILED after {elapsed:.1f}s: {e}")
             import traceback
+
             traceback.print_exc()
             results[name] = {"error": str(e)}
 
     runner._publish = original_publish
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     for name, r in results.items():
         if "error" in r:
             print(f"  {name}: FAILED - {r['error'][:100]}")
         else:
-            print(f"  {name}: score={r['qa_score']:.2f}, verdict={r['verdict']}, "
-                  f"{r['iterations']} iters, {r['report_length']} chars, {r['elapsed_s']}s")
+            print(
+                f"  {name}: score={r['qa_score']:.2f}, verdict={r['verdict']}, "
+                f"{r['iterations']} iters, {r['report_length']} chars, {r['elapsed_s']}s"
+            )
 
 
 if __name__ == "__main__":

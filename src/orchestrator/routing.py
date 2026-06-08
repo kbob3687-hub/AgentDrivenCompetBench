@@ -60,8 +60,8 @@ def classify_no_profile_failure(state: GraphState) -> dict[str, Any]:
             reason = "collector_no_sources"
             summary = "Discovery 没找到可采集 URL，所以 Collector 没有证据可抽取。"
             message = (
-                f"采集 0 条数据，无法生成报告。系统没有发现可用 URL。"
-                f"请换 discovery_strategy，或人工补充 2-3 个可直接访问的数据源。"
+                "采集 0 条数据，无法生成报告。系统没有发现可用 URL。"
+                "请换 discovery_strategy，或人工补充 2-3 个可直接访问的数据源。"
             )
             error_samples: list[str] = []
             failure_reasons = ["未发现 URL"]
@@ -80,9 +80,7 @@ def classify_no_profile_failure(state: GraphState) -> dict[str, Any]:
             )
         else:
             reason = "collector_no_claims"
-            summary = (
-                f"已发现 {len(discovered_urls)} 个 URL，但 Collector 没抽出任何 claims。"
-            )
+            summary = f"已发现 {len(discovered_urls)} 个 URL，但 Collector 没抽出任何 claims。"
             message = (
                 f"已发现 {len(discovered_urls)} 个 URL，但页面内容没有被抽取成结构化证据。"
                 "请检查页面内容是否过短、是否与分析维度无关，或补充更明确的数据源。"
@@ -91,7 +89,10 @@ def classify_no_profile_failure(state: GraphState) -> dict[str, Any]:
             failure_reasons = ["未抽出 claims"]
 
         suggested_strategy = ""
-        if reason in {"collector_no_sources", "collector_fetch_failed"} and discovery_strategy == "official_only":
+        if (
+            reason in {"collector_no_sources", "collector_fetch_failed"}
+            and discovery_strategy == "official_only"
+        ):
             suggested_strategy = "open_search"
 
         return {

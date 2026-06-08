@@ -11,6 +11,8 @@ from api.runner import (
     _normalize_manual_urls,
     _usable_pre_fetched_content,
     collector_node,
+)
+from api.runner import (
     qa_node as sse_qa_node,
 )
 from orchestrator.edges import qa_routing
@@ -39,7 +41,25 @@ class TestLangfuseTraceLinks:
         url = _langfuse_trace_url("48aea9f9-789c-4651-a257-ede9ffaf498c")
 
         assert url == (
-            "https://cloud.langfuse.com/project/project-1/traces/"
+            "https://cloud.langfuse.com/project/project-1/traces/48aea9f9789c4651a257ede9ffaf498c"
+        )
+
+    def test_langfuse_trace_url_falls_back_to_project_id_env(self, monkeypatch):
+        class FakeLangfuse:
+            def __init__(self, timeout):
+                self.timeout = timeout
+
+            def get_trace_url(self, *, trace_id=None):
+                raise RuntimeError("network unavailable")
+
+        monkeypatch.setattr("langfuse.Langfuse", FakeLangfuse)
+        monkeypatch.setenv("LANGFUSE_HOST", "https://us.cloud.langfuse.com")
+        monkeypatch.setenv("LANGFUSE_PROJECT_ID", "project-2")
+
+        url = _langfuse_trace_url("48aea9f9-789c-4651-a257-ede9ffaf498c")
+
+        assert url == (
+            "https://us.cloud.langfuse.com/project/project-2/traces/"
             "48aea9f9789c4651a257ede9ffaf498c"
         )
 
@@ -51,7 +71,9 @@ class TestQARouting:
 
     def test_reject_routes_to_target_agent(self):
         state: GraphState = {
-            "qa_verdict": "reject", "iteration": 1, "max_iterations": 3,
+            "qa_verdict": "reject",
+            "iteration": 1,
+            "max_iterations": 3,
             "qa_target_agent": "analyst",
         }
         assert qa_routing(state) == "analyst"
@@ -82,7 +104,9 @@ class TestQARouting:
 
     def test_revise_routes_to_target_agent(self):
         state: GraphState = {
-            "qa_verdict": "revise", "iteration": 1, "max_iterations": 3,
+            "qa_verdict": "revise",
+            "iteration": 1,
+            "max_iterations": 3,
             "qa_target_agent": "writer",
         }
         assert qa_routing(state) == "writer"
@@ -97,7 +121,9 @@ class TestQARouting:
 
     def test_invalid_target_agent_falls_back_to_collector(self):
         state: GraphState = {
-            "qa_verdict": "revise", "iteration": 1, "max_iterations": 3,
+            "qa_verdict": "revise",
+            "iteration": 1,
+            "max_iterations": 3,
             "qa_target_agent": "invalid_agent",
         }
         assert qa_routing(state) == "collector"
@@ -198,13 +224,15 @@ class TestNoProfileAttribution:
 
 class TestHitlManualUrls:
     def test_normalize_manual_urls_filters_invalid_and_dedupes(self):
-        urls = _normalize_manual_urls([
-            " https://example.com/product ",
-            "not-a-url",
-            "ftp://example.com/file",
-            "https://example.com/product",
-            "http://example.com/support",
-        ])
+        urls = _normalize_manual_urls(
+            [
+                " https://example.com/product ",
+                "not-a-url",
+                "ftp://example.com/file",
+                "https://example.com/product",
+                "http://example.com/support",
+            ]
+        )
 
         assert urls == [
             "https://example.com/product",

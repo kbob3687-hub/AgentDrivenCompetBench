@@ -131,7 +131,7 @@ async def run_pipeline(
 
     Args:
         competitor_name: 竞品名称
-        collect_scope: 初始采集维度，默认["pricing", "features"]
+        collect_scope: 初始采集维度，默认["pricing", "features", "user_personas"]
         target_urls: 指定URL，为空则自动发现
         expected_dimensions: 期望覆盖的完整维度列表（QA据此判定数据完整性）
         max_iterations: 最大反馈循环次数，默认3
@@ -147,9 +147,10 @@ async def run_pipeline(
 
     initial_state: GraphState = {
         "competitor_name": competitor_name,
-        "collect_scope": collect_scope or ["pricing", "features"],
+        "collect_scope": collect_scope or ["pricing", "features", "user_personas"],
         "target_urls": target_urls or [],
-        "expected_dimensions": expected_dimensions or (collect_scope or ["pricing", "features"]),
+        "expected_dimensions": expected_dimensions
+        or (collect_scope or ["pricing", "features", "user_personas"]),
         "discovery_strategy": discovery_strategy,
         "trusted_domains": trusted_domains or [],
         "iteration": 1,

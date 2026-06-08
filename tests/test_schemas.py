@@ -3,7 +3,6 @@
 import pytest
 
 from schemas.competitor import (
-    CompetitorProfile,
     EvidencedClaim,
     SourceReference,
     SourceType,

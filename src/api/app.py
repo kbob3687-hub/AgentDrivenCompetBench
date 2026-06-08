@@ -14,13 +14,14 @@ from fastapi.responses import JSONResponse
 
 from api.routes.analyze import router as analyze_router
 from api.routes.health import router as health_router
+from api.routes.survey import router as survey_router
 
 logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from storage.engine import init_engine, dispose_engine, get_engine
+    from storage.engine import dispose_engine, init_engine
     from storage.models import Base
 
     try:
@@ -56,6 +57,7 @@ app.add_middleware(
 
 app.include_router(health_router)
 app.include_router(analyze_router)
+app.include_router(survey_router)
 
 
 @app.exception_handler(Exception)

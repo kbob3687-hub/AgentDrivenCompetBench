@@ -17,10 +17,8 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 import sys
-import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -33,7 +31,7 @@ ROOT = Path(__file__).parent.parent
 load_dotenv(ROOT / ".env")
 sys.path.insert(0, str(ROOT / "src"))
 
-from orchestrator.graph import build_graph, _make_trace_id
+from orchestrator.graph import _make_trace_id, build_graph
 from orchestrator.state import GraphState
 
 # ============================================================
@@ -63,7 +61,7 @@ async def main():
     print(f"  Competitor: {competitor}")
     print(f"  Round 1 scope: {FIRST_ROUND_SCOPE}  (deliberately incomplete)")
     print(f"  QA expects:    {ALL_DIMENSIONS}")
-    print(f"  Graph: build_graph() — conditional_edges qa_routing")
+    print("  Graph: build_graph() — conditional_edges qa_routing")
 
     # 编译LangGraph
     app = build_graph(checkpointer=None)
@@ -139,11 +137,13 @@ async def main():
                 print(f"      missing_dimensions: {missing}")
                 # qa_routing逻辑: missing非空或verdict=revise → collector; pass → end
                 if verdict == "pass":
-                    print(f"      >> CONDITIONAL EDGE: qa_routing() -> 'end' (pass)")
+                    print("      >> CONDITIONAL EDGE: qa_routing() -> 'end' (pass)")
                 elif verdict == "revise":
-                    print(f"      >> CONDITIONAL EDGE: qa_routing() -> 'collector' (revise, score<0.70 or missing dims)")
+                    print(
+                        "      >> CONDITIONAL EDGE: qa_routing() -> 'collector' (revise, score<0.70 or missing dims)"
+                    )
                 else:
-                    print(f"      >> CONDITIONAL EDGE: qa_routing() -> 'end' (reject)")
+                    print("      >> CONDITIONAL EDGE: qa_routing() -> 'end' (reject)")
 
             # 累积state
             if not final_state:
@@ -157,7 +157,7 @@ async def main():
 
     path_str = " → ".join(node_path)
     print(f"\n  Node path: {path_str}")
-    print(f"  Expected:  collector → analyst → writer → qa → collector → analyst → writer → qa")
+    print("  Expected:  collector → analyst → writer → qa → collector → analyst → writer → qa")
 
     verdict = final_state.get("qa_verdict", "unknown")
     score = final_state.get("qa_score", 0)
@@ -173,16 +173,20 @@ async def main():
 
     # 打印feedback历史
     if feedback_history:
-        print(f"\n  Feedback history:")
+        print("\n  Feedback history:")
         for i, fb in enumerate(feedback_history, 1):
-            print(f"    Round {i}: verdict={fb.get('verdict')}, score={fb.get('score'):.2f}, action={fb.get('action_taken')}")
+            print(
+                f"    Round {i}: verdict={fb.get('verdict')}, score={fb.get('score'):.2f}, action={fb.get('action_taken')}"
+            )
 
     # 验证路径包含revise回路
     has_loop = node_path.count("collector") >= 2 and node_path.count("qa") >= 2
     if has_loop:
-        print(f"\n  [OK] Feedback loop confirmed: collector appears {node_path.count('collector')}x, qa appears {node_path.count('qa')}x")
+        print(
+            f"\n  [OK] Feedback loop confirmed: collector appears {node_path.count('collector')}x, qa appears {node_path.count('qa')}x"
+        )
     else:
-        print(f"\n  [WARN] No feedback loop detected — may have passed on first round")
+        print("\n  [WARN] No feedback loop detected — may have passed on first round")
 
     # 保存报告
     reports_dir = ROOT / "reports"
@@ -195,7 +199,7 @@ async def main():
 
 **竞品**: {competitor}
 **编排引擎**: LangGraph StateGraph (`orchestrator.graph.build_graph`)
-**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**生成时间**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 ## Graph执行路径
 

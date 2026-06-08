@@ -62,9 +62,7 @@ class EvidencedClaim(BaseModel):
 
     claim: str = Field(description="分析结论/事实陈述")
     confidence: float = Field(ge=0.0, le=1.0, description="置信度，0-1")
-    sources: list[SourceReference] = Field(
-        min_length=1, description="数据来源列表，至少1个"
-    )
+    sources: list[SourceReference] = Field(min_length=1, description="数据来源列表，至少1个")
     reasoning: str = Field(description="推理过程简述")
     verified_by: str | None = Field(
         default=None, description="质检Agent验证标记（agent role name）"
@@ -97,15 +95,9 @@ class FeatureNode(BaseModel):
 
     name: str = Field(description="功能名称")
     description: EvidencedClaim = Field(description="功能描述（带溯源）")
-    sub_features: list[FeatureNode] = Field(
-        default_factory=list, description="子功能列表"
-    )
-    maturity: str | None = Field(
-        default=None, description="成熟度: mvp/growing/mature/declining"
-    )
-    category: str | None = Field(
-        default=None, description="功能分类: core/advanced/experimental"
-    )
+    sub_features: list[FeatureNode] = Field(default_factory=list, description="子功能列表")
+    maturity: str | None = Field(default=None, description="成熟度: mvp/growing/mature/declining")
+    category: str | None = Field(default=None, description="功能分类: core/advanced/experimental")
 
 
 class PricingTier(BaseModel):
@@ -116,12 +108,8 @@ class PricingTier(BaseModel):
     billing_cycle: str | None = Field(
         default=None, description="计费周期: monthly/annually/one_time"
     )
-    features: list[str] = Field(
-        default_factory=list, description="该层级包含的功能列表"
-    )
-    limitations: list[str] = Field(
-        default_factory=list, description="该层级的限制"
-    )
+    features: list[str] = Field(default_factory=list, description="该层级包含的功能列表")
+    limitations: list[str] = Field(default_factory=list, description="该层级的限制")
 
 
 class PricingModel(BaseModel):
@@ -141,15 +129,11 @@ class UserPersona(BaseModel):
     """用户画像"""
 
     segment: str = Field(description="用户群体名称，如'个人用户'/'中小团队'/'企业客户'")
-    demographics: dict[str, Any] = Field(
-        default_factory=dict, description="人口统计特征"
-    )
+    demographics: dict[str, Any] = Field(default_factory=dict, description="人口统计特征")
     pain_points: list[EvidencedClaim] = Field(
         default_factory=list, description="痛点列表（带溯源）"
     )
-    usage_scenarios: list[str] = Field(
-        default_factory=list, description="使用场景"
-    )
+    usage_scenarios: list[str] = Field(default_factory=list, description="使用场景")
     satisfaction_signals: list[EvidencedClaim] = Field(
         default_factory=list, description="满意度信号（来自评论/访谈）"
     )
@@ -158,9 +142,7 @@ class UserPersona(BaseModel):
 class SWOTItem(BaseModel):
     """SWOT分析条目"""
 
-    category: str = Field(
-        description="SWOT类别: strength/weakness/opportunity/threat"
-    )
+    category: str = Field(description="SWOT类别: strength/weakness/opportunity/threat")
     items: list[EvidencedClaim] = Field(description="该类别下的分析条目（带溯源）")
 
 
@@ -176,9 +158,7 @@ class CompetitorProfile(BaseModel):
     product_name: str = Field(description="产品名称")
     website: str = Field(description="官网URL")
     industry: str = Field(description="所属行业")
-    one_liner: str | None = Field(
-        default=None, description="一句话产品定位"
-    )
+    one_liner: str | None = Field(default=None, description="一句话产品定位")
     founded_year: int | None = Field(default=None, description="成立年份")
     headquarters: str | None = Field(default=None, description="总部所在地")
     funding_stage: str | None = Field(
@@ -190,13 +170,9 @@ class CompetitorProfile(BaseModel):
     )
 
     # ---- 结构化分析（核心产出） ----
-    feature_tree: list[FeatureNode] = Field(
-        default_factory=list, description="功能树"
-    )
+    feature_tree: list[FeatureNode] = Field(default_factory=list, description="功能树")
     pricing: PricingModel | None = Field(default=None, description="定价模型")
-    user_personas: list[UserPersona] = Field(
-        default_factory=list, description="用户画像"
-    )
+    user_personas: list[UserPersona] = Field(default_factory=list, description="用户画像")
     swot: list[SWOTItem] = Field(default_factory=list, description="SWOT分析")
 
     # ---- 动态扩展字段（行业模板注入） ----
@@ -235,11 +211,7 @@ class CompetitorProfile(BaseModel):
 
         if self.extensions:
             total_fields += len(self.extensions)
-            filled_fields += sum(
-                1 for v in self.extensions.values() if v is not None
-            )
+            filled_fields += sum(1 for v in self.extensions.values() if v is not None)
 
-        self.completeness_score = (
-            filled_fields / total_fields if total_fields > 0 else 0.0
-        )
+        self.completeness_score = filled_fields / total_fields if total_fields > 0 else 0.0
         return self.completeness_score

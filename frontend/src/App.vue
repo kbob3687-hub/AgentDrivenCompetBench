@@ -6,12 +6,13 @@ import LogStream from './components/LogStream.vue'
 import CompareView from './components/CompareView.vue'
 import ProcessObservabilityPanel from './components/ProcessObservabilityPanel.vue'
 import ReportWorkspace from './components/ReportWorkspace.vue'
+import SurveyPanel from './components/SurveyPanel.vue'
 import { useAnalysis } from './composables/useAnalysis'
 import type { InterventionAction, InterventionPayload } from './types'
 
 const { state, startAnalysis, restoreFromHash, intervene } = useAnalysis()
 
-const viewMode = ref<'analysis' | 'compare'>('analysis')
+const viewMode = ref<'analysis' | 'compare' | 'survey'>('analysis')
 
 const isRunning = computed(() => state.status === 'running')
 const isCompleted = computed(() => state.status === 'completed')
@@ -43,16 +44,13 @@ onMounted(() => {
         </div>
         <div class="flex items-center gap-2 text-sm text-slate-500">
           <button
-            :class="[
-              'px-3 py-1.5 text-xs font-medium rounded transition-colors',
-              viewMode === 'compare'
-                ? 'bg-indigo-100 text-indigo-700'
-                : 'border border-slate-300 text-slate-600 hover:bg-slate-50'
-            ]"
+            :class="['px-3 py-1.5 text-xs font-medium rounded transition-colors', viewMode === 'survey' ? 'bg-emerald-100 text-emerald-700' : 'border border-slate-300 text-slate-600 hover:bg-slate-50']"
+            @click="viewMode = viewMode === 'survey' ? 'analysis' : 'survey'"
+          >{{ viewMode === 'survey' ? '返回分析' : '调研工具' }}</button>
+          <button
+            :class="['px-3 py-1.5 text-xs font-medium rounded transition-colors', viewMode === 'compare' ? 'bg-indigo-100 text-indigo-700' : 'border border-slate-300 text-slate-600 hover:bg-slate-50']"
             @click="viewMode = viewMode === 'compare' ? 'analysis' : 'compare'"
-          >
-            {{ viewMode === 'compare' ? '返回分析' : '多竞品对比' }}
-          </button>
+          >{{ viewMode === 'compare' ? '返回分析' : '多竞品对比' }}</button>
           <span
             :class="[
               'w-2 h-2 rounded-full',
@@ -68,8 +66,13 @@ onMounted(() => {
     </header>
 
     <main class="mx-auto max-w-[1800px] px-4 py-5 sm:px-6">
+      <!-- Survey View -->
+      <div v-if="viewMode === 'survey'" class="max-w-4xl mx-auto">
+        <SurveyPanel />
+      </div>
+
       <!-- Compare View -->
-      <CompareView v-if="viewMode === 'compare'" @close="viewMode = 'analysis'" />
+      <CompareView v-else-if="viewMode === 'compare'" @close="viewMode = 'analysis'" />
 
       <!-- Analysis View -->
       <template v-else>

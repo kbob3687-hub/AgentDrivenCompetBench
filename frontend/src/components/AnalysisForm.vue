@@ -16,9 +16,10 @@ const allDimensions = [
   { id: 'pricing', label: '定价策略' },
   { id: 'features', label: '核心功能' },
   { id: 'integrations', label: '集成生态' },
-  { id: 'ai_features', label: 'AI 能力' }
+  { id: 'ai_features', label: 'AI 能力' },
+  { id: 'user_personas', label: '用户画像' }
 ]
-const selectedDimensions = ref<string[]>(['pricing', 'features', 'integrations', 'ai_features'])
+const selectedDimensions = ref<string[]>(['pricing', 'features', 'integrations', 'ai_features', 'user_personas'])
 
 const industries = [
   { id: 'saas', label: 'SaaS/项目管理' },

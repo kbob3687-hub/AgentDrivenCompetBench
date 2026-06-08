@@ -6,7 +6,6 @@
 
 import asyncio
 import json
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -27,11 +26,11 @@ async def main():
     print("  场景：维度补全反馈循环")
     print("=" * 70)
     print(f"  启动时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"  目标竞品: Notion")
-    print(f"  初始采集: pricing（故意不完整）")
-    print(f"  期望维度: pricing, features（QA会发现features缺失）")
-    print(f"  预期流程: 第1轮revise → 第2轮补采features → pass")
-    print(f"  最大迭代: 3")
+    print("  目标竞品: Notion")
+    print("  初始采集: pricing（故意不完整）")
+    print("  期望维度: pricing, features（QA会发现features缺失）")
+    print("  预期流程: 第1轮revise → 第2轮补采features → pass")
+    print("  最大迭代: 3")
     print("=" * 70)
     print()
 
@@ -55,13 +54,13 @@ async def main():
     print(f"  结束时间: {result.get('completed_at', 'N/A')}")
 
     # ====== Collector统计 ======
-    print(f"\n--- Collector ---")
+    print("\n--- Collector ---")
     print(f"  采集成功: {result.get('sources_fetched', 0)} 个来源")
     print(f"  采集失败: {result.get('sources_failed', 0)} 个来源")
     print(f"  Claims数: {len(result.get('claims', []))}")
 
     # ====== Analyst统计 ======
-    print(f"\n--- Analyst ---")
+    print("\n--- Analyst ---")
     profile = result.get("profile", {})
     print(f"  Profile完整度: {result.get('completeness_score', 0):.0%}")
     print(f"  分析维度: {result.get('dimensions_analyzed', [])}")
@@ -71,21 +70,23 @@ async def main():
         print(f"  SWOT条目: {sum(len(s.get('items', [])) for s in profile.get('swot', []))} 条")
 
     # ====== Writer统计 ======
-    print(f"\n--- Writer ---")
+    print("\n--- Writer ---")
     report = result.get("report_markdown", "")
     print(f"  报告长度: {len(report)} 字符")
     print(f"  角标数量: {result.get('footnote_count', 0)}")
 
     # ====== QA反馈轨迹 ======
-    print(f"\n--- QA反馈轨迹 (FeedbackHistory) ---")
+    print("\n--- QA反馈轨迹 (FeedbackHistory) ---")
     feedback_history = result.get("feedback_history", [])
     if feedback_history:
         for record in feedback_history:
-            print(f"  第{record['iteration']}轮: "
-                  f"verdict={record['verdict']}, "
-                  f"score={record['score']:.2f}, "
-                  f"issues={record['issues_count']}, "
-                  f"action={record['action_taken']}")
+            print(
+                f"  第{record['iteration']}轮: "
+                f"verdict={record['verdict']}, "
+                f"score={record['score']:.2f}, "
+                f"issues={record['issues_count']}, "
+                f"action={record['action_taken']}"
+            )
     else:
         print("  (无反馈记录)")
 
@@ -101,7 +102,8 @@ async def main():
     # 保存完整state（用于调试）
     state_path = output_dir / f"pipeline_state_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     serializable_state = {
-        k: v for k, v in result.items()
+        k: v
+        for k, v in result.items()
         if isinstance(v, (str, int, float, bool, list, dict, type(None)))
     }
     state_path.write_text(

@@ -31,9 +31,7 @@ class TraceSpan(BaseModel):
     # ---- 标识 ----
     trace_id: str = Field(description="顶层任务ID，贯穿整个分析流程")
     span_id: str = Field(description="当前操作的唯一ID")
-    parent_span_id: str | None = Field(
-        default=None, description="父操作ID，构成树形追踪结构"
-    )
+    parent_span_id: str | None = Field(default=None, description="父操作ID，构成树形追踪结构")
 
     # ---- 描述 ----
     name: str = Field(description="操作名称，如'collector.scrape_pricing'")
@@ -48,22 +46,16 @@ class TraceSpan(BaseModel):
     duration_ms: int | None = Field(default=None, ge=0, description="耗时（毫秒）")
 
     # ---- 输入输出（完整记录，支持决策回放） ----
-    input_data: dict[str, Any] = Field(
-        default_factory=dict, description="操作输入"
-    )
-    output_data: dict[str, Any] = Field(
-        default_factory=dict, description="操作输出"
-    )
+    input_data: dict[str, Any] = Field(default_factory=dict, description="操作输入")
+    output_data: dict[str, Any] = Field(default_factory=dict, description="操作输出")
 
     # ---- LLM调用详情 ----
-    model: str | None = Field(default=None, description="使用的模型，如'claude-sonnet-4-6-20250514'")
+    model: str | None = Field(
+        default=None, description="使用的模型，如'claude-sonnet-4-6-20250514'"
+    )
     prompt_tokens: int | None = Field(default=None, ge=0, description="输入token数")
-    completion_tokens: int | None = Field(
-        default=None, ge=0, description="输出token数"
-    )
-    total_cost_usd: float | None = Field(
-        default=None, ge=0, description="本次调用成本（美元）"
-    )
+    completion_tokens: int | None = Field(default=None, ge=0, description="输出token数")
+    total_cost_usd: float | None = Field(default=None, ge=0, description="本次调用成本（美元）")
 
     # ---- 状态 ----
     status: str = Field(
@@ -74,9 +66,7 @@ class TraceSpan(BaseModel):
     retry_count: int = Field(default=0, ge=0, description="重试次数")
 
     # ---- 元数据 ----
-    metadata: dict[str, Any] = Field(
-        default_factory=dict, description="自定义元数据"
-    )
+    metadata: dict[str, Any] = Field(default_factory=dict, description="自定义元数据")
 
     def complete(self, output: dict[str, Any] | None = None) -> None:
         """标记span完成"""
@@ -116,9 +106,7 @@ class FeedbackRecord(BaseModel):
         description="问题类型: missing_source/low_confidence/schema_violation/factual_error/inconsistency"
     )
     issue_description: str = Field(description="问题详细描述")
-    severity: str = Field(
-        default="major", description="严重程度: critical/major/minor"
-    )
+    severity: str = Field(default="major", description="严重程度: critical/major/minor")
 
     # ---- 修正前后对比（核心：证明改善） ----
     original_content: dict[str, Any] = Field(description="修正前的内容")
@@ -138,9 +126,7 @@ class FeedbackRecord(BaseModel):
     resolved_at: datetime | None = Field(default=None, description="解决时间")
     iteration: int = Field(default=1, description="第几轮反馈")
 
-    def resolve(
-        self, revised_content: dict[str, Any], improvement_score: float
-    ) -> None:
+    def resolve(self, revised_content: dict[str, Any], improvement_score: float) -> None:
         """标记反馈已解决"""
         self.revised_content = revised_content
         self.improvement_score = improvement_score
@@ -171,9 +157,7 @@ class TaskTrace(BaseModel):
     )
 
     # ---- 追踪数据 ----
-    spans: list[TraceSpan] = Field(
-        default_factory=list, description="所有操作span"
-    )
+    spans: list[TraceSpan] = Field(default_factory=list, description="所有操作span")
     feedback_loops: list[FeedbackRecord] = Field(
         default_factory=list, description="所有反馈闭环记录"
     )
@@ -182,9 +166,7 @@ class TaskTrace(BaseModel):
     total_cost_usd: float = Field(default=0.0, ge=0.0, description="总成本")
     total_tokens: int = Field(default=0, ge=0, description="总token消耗")
     total_llm_calls: int = Field(default=0, ge=0, description="LLM调用总次数")
-    total_feedback_rounds: int = Field(
-        default=0, ge=0, description="反馈闭环触发总次数"
-    )
+    total_feedback_rounds: int = Field(default=0, ge=0, description="反馈闭环触发总次数")
 
     def add_span(self, span: TraceSpan) -> None:
         """添加span并更新统计"""
