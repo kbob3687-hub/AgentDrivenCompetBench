@@ -177,8 +177,8 @@ class CollectorAgent(BaseAgent):
                 return result
             jina_error = result.error or "unknown"
 
-        firecrawl_error = "disabled (set ENABLE_FIRECRAWL=true to enable)"
-        if _env_flag("ENABLE_FIRECRAWL"):
+        firecrawl_error = "disabled (no FIRECRAWL_API_KEY)"
+        if os.getenv("FIRECRAWL_API_KEY"):
             print(f"  [Collector] Jina Reader 失败 ({url[:50]}): {jina_error}，降级到Firecrawl")
             result = await firecrawl_fetch(url)
             if result.success:

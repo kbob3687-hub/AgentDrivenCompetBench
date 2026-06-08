@@ -365,25 +365,30 @@ async def schema_changelog(limit: int = Query(50, ge=1, le=200)) -> list[dict[st
 @router.post("/{task_id}/intervene")
 async def intervene_task(task_id: str, req: InterveneRequest) -> dict[str, str]:
     """人工介入 - 强制通过/继续迭代/终止任务"""
-    from api.runner import hitl_resume
+    from api.runner import _hitl_gates, hitl_resume
 
     task_info = _tasks.get(task_id)
     if not task_info:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    if req.action == "force_pass":
-        hitl_resume(task_id, "force_pass", urls=req.urls, reason=req.reason)
-        return {"status": "ok", "message": "Task force-passed by human"}
+    if task_info.get("status") != "running":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Task is '{task_info.get('status')}', not running. Cannot intervene.",
+        )
 
-    elif req.action == "continue":
-        hitl_resume(task_id, "continue", urls=req.urls, reason=req.reason)
-        return {"status": "ok", "message": "Pipeline resumed, continuing iteration"}
+    if task_id not in _hitl_gates:
+        raise HTTPException(
+            status_code=409,
+            detail="Task is running but not at a HITL pause point. Wait for QA to finish.",
+        )
 
-    elif req.action == "abort":
-        hitl_resume(task_id, "abort", urls=req.urls, reason=req.reason)
-        return {"status": "ok", "message": "Task aborted by human"}
+    valid_actions = {"force_pass", "continue", "abort"}
+    if req.action not in valid_actions:
+        raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
 
-    raise HTTPException(status_code=400, detail=f"Unknown action: {req.action}")
+    hitl_resume(task_id, req.action, urls=req.urls, reason=req.reason)
+    return {"status": "ok", "message": f"Intervention '{req.action}' applied"}
 
 
 @router.get("/{task_id}/metrics")

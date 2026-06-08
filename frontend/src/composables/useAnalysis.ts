@@ -307,8 +307,12 @@ export function useAnalysis() {
         body: JSON.stringify(payload)
       })
       if (!response.ok) {
-        const text = await response.text().catch(() => '')
-        addLog(`介入失败 (HTTP ${response.status}): ${text || response.statusText}`, 'error')
+        let msg = response.statusText
+        try {
+          const body = await response.json()
+          msg = body.detail || body.error || msg
+        } catch { /* ignore parse error */ }
+        addLog(`介入失败 (HTTP ${response.status}): ${msg}`, 'error')
         return
       }
       // Optimistic state update — don't wait for SSE which may have disconnected

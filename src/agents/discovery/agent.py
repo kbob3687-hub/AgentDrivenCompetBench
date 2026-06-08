@@ -62,6 +62,31 @@ KNOWN_COMPETITORS: dict[str, dict[str, Any]] = {
             "customers": ["https://monday.com/customers/all"],
         },
     },
+    "shopify": {
+        "domain": "shopify.com",
+        "urls": {
+            "pricing": ["https://www.shopify.com/pricing"],
+            "features": ["https://www.shopify.com/products", "https://www.shopify.com/sell"],
+            "integrations": ["https://www.shopify.com/apps"],
+            "ai_features": ["https://www.shopify.com/plus"],
+            "customers": ["https://www.shopify.com/enterprise"],
+            "api_openness": ["https://www.shopify.com/partners"],
+            "deployment_options": ["https://www.shopify.com/products"],
+        },
+    },
+    "anker": {
+        "domain": "anker.com",
+        "urls": {
+            "pricing": ["https://www.anker.com/collections"],
+            "features": ["https://www.anker.com/collections/cables", "https://www.anker.com/collections/home"],
+            "distribution_channels": ["https://www.anker.com/collections"],
+            "brand_sentiment": ["https://www.anker.com/blogs"],
+            "target_demographics": ["https://www.anker.com/collections"],
+            "product_line_breadth": ["https://www.anker.com/collections", "https://www.anker.com/collections/cables"],
+            "customers": ["https://www.anker.com/blogs"],
+            "after_sales_policy": ["https://www.anker.com/support"],
+        },
+    },
     "insta360": {
         "domain": "insta360.com",
         "urls": {
@@ -107,6 +132,9 @@ ALIASES: dict[str, str] = {
     "click up": "clickup",
     "monday.com": "monday",
     "arashi vision": "insta360",
+    "安克": "anker",
+    "anker": "anker",
+    "安克创新": "anker",
     "钉钉": "dingtalk",
     "ding talk": "dingtalk",
     "dingding": "dingtalk",
@@ -251,10 +279,6 @@ async def _web_search(client: httpx.AsyncClient, query: str) -> list[dict[str, A
     也不受 robots.txt 限制（Firecrawl 服务端处理合规）。
     返回的 content 字段包含完整页面 markdown，可直接供 Collector 提取 claim。
     """
-    if not _env_flag("ENABLE_FIRECRAWL"):
-        logger.info("ENABLE_FIRECRAWL=false，跳过 Firecrawl Search: query=%r", query)
-        return []
-
     api_key = os.getenv("FIRECRAWL_API_KEY", "")
     if not api_key:
         logger.warning("FIRECRAWL_API_KEY 未配置，搜索不可用")

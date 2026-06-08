@@ -78,7 +78,7 @@ class WriterAgent(BaseAgent):
         # 调用Claude生成报告
         response = await self.call_llm(messages=[{"role": "user", "content": user_prompt}])
 
-        report_md = response.text
+        report_md = self._strip_preamble(response.text)
 
         # 后处理：提取sources列表用于QA验证
         sources = self._extract_all_sources(profile)
@@ -101,6 +101,25 @@ class WriterAgent(BaseAgent):
             parent_message_id=message.message_id,
             context=message.context,
         )
+
+    @staticmethod
+    def _strip_preamble(text: str) -> str:
+        """去除LLM输出的前言客套话，直接从报告标题开始"""
+        lines = text.strip().splitlines()
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            # 找到第一个标题行（# 开头）或第一个非空正文行
+            if stripped.startswith("#"):
+                return "\n".join(lines[i:]).strip()
+        # 没找到标题，跳过开头的客套话行
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if stripped and not any(
+                stripped.startswith(p)
+                for p in ("好的", "以下是", "根据", "基于您", "这是", "下面", "以下是根据")
+            ):
+                return "\n".join(lines[i:]).strip()
+        return text.strip()
 
     def _compact_profile(self, profile: dict[str, Any]) -> str:
         """压缩过长的profile，保留关键字段"""
