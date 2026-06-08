@@ -567,6 +567,30 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
                 "agent": "collector",
             },
         )
+    elif iteration > 1 and missing:
+        # 有claims但QA打回说缺维度 → 排除上轮已抓URL，重新发现新数据源
+        already_tried = set(discovered)
+        rediscover = DiscoveryAgent()
+        rediscover_result = await rediscover.discover(
+            target,
+            scope,
+            strategy=new_strategy,
+            trusted_domains=state.get("trusted_domains", []),
+        )
+        new_urls = [u for u in rediscover_result.get("urls", []) if u not in already_tried]
+        urls = (new_urls or discovered)[:10]
+        pre_fetched_updates.update(rediscover_result.get("pre_fetched", {}))
+        await _publish(
+            task_id,
+            EventType.LOG,
+            {
+                "message": (
+                    f"缺少维度 {missing}，重新发现数据源: {len(new_urls)} 个新URL"
+                    f"（排除 {len(already_tried)} 个已抓）"
+                ),
+                "agent": "collector",
+            },
+        )
     elif discovered:
         # Discovery 已发现 URL（首轮或补采），直接复用
         urls = discovered[:10]
