@@ -29,6 +29,41 @@ const industries = [
 const selectedIndustry = ref(props.industry || 'saas')
 const targetUrlsInput = ref('')
 const showUrlInput = ref(false)
+const templateFields = ref<{ field_name: string; description: string; required: boolean }[]>([])
+const templateDesc = ref('')
+const loadingTemplate = ref(false)
+const showTemplateFields = ref(false)
+
+// 每个行业模板对应的已知例品（warm-path 可直出 URL）
+const industryExamples: Record<string, string[]> = {
+  saas: ['Notion', '飞书', 'ClickUp', 'Monday', 'Shopify'],
+  consumer: ['Anker', '小米'],
+  hardware: ['Insta360', 'DJI'],
+}
+
+async function fetchTemplateInfo(industry: string) {
+  loadingTemplate.value = true
+  try {
+    const resp = await fetch(`/api/analyze/templates/${industry}`)
+    if (resp.ok) {
+      const data = await resp.json()
+      templateDesc.value = data.description || ''
+      templateFields.value = Object.entries(data.fields || {}).map(([name, info]: [string, any]) => ({
+        field_name: name,
+        description: info.description || '',
+        required: info.required || false
+      }))
+    }
+  } catch { /* ignore */ }
+  loadingTemplate.value = false
+}
+
+fetchTemplateInfo(selectedIndustry.value)
+
+function selectIndustry(id: string) {
+  selectedIndustry.value = id
+  fetchTemplateInfo(id)
+}
 
 watch(
   () => props.competitorName,
@@ -85,8 +120,8 @@ function handleSubmit() {
           v-model="competitorName"
           type="text"
           :disabled="disabled"
+          :placeholder="`例如: ${(industryExamples[selectedIndustry] || []).join('、')}`"
           class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-          placeholder="输入竞品名称..."
         />
       </div>
       <div class="min-w-[160px]">
@@ -96,17 +131,41 @@ function handleSubmit() {
             v-for="ind in industries"
             :key="ind.id"
             type="button"
-            :disabled="disabled"
             :class="[
               'px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors',
               selectedIndustry === ind.id
                 ? 'bg-purple-600 text-white'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             ]"
-            @click="selectedIndustry = ind.id"
+            @click="selectIndustry(ind.id)"
           >
             {{ ind.label }}
           </button>
+        </div>
+        <!-- 模板说明：选中行业后显示一句话说明 + 可展开字段列表 -->
+        <div
+          v-if="templateDesc"
+          class="mt-2 p-2 rounded-md text-xs"
+          style="background: #f5f3ff; border: 1px solid #e0e7ff;"
+        >
+          <button
+            type="button"
+            class="text-slate-700 font-medium hover:text-purple-700 transition-colors text-left w-full flex items-center gap-1"
+            @click="showTemplateFields = !showTemplateFields"
+          >
+            <span>{{ showTemplateFields ? '▾' : '▸' }}</span>
+            <span>{{ templateDesc }}</span>
+            <span class="text-slate-400 font-normal">（{{ templateFields.length }} 个扩展字段）</span>
+          </button>
+          <ul v-if="showTemplateFields && templateFields.length" class="mt-1.5 space-y-0.5 ml-4">
+            <li
+              v-for="f in templateFields"
+              :key="f.field_name"
+              :class="f.required ? 'text-purple-700' : 'text-slate-500'"
+            >
+              {{ f.description }}{{ f.required ? '*' : '' }}
+            </li>
+          </ul>
         </div>
       </div>
       <div class="flex-1 min-w-[300px]">

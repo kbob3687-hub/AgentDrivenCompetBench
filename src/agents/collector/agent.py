@@ -323,12 +323,39 @@ class CollectorAgent(BaseAgent):
                 "ai_features": ["https://clickup.com/ai"],
                 "user_personas": ["https://clickup.com/customers"],
             },
+            # ---- 消费品（consumer 模板） ----
+            "xiaomi": {
+                "pricing": ["https://www.mi.com"],
+                "features": ["https://www.mi.com/shop"],
+                "user_personas": ["https://www.mi.com/community"],
+            },
+            "anker": {
+                "pricing": ["https://www.anker.com/collections"],
+                "features": ["https://www.anker.com/collections/cables"],
+                "user_personas": ["https://www.anker.com/blogs"],
+            },
+            # ---- 硬件（hardware 模板） ----
+            "dji": {
+                "pricing": ["https://store.dji.com"],
+                "features": ["https://www.dji.com/products"],
+                "user_personas": ["https://www.dji.com/newsroom"],
+            },
+            "insta360": {
+                "pricing": ["https://store.insta360.com"],
+                "features": ["https://www.insta360.com/product"],
+                "user_personas": ["https://www.insta360.com/explore"],
+            },
         }
 
         aliases: dict[str, str] = {
             "飞书": "feishu",
             "lark": "feishu",
             "click up": "clickup",
+            "小米": "xiaomi",
+            "大疆": "dji",
+            "安克": "anker",
+            "安克创新": "anker",
+            "影石": "insta360",
         }
 
         key = target.lower().strip()
