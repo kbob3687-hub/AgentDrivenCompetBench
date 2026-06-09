@@ -32,8 +32,9 @@ const sourceLinks = computed(() => {
 })
 
 const scoreText = computed(() => {
-  if (props.result) return `${(props.result.qa_score * 100).toFixed(0)}%`
-  if (props.pauseContext) return `${(props.pauseContext.score * 100).toFixed(0)}%`
+  const fmt = (v: number | null | undefined) => Number(v) ? `${(Number(v) * 100).toFixed(0)}%` : '—'
+  if (props.result) return fmt(props.result.qa_score)
+  if (props.pauseContext) return fmt(props.pauseContext.score)
   return '—'
 })
 

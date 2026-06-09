@@ -384,7 +384,7 @@ function getExtensionSourceUrl(value: any): string | null {
                 <div class="text-xs font-normal text-slate-500">{{ comp.product_name }}</div>
                 <div class="mt-1">
                   <span class="px-1.5 py-0.5 rounded text-xs bg-blue-100 text-blue-700">
-                    {{ (comp.qa_score * 100).toFixed(0) }}%
+                    {{ Number(comp.qa_score) ? (Number(comp.qa_score) * 100).toFixed(0) + '%' : '—' }}
                   </span>
                 </div>
               </th>
