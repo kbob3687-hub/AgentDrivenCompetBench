@@ -35,6 +35,33 @@ def average_confidence(claims: list[dict[str, Any]]) -> float:
     return round(total / len(claims), 2)
 
 
+def cross_validated_confidence(
+    supporting_claims: list[dict[str, Any]],
+    base_confidence: float,
+) -> float:
+    """多条不同网站来源支撑同一结论 → 加分；单一来源 → 不调整。
+
+    不调额外 LLM，只数不同 URL 数量。三个以上独立来源说明多个网站
+    交叉验证了同一个事实，置信度自然应该更高。
+    """
+    if not supporting_claims:
+        return base_confidence
+
+    urls: set[str] = set()
+    for c in supporting_claims:
+        for s in c.get("sources", []):
+            url = (s.get("url") or "").strip()
+            if url:
+                urls.add(url)
+
+    unique_sources = len(urls)
+    if unique_sources >= 3:
+        return round(min(1.0, base_confidence + 0.10), 2)
+    elif unique_sources >= 2:
+        return round(min(1.0, base_confidence + 0.05), 2)
+    return base_confidence
+
+
 def build_pricing_model(
     llm_pricing: dict[str, Any],
     original_claims: list[dict[str, Any]],
@@ -49,6 +76,7 @@ def build_pricing_model(
     if not supporting_claims:
         return None
     confidence = llm_pricing.get("confidence") or average_confidence(supporting_claims)
+    confidence = cross_validated_confidence(supporting_claims, confidence)
     model_type = llm_pricing.get("model_type") or "subscription"
     currency = llm_pricing.get("currency") or "USD"
 
@@ -94,6 +122,7 @@ def build_feature_tree(
         if not supporting_claims:
             continue
         confidence = feat.get("confidence", average_confidence(supporting_claims))
+        confidence = cross_validated_confidence(supporting_claims, confidence)
         sources = _collect_sources(supporting_claims)
 
         sub_features = []
@@ -159,6 +188,7 @@ def build_swot(
             if not supporting:
                 continue
             confidence = item.get("confidence", 0.5)
+            confidence = cross_validated_confidence(supporting, confidence)
             sources = _collect_sources(supporting)
 
             evidenced_claims.append(
@@ -191,6 +221,7 @@ def build_user_personas(
         if not supporting:
             continue
         confidence = p.get("confidence", average_confidence(supporting))
+        confidence = cross_validated_confidence(supporting, confidence)
         sources = _collect_sources(supporting)
 
         pain_claims = []
