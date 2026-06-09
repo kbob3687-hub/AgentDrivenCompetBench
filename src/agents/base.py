@@ -64,6 +64,9 @@ class BaseAgent(ABC):
             timeout=30,
         )
 
+        # 每个 agent 实例独立累加本轮的 LLM 调用 token（真实 API 返回值）
+        self.token_usage: dict[str, int | str] = {"input": 0, "output": 0, "model": ""}
+
         if self.config.provider == "anthropic":
             self.anthropic_client = anthropic.AsyncAnthropic(
                 base_url=os.getenv("ANTHROPIC_BASE_URL") or None,
@@ -205,6 +208,11 @@ class BaseAgent(ABC):
                 result = await self._call_anthropic(messages, tools, response_format)
             else:
                 result = await self._call_openai_compat(messages, tools, response_format)
+
+            # 累加真实 token（来自 API 返回的 usage 字段，非估算）
+            self.token_usage["input"] += result.input_tokens
+            self.token_usage["output"] += result.output_tokens
+            self.token_usage["model"] = result.model or self.config.model
 
             generation.update(
                 output=result.text[:2000],

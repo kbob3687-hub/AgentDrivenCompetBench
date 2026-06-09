@@ -639,7 +639,7 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     )
 
     # Fan-out: 并行 fetch + extract
-    semaphore = asyncio.Semaphore(4)
+    semaphore = asyncio.Semaphore(6)
     fetch_errors: list[str] = []
     # Discovery 阶段搜索结果中的内容摘要（robots.txt 拦截时兜底）
     pre_fetched: dict[str, str] = {
@@ -883,8 +883,8 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
             iteration=iteration,
             duration_ms=round(duration * 1000),
             model=agent.config.model,
-            input_tokens=len(all_claims) * 800,
-            output_tokens=len(all_claims) * 200,
+            input_tokens=agent.token_usage["input"],
+            output_tokens=agent.token_usage["output"],
             prompt_preview=f"采集 {target} 的 {scope} 维度数据，共 {len(urls)} 个URL",
             output_preview=(
                 f"累计 {len(all_claims)} 条claims（本轮 +{added}），失败 {len(fetch_errors)} 个源"
@@ -987,8 +987,8 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             iteration=iteration,
             duration_ms=round(duration * 1000),
             model=agent.config.model,
-            input_tokens=len(str(claims)) // 4,
-            output_tokens=len(str(args.get("profile", {}))) // 4,
+            input_tokens=agent.token_usage["input"],
+            output_tokens=agent.token_usage["output"],
             prompt_preview=f"分析 {len(claims)} 条claims，维度: {state.get('collect_scope', [])}",
             output_preview=f"生成 CompetitorProfile，完整度 {args.get('completeness_score', 0):.0%}",
         )
@@ -1045,6 +1045,7 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
     args = result.arguments
     duration = time.time() - start
 
+    report_md = args.get("report_markdown", "")
     await _publish(
         task_id,
         EventType.AGENT_END,
@@ -1052,6 +1053,7 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
             "agent": "writer",
             "iteration": iteration,
             "duration_ms": round(duration * 1000),
+            "report_preview": report_md,
         },
     )
 
@@ -1064,8 +1066,8 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
             iteration=iteration,
             duration_ms=round(duration * 1000),
             model=agent.config.model,
-            input_tokens=len(str(state.get("profile", {}))) // 4,
-            output_tokens=len(args.get("report_markdown", "")) // 4,
+            input_tokens=agent.token_usage["input"],
+            output_tokens=agent.token_usage["output"],
             prompt_preview=f"将 {state['competitor_name']} 的 profile 转为 Markdown 报告",
             output_preview=f"生成报告 {args.get('report_length', 0)} 字，{args.get('footnote_count', 0)} 个脚注",
         )
@@ -1272,8 +1274,8 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
                 iteration=iteration,
                 duration_ms=round(duration * 1000),
                 model=agent.config.model,
-                input_tokens=len(str(profile)) // 4 + len(report_markdown) // 4,
-                output_tokens=0,
+                input_tokens=agent.token_usage["input"],
+                output_tokens=agent.token_usage["output"],
                 prompt_preview=f"质检 {state['competitor_name']} profile + 报告",
                 output_preview=f"QA failed: {error_type}: {error_message}",
             )
@@ -1520,8 +1522,8 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             iteration=iteration,
             duration_ms=round(duration * 1000),
             model=agent.config.model,
-            input_tokens=len(str(profile)) // 4 + len(report_markdown) // 4,
-            output_tokens=500,
+            input_tokens=agent.token_usage["input"],
+            output_tokens=agent.token_usage["output"],
             prompt_preview=f"质检 {state['competitor_name']} profile + 报告，期望维度: {state.get('expected_dimensions', [])}",
             output_preview=f"verdict={verdict}, score={score:.2f}, issues={issues_count}, missing={missing_dims}",
         )

@@ -301,6 +301,7 @@ class TestCollectorPreFetchedContent:
 
         class FakeCollector:
             config = SimpleNamespace(model="fake-model")
+            token_usage = {"input": 3200, "output": 1200}
 
             async def _fetch_url(self, fetch_url: str):
                 raise AssertionError(f"should not fetch pre-fetched URL: {fetch_url}")
@@ -353,6 +354,7 @@ class TestSseQaNode:
 
         class FakeQAAgent:
             config = SimpleNamespace(model="fake-qa")
+            token_usage = {"input": 4000, "output": 300}
 
             async def execute(self, message):
                 return FakeResult()
