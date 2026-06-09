@@ -99,6 +99,7 @@ export interface AnalysisState {
   status: 'idle' | 'running' | 'completed' | 'failed' | 'paused'
   pauseVerdict: 'pass' | 'revise' | null
   pauseContext: PauseContext | null
+  qaTargetAgent: AgentName | null
   nodeStates: Record<AgentName, NodeStatus>
   logs: LogEntry[]
   result: SSEComplete | null

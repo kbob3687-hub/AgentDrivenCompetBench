@@ -103,7 +103,7 @@ const statusLabel = computed(() => {
     >
       <div class="text-base leading-none mb-1" :style="{ color: ringColor }">{{ statusIcon }}</div>
       <div class="text-[11px] font-semibold text-slate-100 leading-tight">{{ data.label }}</div>
-      <div class="text-[9px] mt-0.5" :style="{ color: ringColor }">{{ statusLabel }}</div>
+      <div class="text-[9px] mt-0.5" :style="{ color: ringColor }">{{ data.sub || statusLabel }}</div>
     </div>
 
     <Handle type="source" :position="Position.Right" class="!bg-slate-500 !border-slate-600" />
