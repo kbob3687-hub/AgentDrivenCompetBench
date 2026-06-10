@@ -12,7 +12,35 @@ const props = defineProps<{
 const activeTab = ref<'report' | 'feedback' | 'trace' | 'metrics' | 'loop'>('report')
 
 const renderedMarkdown = computed(() => {
-  return marked.parse(props.result.report_markdown || '') as string
+  const md = props.result.report_markdown || ''
+  if (!md) return ''
+
+  // 从附录标题处切分，正文和附录分开处理
+  const appendixMatch = md.match(/^#{2,3}\s+(附录|数据来源|参考|来源)/m)
+  let bodyMd = md
+  let appendixMd = ''
+
+  if (appendixMatch && appendixMatch.index !== undefined) {
+    bodyMd = md.substring(0, appendixMatch.index)
+    appendixMd = md.substring(appendixMatch.index)
+  }
+
+  let bodyHtml = marked.parse(bodyMd) as string
+  let appendixHtml = marked.parse(appendixMd) as string
+
+  // 附录里每条 [N] 前加锚点，支持列表 <li> 和表格 <td> 两种格式
+  appendixHtml = appendixHtml.replace(
+    /(<(?:li|td)[^>]*>)\[(\d+)\]/g,
+    '$1<span id="source-$2" class="source-anchor"></span>[$2]'
+  )
+
+  // 正文里 [N] 替换为可点击的跳转链接
+  bodyHtml = bodyHtml.replace(
+    /\[(\d+)\]/g,
+    '<a href="#source-$1" class="footnote-ref" title="查看来源 $1">[$1]</a>'
+  )
+
+  return bodyHtml + appendixHtml
 })
 
 const totalTokens = computed(() => {
@@ -245,7 +273,7 @@ function severityShortLabel(severity: string): string {
         </span>
         <span class="text-sm text-slate-500">QA 评分:</span>
         <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-sm font-medium">
-          {{ (result.qa_score * 100).toFixed(0) }}%
+          {{ Number(result.qa_score) ? (Number(result.qa_score) * 100).toFixed(0) + '%' : '—' }}
         </span>
         <span class="flex-1"></span>
         <button
@@ -474,6 +502,7 @@ function severityShortLabel(severity: string): string {
 <style scoped>
 .report-content {
   overflow-x: auto;
+  scroll-behavior: smooth;
 }
 
 .report-content :deep(table) {
@@ -525,5 +554,26 @@ function severityShortLabel(severity: string): string {
 
 .report-content :deep(strong) {
   color: rgb(226 232 240);
+}
+
+/* 正文脚标链接 — 和周围文字协调，但一眼能认出可点击 */
+.report-content :deep(.footnote-ref) {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.8em;
+  vertical-align: super;
+  margin: 0 1px;
+  transition: color 0.15s;
+}
+.report-content :deep(.footnote-ref:hover) {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+/* 附录来源锚点 — 不可见，仅用于跳转定位 */
+.report-content :deep(.source-anchor) {
+  display: inline-block;
+  scroll-margin-top: 20px;
 }
 </style>

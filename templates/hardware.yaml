@@ -1,7 +1,7 @@
 template_id: hardware_v1
 industry: hardware
 display_name: "硬件/智能设备模板"
-description: "适用于智能硬件、IoT设备、消费电子、机器人等产品"
+description: "适用于智能硬件、IoT设备、消费电子、机器人等产品（如Insta360、DJI）"
 version: "1.0"
 
 discovery_strategy: open_search

@@ -30,6 +30,98 @@ from schemas.message import AgentMessage, MessageContext, MessageType
 
 logger = logging.getLogger(__name__)
 
+
+def _profile_to_preview_markdown(profile: dict[str, Any]) -> str:
+    """将 CompetitorProfile dict 转为简要 Markdown 预览，供 Analyst 完成后立即展示。"""
+    if not profile:
+        return ""
+    lines: list[str] = []
+    name = profile.get("product_name") or profile.get("company_name") or "未知产品"
+    one_liner = profile.get("one_liner") or ""
+    lines.append(f"# {name} — 结构化分析（草稿）")
+    if one_liner:
+        lines.append(f"\n> {one_liner}\n")
+
+    # 基本信息
+    meta_parts: list[str] = []
+    if profile.get("industry"):
+        meta_parts.append(f"行业: {profile['industry']}")
+    if profile.get("founded_year"):
+        meta_parts.append(f"成立: {profile['founded_year']}")
+    if profile.get("funding_stage"):
+        meta_parts.append(f"融资: {profile['funding_stage']}")
+    if profile.get("employee_count_range"):
+        meta_parts.append(f"规模: {profile['employee_count_range']}")
+    if meta_parts:
+        lines.append(" | ".join(meta_parts))
+        lines.append("")
+
+    # 功能树
+    features = profile.get("feature_tree") or []
+    if features:
+        lines.append("## 核心功能")
+        for f in features[:8]:
+            fname = f.get("name", "")
+            desc = ""
+            if isinstance(f.get("description"), dict):
+                desc = f["description"].get("claim", "")
+            elif isinstance(f.get("description"), str):
+                desc = f["description"]
+            maturity = f.get("maturity") or ""
+            tag = f" `{maturity}`" if maturity else ""
+            lines.append(f"- **{fname}**{tag}: {desc[:80]}")
+            for sf in (f.get("sub_features") or [])[:3]:
+                sf_name = sf.get("name", "")
+                lines.append(f"  - {sf_name}")
+        if len(features) > 8:
+            lines.append(f"- ...及其他 {len(features) - 8} 项功能")
+        lines.append("")
+
+    # 定价
+    pricing = profile.get("pricing")
+    if pricing and isinstance(pricing, dict):
+        lines.append("## 定价模型")
+        model_type = pricing.get("model_type", "")
+        if model_type:
+            lines.append(f"模式: {model_type}")
+        for tier in (pricing.get("tiers") or [])[:5]:
+            tier_name = tier.get("name", "")
+            price = tier.get("price", "")
+            cycle = tier.get("billing_cycle", "")
+            lines.append(f"- **{tier_name}**: {price} / {cycle}")
+            for feat in (tier.get("features") or [])[:3]:
+                lines.append(f"  - {feat}")
+        lines.append("")
+
+    # SWOT
+    swot = profile.get("swot") or []
+    if swot:
+        lines.append("## SWOT 分析")
+        category_map = {"strength": "优势", "weakness": "劣势", "opportunity": "机会", "threat": "威胁"}
+        for item in swot:
+            cat = category_map.get(item.get("category", ""), item.get("category", ""))
+            lines.append(f"### {cat}")
+            for claim_obj in (item.get("items") or [])[:4]:
+                claim_text = claim_obj.get("claim", "") if isinstance(claim_obj, dict) else str(claim_obj)
+                lines.append(f"- {claim_text[:100]}")
+        lines.append("")
+
+    # 用户画像
+    personas = profile.get("user_personas") or []
+    if personas:
+        lines.append("## 用户画像")
+        for p in personas[:4]:
+            p_name = p.get("name") or p.get("segment") or "用户群"
+            lines.append(f"- **{p_name}**")
+        lines.append("")
+
+    score = profile.get("completeness_score")
+    if score is not None:
+        lines.append(f"---\n*完整度: {score:.0%} — Writer 正在生成完整报告...*")
+
+    return "\n".join(lines)
+
+
 # Per-task trace accumulator (avoids LangGraph state propagation issues)
 _task_traces: dict[str, list[dict[str, Any]]] = {}
 
@@ -639,7 +731,7 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     )
 
     # Fan-out: 并行 fetch + extract
-    semaphore = asyncio.Semaphore(4)
+    semaphore = asyncio.Semaphore(10)
     fetch_errors: list[str] = []
     # Discovery 阶段搜索结果中的内容摘要（robots.txt 拦截时兜底）
     pre_fetched: dict[str, str] = {
@@ -883,8 +975,8 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
             iteration=iteration,
             duration_ms=round(duration * 1000),
             model=agent.config.model,
-            input_tokens=len(all_claims) * 800,
-            output_tokens=len(all_claims) * 200,
+            input_tokens=agent.token_usage["input"],
+            output_tokens=agent.token_usage["output"],
             prompt_preview=f"采集 {target} 的 {scope} 维度数据，共 {len(urls)} 个URL",
             output_preview=(
                 f"累计 {len(all_claims)} 条claims（本轮 +{added}），失败 {len(fetch_errors)} 个源"
@@ -962,6 +1054,7 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             "agent": "analyst",
             "iteration": iteration,
             "duration_ms": round(duration * 1000),
+            "report_preview": _profile_to_preview_markdown(args.get("profile", {})),
         },
     )
 
@@ -987,8 +1080,8 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             iteration=iteration,
             duration_ms=round(duration * 1000),
             model=agent.config.model,
-            input_tokens=len(str(claims)) // 4,
-            output_tokens=len(str(args.get("profile", {}))) // 4,
+            input_tokens=agent.token_usage["input"],
+            output_tokens=agent.token_usage["output"],
             prompt_preview=f"分析 {len(claims)} 条claims，维度: {state.get('collect_scope', [])}",
             output_preview=f"生成 CompetitorProfile，完整度 {args.get('completeness_score', 0):.0%}",
         )
@@ -1045,6 +1138,7 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
     args = result.arguments
     duration = time.time() - start
 
+    report_md = args.get("report_markdown", "")
     await _publish(
         task_id,
         EventType.AGENT_END,
@@ -1052,6 +1146,7 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
             "agent": "writer",
             "iteration": iteration,
             "duration_ms": round(duration * 1000),
+            "report_preview": report_md,
         },
     )
 
@@ -1064,8 +1159,8 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
             iteration=iteration,
             duration_ms=round(duration * 1000),
             model=agent.config.model,
-            input_tokens=len(str(state.get("profile", {}))) // 4,
-            output_tokens=len(args.get("report_markdown", "")) // 4,
+            input_tokens=agent.token_usage["input"],
+            output_tokens=agent.token_usage["output"],
             prompt_preview=f"将 {state['competitor_name']} 的 profile 转为 Markdown 报告",
             output_preview=f"生成报告 {args.get('report_length', 0)} 字，{args.get('footnote_count', 0)} 个脚注",
         )
@@ -1272,8 +1367,8 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
                 iteration=iteration,
                 duration_ms=round(duration * 1000),
                 model=agent.config.model,
-                input_tokens=len(str(profile)) // 4 + len(report_markdown) // 4,
-                output_tokens=0,
+                input_tokens=agent.token_usage["input"],
+                output_tokens=agent.token_usage["output"],
                 prompt_preview=f"质检 {state['competitor_name']} profile + 报告",
                 output_preview=f"QA failed: {error_type}: {error_message}",
             )
@@ -1520,8 +1615,8 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             iteration=iteration,
             duration_ms=round(duration * 1000),
             model=agent.config.model,
-            input_tokens=len(str(profile)) // 4 + len(report_markdown) // 4,
-            output_tokens=500,
+            input_tokens=agent.token_usage["input"],
+            output_tokens=agent.token_usage["output"],
             prompt_preview=f"质检 {state['competitor_name']} profile + 报告，期望维度: {state.get('expected_dimensions', [])}",
             output_preview=f"verdict={verdict}, score={score:.2f}, issues={issues_count}, missing={missing_dims}",
         )

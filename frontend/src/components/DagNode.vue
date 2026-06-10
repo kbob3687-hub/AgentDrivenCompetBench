@@ -14,7 +14,7 @@ const ringProgress = computed(() => {
   return 0
 })
 
-const circumference = 2 * Math.PI * 22 // r=22
+const circumference = 2 * Math.PI * 37 // r=37
 const strokeDashoffset = computed(() =>
   circumference - (ringProgress.value / 100) * circumference
 )
@@ -63,30 +63,30 @@ const statusLabel = computed(() => {
 <template>
   <div
     class="relative flex items-center justify-center"
-    style="width: 96px; height: 96px;"
+    style="width: 82px; height: 82px;"
   >
     <Handle type="target" :position="Position.Left" class="!bg-slate-500 !border-slate-600" />
 
     <!-- SVG ring -->
     <svg
-      width="96" height="96"
+      width="82" height="82"
       class="absolute inset-0"
       style="transform: rotate(-90deg);"
     >
       <!-- track -->
       <circle
-        cx="48" cy="48" r="44"
+        cx="41" cy="41" r="37"
         fill="none"
         stroke="#1e293b"
-        stroke-width="4"
+        stroke-width="3"
       />
       <!-- progress arc -->
       <circle
         v-if="ringProgress > 0"
-        cx="48" cy="48" r="44"
+        cx="41" cy="41" r="37"
         fill="none"
         :stroke="ringColor"
-        stroke-width="4"
+        stroke-width="3"
         stroke-linecap="round"
         :stroke-dasharray="circumference"
         :stroke-dashoffset="strokeDashoffset"
@@ -97,13 +97,13 @@ const statusLabel = computed(() => {
 
     <!-- inner card -->
     <div
-      class="relative z-10 flex flex-col items-center justify-center rounded-xl text-center transition-all duration-300"
-      style="width: 72px; height: 72px; background: #0f172a; border: 1.5px solid #1e293b;"
+      class="relative z-10 flex flex-col items-center justify-center rounded-lg text-center transition-all duration-300"
+      style="width: 62px; height: 62px; background: #0f172a; border: 1.5px solid #1e293b;"
       :style="{ boxShadow: glowColor }"
     >
-      <div class="text-base leading-none mb-1" :style="{ color: ringColor }">{{ statusIcon }}</div>
+      <div class="text-sm leading-none mb-0.5" :style="{ color: ringColor }">{{ statusIcon }}</div>
       <div class="text-[11px] font-semibold text-slate-100 leading-tight">{{ data.label }}</div>
-      <div class="text-[9px] mt-0.5" :style="{ color: ringColor }">{{ statusLabel }}</div>
+      <div class="text-[9px] mt-0.5" :style="{ color: ringColor }">{{ data.sub || statusLabel }}</div>
     </div>
 
     <Handle type="source" :position="Position.Right" class="!bg-slate-500 !border-slate-600" />
@@ -113,7 +113,7 @@ const statusLabel = computed(() => {
 <style scoped>
 .ring-spin {
   animation: ring-rotate 1.6s linear infinite;
-  transform-origin: 48px 48px;
+  transform-origin: 41px 41px;
 }
 @keyframes ring-rotate {
   from { stroke-dashoffset: v-bind(circumference); }

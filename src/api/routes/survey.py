@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
 import os
 
-import anthropic
 from fastapi import APIRouter
+from openai import OpenAI
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/survey", tags=["survey"])
@@ -14,31 +15,31 @@ router = APIRouter(prefix="/api/survey", tags=["survey"])
 class SurveyRequest(BaseModel):
     competitor_name: str
     industry: str = "saas"
-    focus: str = ""  # 可选聚焦方向，如 "pricing" / "user experience"
+    focus: str = ""
 
 
 class SurveyResponse(BaseModel):
     competitor_name: str
-    questionnaire: str   # Markdown 格式的调研问卷
-    interview_guide: str  # Markdown 格式的访谈提纲
+    questionnaire: str
+    interview_guide: str
 
 
 def _call_llm(prompt: str) -> str:
-    client = anthropic.Anthropic(
-        api_key=os.getenv("ANTHROPIC_API_KEY", ""),
-        base_url=os.getenv("ANTHROPIC_BASE_URL", "https://api.anthropic.com"),
+    client = OpenAI(
+        api_key=os.getenv("DEEPSEEK_API_KEY", ""),
+        base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
     )
-    msg = client.messages.create(
-        model=os.getenv("ANTHROPIC_MODEL", "claude-opus-4-7-thinking"),
+    resp = client.chat.completions.create(
+        model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
         max_tokens=2048,
+        temperature=0.7,
         messages=[{"role": "user", "content": prompt}],
     )
-    return msg.content[0].text
+    return resp.choices[0].message.content or ""
 
 
 @router.post("", response_model=SurveyResponse)
 async def generate_survey(req: SurveyRequest) -> SurveyResponse:
-    """生成用户调研问卷 + 访谈提纲"""
     focus_hint = f"，重点关注 {req.focus}" if req.focus else ""
     name = req.competitor_name
     industry = req.industry
@@ -63,8 +64,6 @@ async def generate_survey(req: SurveyRequest) -> SurveyResponse:
 - 输出 Markdown 格式
 
 直接输出访谈提纲，不要前言。"""
-
-    import asyncio
 
     loop = asyncio.get_event_loop()
     questionnaire, interview_guide = await asyncio.gather(

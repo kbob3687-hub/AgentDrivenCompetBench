@@ -90,15 +90,18 @@ KNOWN_COMPETITORS: dict[str, dict[str, Any]] = {
     "insta360": {
         "domain": "insta360.com",
         "urls": {
-            "pricing": ["https://store.insta360.com/product/x5"],
-            "features": ["https://www.insta360.com/product/insta360-x5"],
-            "integrations": ["https://www.insta360.com/download/insta360-x5"],
+            "pricing": ["https://store.insta360.com"],
+            "features": [
+                "https://www.insta360.com/product",
+                "https://www.insta360.com/product/insta360-x5",
+            ],
+            "integrations": ["https://www.insta360.com/download"],
             "core_specs": [
                 "https://www.insta360.com/product/insta360-x5",
                 "https://onlinemanual.insta360.com/x5/en-us/faq/specs/hardware",
             ],
             "ecosystem_lock_in": [
-                "https://www.insta360.com/download/insta360-x5",
+                "https://www.insta360.com/download",
             ],
             "repairability_score": [
                 "https://onlinemanual.insta360.com/service/en-us/service/service-policy",
@@ -110,7 +113,7 @@ KNOWN_COMPETITORS: dict[str, dict[str, Any]] = {
                 "https://www.insta360.com/about",
             ],
             "update_policy": [
-                "https://www.insta360.com/download/insta360-x5",
+                "https://www.insta360.com/download",
             ],
             "connectivity": [
                 "https://onlinemanual.insta360.com/x5/en-us/faq/specs/hardware",
@@ -123,6 +126,43 @@ KNOWN_COMPETITORS: dict[str, dict[str, Any]] = {
                 "https://www.insta360.com/support",
             ],
             "customers": ["https://www.insta360.com/explore"],
+        },
+    },
+    # ---- 消费品（consumer 模板） ----
+    "xiaomi": {
+        "domain": "mi.com",
+        "urls": {
+            "pricing": ["https://www.mi.com"],
+            "features": ["https://www.mi.com/shop"],
+            "distribution_channels": ["https://www.mi.com/store"],
+            "brand_sentiment": ["https://www.mi.com/blog"],
+            "target_demographics": ["https://www.mi.com/about"],
+            "customers": ["https://www.mi.com/community"],
+            "after_sales_policy": ["https://www.mi.com/service"],
+            "product_line_breadth": ["https://www.mi.com/shop"],
+        },
+    },
+    # ---- 硬件（hardware 模板） ----
+    "dji": {
+        "domain": "dji.com",
+        "urls": {
+            "pricing": ["https://store.dji.com"],
+            "features": ["https://www.dji.com/products"],
+            "core_specs": [
+                "https://www.dji.com/products",
+                "https://www.dji.com/support",
+            ],
+            "ecosystem_lock_in": ["https://www.dji.com/downloads"],
+            "certifications": ["https://www.dji.com/products"],
+            "manufacturing_origin": ["https://www.dji.com/company"],
+            "update_policy": ["https://www.dji.com/downloads"],
+            "connectivity": ["https://www.dji.com/products"],
+            "battery_life": ["https://www.dji.com/products"],
+            "after_sales_policy": [
+                "https://www.dji.com/service",
+                "https://www.dji.com/support",
+            ],
+            "customers": ["https://www.dji.com/newsroom"],
         },
     },
 }
@@ -138,6 +178,10 @@ ALIASES: dict[str, str] = {
     "钉钉": "dingtalk",
     "ding talk": "dingtalk",
     "dingding": "dingtalk",
+    "小米": "xiaomi",
+    "大疆": "dji",
+    "dji": "dji",
+    "dj": "dji",
 }
 
 # Brand identity hints are not warm-path source URLs. They only teach Discovery
@@ -161,6 +205,14 @@ BRAND_IDENTITY_HINTS: dict[str, dict[str, list[str]]] = {
     "insta360": {
         "aliases": ["影石", "影石Insta360", "Insta360", "Arashi Vision"],
         "domains": ["insta360.com", "store.insta360.com", "onlinemanual.insta360.com"],
+    },
+    "xiaomi": {
+        "aliases": ["小米", "Xiaomi", "mi", "小米科技"],
+        "domains": ["mi.com", "xiaomi.com", "store.mi.com", "global.mi.com"],
+    },
+    "dji": {
+        "aliases": ["大疆", "DJI", "大疆创新", "DJI Innovations"],
+        "domains": ["dji.com", "store.dji.com", "support.dji.com", "www.dji.com"],
     },
 }
 

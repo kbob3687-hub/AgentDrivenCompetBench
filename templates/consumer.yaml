@@ -1,7 +1,7 @@
 template_id: consumer_v1
 industry: consumer
 display_name: "消费品模板"
-description: "适用于消费电子、快消品、零售、DTC品牌类产品"
+description: "适用于消费电子、快消品、零售、DTC品牌类产品（如Anker、小米）"
 version: "1.0"
 
 discovery_strategy: open_search

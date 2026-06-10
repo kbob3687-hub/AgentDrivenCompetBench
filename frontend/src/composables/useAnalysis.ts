@@ -10,6 +10,7 @@ function createInitialState(): AnalysisState {
     status: 'idle',
     pauseVerdict: null,
     pauseContext: null,
+    qaTargetAgent: null,
     nodeStates: {
       discovery: 'idle',
       collector: 'idle',
@@ -54,6 +55,11 @@ export function useAnalysis() {
         const { agent, iteration, duration_ms } = event.data
         state.nodeStates[agent] = 'done'
         addLog(`Agent [${agent}] completed in ${duration_ms}ms (iteration ${iteration})`, 'success', agent)
+        // Analyst/Writer 完成后立刻把预览推到右侧，Writer 会覆盖 Analyst 的草稿
+        if ((agent === 'writer' || agent === 'analyst') && event.data.report_preview) {
+          if (!state.result) state.result = {} as any
+          state.result.report_markdown = event.data.report_preview
+        }
         break
       }
       case 'log': {
@@ -69,6 +75,7 @@ export function useAnalysis() {
         const targetText = target ? `, target: ${target}` : ''
         const issueText = issueCount ? `, issues: ${issueCount}` : ''
         if (verdict === 'revise') {
+          state.qaTargetAgent = (event.data.target_agent as AgentName) || 'collector'
           state.nodeStates.collector = 'revise'
           state.nodeStates.analyst = 'revise'
           state.nodeStates.writer = 'revise'
