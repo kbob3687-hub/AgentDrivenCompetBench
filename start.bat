@@ -1,5 +1,6 @@
 @echo off
 chcp 65001 >nul
+cd /d "%~dp0"
 title AgentDrivenCompetBench - 一键启动
 
 echo ============================================================
@@ -59,14 +60,14 @@ cd ..
 
 echo [4/4] 启动服务...
 echo.
-echo   后端: http://localhost:8000
+echo   后端: http://localhost:8001
 echo   前端: http://localhost:5173
 echo.
 echo   按 Ctrl+C 停止所有服务
 echo ============================================================
 
 :: 启动后端（后台运行）
-start /b cmd /c "set PYTHONPATH=src && python -m uvicorn api.app:app --host 0.0.0.0 --port 8000"
+start /b cmd /c "set PYTHONPATH=src && python -m uvicorn api.app:app --host 0.0.0.0 --port 8001"
 
 :: 等待后端就绪
 timeout /t 3 /nobreak >nul

@@ -304,8 +304,6 @@ SEARCH_EXCLUDE_DOMAINS = {
 USER_REVIEW_PLATFORMS: dict[str, str] = {
     "g2": "https://www.g2.com/products/{slug}/reviews",
     "capterra": "https://www.capterra.com/p/1/{slug}/",
-    "reddit_saas": "https://www.reddit.com/r/projectmanagement/search.json?q={name}&sort=top&limit=25",
-    "reddit_software": "https://www.reddit.com/r/software/search.json?q={name}+review&sort=top&limit=25",
     "zhihu": "https://www.zhihu.com/search?type=content&q={name}+使用体验",
     "sspai": "https://sspai.com/search/post/{name}",
 }
@@ -459,8 +457,6 @@ class DiscoveryAgent:
             urls.append(USER_REVIEW_PLATFORMS["g2"].format(slug=slugs["g2"]))
         if slugs.get("capterra"):
             urls.append(USER_REVIEW_PLATFORMS["capterra"].format(slug=slugs["capterra"]))
-        urls.append(USER_REVIEW_PLATFORMS["reddit_saas"].format(name=name_encoded))
-        urls.append(USER_REVIEW_PLATFORMS["reddit_software"].format(name=name_encoded))
 
         urls = list(dict.fromkeys(urls))
 
