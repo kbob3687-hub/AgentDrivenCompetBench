@@ -20,7 +20,6 @@ from agents.collector.tools import (
     firecrawl_fetch,
     jina_reader,
     playwright_fetch,
-    reddit_fetch,
 )
 from schemas.competitor import SourceType
 from schemas.message import AgentMessage, CollectRequest, MessageType
@@ -121,11 +120,8 @@ class CollectorAgent(BaseAgent):
     async def _fetch_url(self, url: str) -> FetchResult:
         """获取URL内容。
 
-        Reddit JSON API → Firecrawl（有key时）→ 直接HTTP → Playwright。
+        Firecrawl（有key时）→ 直接HTTP → Playwright。
         """
-        # Reddit JSON API 直接走专用工具，跳过 robots 检查
-        if "reddit.com" in url and ".json" in url:
-            return await reddit_fetch(url)
 
         allowed, reason = await is_allowed_by_robots(url)
         if not allowed:

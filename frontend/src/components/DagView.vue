@@ -23,25 +23,25 @@ function getUrlLabel(rawUrl: string): string {
 }
 
 // ---- 布局 ----
-// 生产层 (y=140): Discovery → Collector → Analyst → Writer
-// 审查层 (y=10):  QA（独立一行，在 Writer 上方）
-const PROD_Y = 140
-const QA_Y = 10
+// 生产层 (y=120): Discovery → Collector → Analyst → Writer
+// 审查层 (y=5):  QA（居中偏右位置）
+const PROD_Y = 120
+const QA_Y = 5
 
 const agentNodes = computed(() => [
   { id: 'discovery', type: 'agent', position: { x: 10,  y: PROD_Y }, data: { label: 'Discovery', sub: 'URL 发现', status: props.nodeStates.discovery }, sourcePosition: Position.Right, targetPosition: Position.Left },
-  { id: 'collector',  type: 'agent', position: { x: 140, y: PROD_Y }, data: { label: 'Collector',  sub: '数据采集',   status: props.nodeStates.collector  }, sourcePosition: Position.Right, targetPosition: Position.Left },
-  { id: 'analyst',    type: 'agent', position: { x: 270, y: PROD_Y }, data: { label: 'Analyst',    sub: '结构化分析',  status: props.nodeStates.analyst    }, sourcePosition: Position.Right, targetPosition: Position.Left },
-  { id: 'writer',     type: 'agent', position: { x: 400, y: PROD_Y }, data: { label: 'Writer',     sub: '报告撰写',   status: props.nodeStates.writer     }, sourcePosition: Position.Right, targetPosition: Position.Left },
-  // QA 审查层 — 独立一行，不在生产层并排
-  { id: 'qa',         type: 'agent', position: { x: 400, y: QA_Y },  data: { label: 'QA',         sub: '质量审查',   status: props.nodeStates.qa          }, sourcePosition: Position.Bottom, targetPosition: Position.Top },
+  { id: 'collector',  type: 'agent', position: { x: 150, y: PROD_Y }, data: { label: 'Collector',  sub: '数据采集',   status: props.nodeStates.collector  }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  { id: 'analyst',    type: 'agent', position: { x: 290, y: PROD_Y }, data: { label: 'Analyst',    sub: '结构化分析',  status: props.nodeStates.analyst    }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  { id: 'writer',     type: 'agent', position: { x: 430, y: PROD_Y }, data: { label: 'Writer',     sub: '报告撰写',   status: props.nodeStates.writer     }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  // QA 审查层
+  { id: 'qa',         type: 'agent', position: { x: 530, y: QA_Y },  data: { label: 'QA',         sub: '质量审查',   status: props.nodeStates.qa          }, sourcePosition: Position.Bottom, targetPosition: Position.Left },
 ])
 
 const subNodes = computed(() =>
   props.subAgents.slice(0, 4).map((sa, i) => ({
     id: `sub-${sa.sub_id}`,
     type: 'sub-agent',
-    position: { x: 30 + i * 120, y: 250 },
+    position: { x: 40 + i * 130, y: 230 },
     data: { label: getUrlLabel(sa.url), status: sa.status, claims: sa.claims_count },
     sourcePosition: Position.Top,
     targetPosition: Position.Top,
@@ -56,7 +56,7 @@ const overflowNode = computed(() => {
   return [{
     id: 'sub-overflow',
     type: 'sub-agent',
-    position: { x: 510, y: 250 },
+    position: { x: 560, y: 230 },
     data: {
       label: `+${hiddenCount} sources`,
       status: failed ? 'error' : done ? 'done' : 'running',
@@ -120,9 +120,9 @@ function qaEdge(id: string, target: AgentName, lx: number, ly: number, label: st
 }
 
 const qaEdges = computed(() => [
-  qaEdge('e-qa-coll', 'collector', 200, 80, '数据问题', 'missing_source / factual_error'),
-  qaEdge('e-qa-anal', 'analyst',   320, 55, '分析问题', 'low_confidence / inconsistency'),
-  qaEdge('e-qa-writ', 'writer',    420, 55, '报告问题', 'schema_violation'),
+  qaEdge('e-qa-coll', 'collector', 220, 70, '数据问题', 'missing_source'),
+  qaEdge('e-qa-anal', 'analyst',   340, 50, '分析问题', 'low_confidence'),
+  qaEdge('e-qa-writ', 'writer',    460, 50, '报告问题', 'schema_violation'),
 ])
 
 // 子节点边
@@ -152,7 +152,7 @@ const edges = computed(() => [...mainEdges.value, ...qaEdges.value, ...subEdges.
       :nodes="nodes"
       :edges="edges"
       :fit-view-on-init="true"
-      :fit-view-options="{ padding: 0.18, minZoom: 0.5, maxZoom: 1.2 }"
+      :fit-view-options="{ padding: 0.12, minZoom: 0.35, maxZoom: 1 }"
       :nodes-draggable="false"
       :nodes-connectable="false"
       :zoom-on-scroll="false"

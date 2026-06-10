@@ -48,7 +48,7 @@ cd frontend && npm install --silent 2>/dev/null && cd ..
 
 echo "[4/4] 启动服务..."
 echo ""
-echo "  后端: http://localhost:8000"
+echo "  后端: http://localhost:8001"
 echo "  前端: http://localhost:5173"
 echo ""
 echo "  按 Ctrl+C 停止所有服务"
@@ -64,7 +64,7 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 # 启动后端
-PYTHONPATH=src python3 -m uvicorn api.app:app --host 0.0.0.0 --port 8000 &
+PYTHONPATH=src python3 -m uvicorn api.app:app --host 0.0.0.0 --port 8001 &
 BACKEND_PID=$!
 
 # 等待后端就绪
