@@ -234,7 +234,7 @@ pip install -e ".[dev]"
 playwright install chromium
 
 # 启动后端
-PYTHONPATH=src uvicorn api.app:app --reload --host 0.0.0.0 --port 8000
+PYTHONPATH=src uvicorn api.app:app --reload --host 0.0.0.0 --port 8001
 
 # 启动前端（新终端）
 cd frontend && npm install && npm run dev
@@ -243,6 +243,13 @@ cd frontend && npm install && npm run dev
 浏览器访问 `http://localhost:5173`，输入竞品名称即可开始分析。
 
 > **提示：** 已内置竞品（Notion / ClickUp / 飞书 / 小米 / 大疆等）无需 Firecrawl 即可完整运行。分析陌生竞品时需要 Firecrawl API 自动发现 URL，或可手动在表单中输入目标 URL。
+
+> **网络要求：** 系统需要访问外部 API（api.deepseek.com、api.firecrawl.dev）和目标竞品网站。如果本地网络需要代理才能访问外网，请在 `.env` 中添加：
+> ```
+> HTTP_PROXY=http://127.0.0.1:7890
+> HTTPS_PROXY=http://127.0.0.1:7890
+> ```
+> 端口号请根据实际代理工具配置修改（如 Clash 默认 7890，V2Ray 默认 10809）。国内网络可直连 DeepSeek，Firecrawl 和目标网站可能需要代理。
 
 ---
 
