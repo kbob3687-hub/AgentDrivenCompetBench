@@ -86,7 +86,7 @@ onMounted(() => {
             />
 
             <div v-if="state.status !== 'idle'" class="grid gap-4">
-              <div class="h-[420px] min-h-0 overflow-hidden">
+              <div class="h-[360px] min-h-0 overflow-hidden">
                 <DagView :node-states="state.nodeStates" :sub-agents="state.subAgents" :qa-target-agent="state.qaTargetAgent" />
               </div>
               <div class="h-[260px] min-h-0 overflow-hidden">

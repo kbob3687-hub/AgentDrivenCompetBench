@@ -23,10 +23,10 @@ function getUrlLabel(rawUrl: string): string {
 }
 
 // ---- 布局 ----
-// 生产层 (y=145): Discovery → Collector → Analyst → Writer
-// 审查层 (y=30):  QA（独立一行，在 Writer 上方）
-const PROD_Y = 145
-const QA_Y = 30
+// 生产层 (y=140): Discovery → Collector → Analyst → Writer
+// 审查层 (y=10):  QA（独立一行，在 Writer 上方）
+const PROD_Y = 140
+const QA_Y = 10
 
 const agentNodes = computed(() => [
   { id: 'discovery', type: 'agent', position: { x: 10,  y: PROD_Y }, data: { label: 'Discovery', sub: 'URL 发现', status: props.nodeStates.discovery }, sourcePosition: Position.Right, targetPosition: Position.Left },
@@ -41,7 +41,7 @@ const subNodes = computed(() =>
   props.subAgents.slice(0, 4).map((sa, i) => ({
     id: `sub-${sa.sub_id}`,
     type: 'sub-agent',
-    position: { x: 30 + i * 120, y: 270 },
+    position: { x: 30 + i * 120, y: 250 },
     data: { label: getUrlLabel(sa.url), status: sa.status, claims: sa.claims_count },
     sourcePosition: Position.Top,
     targetPosition: Position.Top,
@@ -56,7 +56,7 @@ const overflowNode = computed(() => {
   return [{
     id: 'sub-overflow',
     type: 'sub-agent',
-    position: { x: 510, y: 270 },
+    position: { x: 510, y: 250 },
     data: {
       label: `+${hiddenCount} sources`,
       status: failed ? 'error' : done ? 'done' : 'running',
@@ -120,9 +120,9 @@ function qaEdge(id: string, target: AgentName, lx: number, ly: number, label: st
 }
 
 const qaEdges = computed(() => [
-  qaEdge('e-qa-coll', 'collector', 230, 108, '数据问题', 'missing_source / factual_error / outdated'),
-  qaEdge('e-qa-anal', 'analyst',   350, 75,  '分析问题', 'low_confidence / inconsistency'),
-  qaEdge('e-qa-writ', 'writer',    420, 85,  '报告问题', 'schema_violation'),
+  qaEdge('e-qa-coll', 'collector', 200, 80, '数据问题', 'missing_source / factual_error'),
+  qaEdge('e-qa-anal', 'analyst',   320, 55, '分析问题', 'low_confidence / inconsistency'),
+  qaEdge('e-qa-writ', 'writer',    420, 55, '报告问题', 'schema_violation'),
 ])
 
 // 子节点边
@@ -152,7 +152,7 @@ const edges = computed(() => [...mainEdges.value, ...qaEdges.value, ...subEdges.
       :nodes="nodes"
       :edges="edges"
       :fit-view-on-init="true"
-      :fit-view-options="{ padding: 0.22, minZoom: 0.4, maxZoom: 1 }"
+      :fit-view-options="{ padding: 0.18, minZoom: 0.5, maxZoom: 1.2 }"
       :nodes-draggable="false"
       :nodes-connectable="false"
       :zoom-on-scroll="false"

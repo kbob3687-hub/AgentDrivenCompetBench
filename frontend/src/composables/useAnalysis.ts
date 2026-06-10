@@ -55,8 +55,8 @@ export function useAnalysis() {
         const { agent, iteration, duration_ms } = event.data
         state.nodeStates[agent] = 'done'
         addLog(`Agent [${agent}] completed in ${duration_ms}ms (iteration ${iteration})`, 'success', agent)
-        // Writer 完成后立刻把报告推到右侧，不等 QA
-        if (agent === 'writer' && event.data.report_preview) {
+        // Analyst/Writer 完成后立刻把预览推到右侧，Writer 会覆盖 Analyst 的草稿
+        if ((agent === 'writer' || agent === 'analyst') && event.data.report_preview) {
           if (!state.result) state.result = {} as any
           state.result.report_markdown = event.data.report_preview
         }
