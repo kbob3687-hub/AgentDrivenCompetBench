@@ -81,7 +81,7 @@
 └──────────────────────────────────────────────────────────────────────────┘
         │                    │                │               │
    ┌────▼────┐         ┌────▼────┐     ┌────▼────┐    ┌────▼────┐
-   │Firecrawl│         │Claude   │     │Langfuse │    │Pydantic │
+   │Firecrawl│         │DeepSeek │     │Langfuse │    │Pydantic │
    │HTTP+PW  │         │DeepSeek │     │(追踪)   │    │(Schema) │
    │(三级降级)│         │(智能路由)│     │         │    │         │
    └─────────┘         └─────────┘     └─────────┘    └─────────┘
@@ -166,7 +166,7 @@ EvidencedClaim(
 
 无需切换到外部工具，前端直接展示每个 Agent 的：
 - 执行耗时 / 使用模型 / 输入输出 Token 数
-- 预估成本（DeepSeek ~$0.002/次，Claude ~$0.03/次）
+- 预估成本（deepseek-chat ~$0.002/次，deepseek-reasoner ~$0.01/次）
 - Prompt 预览 / 输出预览
 - 一键跳转 Langfuse 查看完整调用链
 
@@ -179,8 +179,8 @@ Trace (task_id)
 │   ├── Generation: fetch-0 (notion.so/pricing)
 │   ├── Generation: fetch-1 (notion.so/product)
 │   └── Generation: fetch-2 (notion.so/integrations)
-├── Span: analyst (6.1s, claude-opus-4-7-thinking)
-├── Span: writer (8.3s, claude-opus-4-7-thinking)
+├── Span: analyst (6.1s, deepseek-chat)
+├── Span: writer (8.3s, deepseek-chat)
 └── Span: qa (4.2s, deepseek-chat)
 ```
 
@@ -191,7 +191,7 @@ Trace (task_id)
 | 层级 | 技术 | 选型理由 |
 |------|------|---------|
 | Agent 编排 | **LangGraph StateGraph** | 声明式 DAG + 条件路由边，原生支持循环与反馈闭环 |
-| LLM 智能路由 | **Claude + DeepSeek** | 高质量推理（分析/写作）与高性价比提取（采集）按任务分流 |
+| LLM 智能路由 | **DeepSeek（双模型）** | deepseek-chat（快速提取）+ deepseek-reasoner（深度推理），按任务复杂度分流 |
 | 后端 | **FastAPI + SSE** | 异步非阻塞 + 原生流式推送，单次分析 11 种事件实时触达 |
 | 前端 | **Vue 3 + Vite + Tailwind + Vue Flow** | 响应式 DAG 可视化 + 渐进式报告呈现 |
 | 数据采集 | **Firecrawl + HTTP + Playwright** | 三级降级保证可用性，Semaphore(10) 并发加速 |
@@ -207,28 +207,42 @@ Trace (task_id)
 
 ### 环境要求
 
-- Python 3.11+ / Node.js 18+ / Docker（可选）
-- API 密钥：DeepSeek + Anthropic（Claude）+ Firecrawl + Langfuse
+- Python 3.11+ / Node.js 18+
+- Docker（可选，PostgreSQL 持久化；无 Docker 时自动内存兜底）
 
-### 安装运行
+### 一键启动（推荐）
 
+项目已预配置 API 密钥（`.env.reviewer`），无需手动配置即可运行：
+
+**Windows：** 双击 `start.bat`
+
+**macOS / Linux：**
 ```bash
 git clone https://github.com/kbob3687-hub/AgentDrivenCompetBench.git
 cd AgentDrivenCompetBench
+chmod +x start.sh && ./start.sh
+```
 
-cp .env.example .env   # 填入 API 密钥
+脚本会自动：安装依赖 → 配置 Playwright 浏览器 → 启动前后端 → 打开浏览器
+
+### 手动启动
+
+```bash
+cp .env.reviewer .env   # 使用预配置密钥（或手动编辑 .env.example）
 
 pip install -e ".[dev]"
-docker compose up -d   # PostgreSQL（可选，无 PG 时自动内存兜底）
+playwright install chromium
 
 # 启动后端
 PYTHONPATH=src uvicorn api.app:app --reload --host 0.0.0.0 --port 8000
 
-# 启动前端
+# 启动前端（新终端）
 cd frontend && npm install && npm run dev
 ```
 
 浏览器访问 `http://localhost:5173`，输入竞品名称即可开始分析。
+
+> **提示：** 已内置竞品（Notion / ClickUp / 飞书 / 小米 / 大疆等）无需 Firecrawl 即可完整运行。分析陌生竞品时需要 Firecrawl API 自动发现 URL，或可手动在表单中输入目标 URL。
 
 ---
 
@@ -239,7 +253,7 @@ cd frontend && npm install && npm run dev
 输出：2500+ 字结构化报告 | 14-47 条带溯源 claims | QA 评分 0.68-0.78
 
 全流程耗时：~90 秒（10 并发采集 + 4 Agent 串行推理）
-单次成本：< $0.05（DeepSeek 采集 + Claude 分析/写作）
+单次成本：< $0.02（全链路 DeepSeek）
 ```
 
 **渐进式体验**：Analyst 完成后右侧即显示结构化预览（功能树 / 定价 / SWOT 骨架），Writer 出稿后无缝替换为完整报告，全程无空白等待。
@@ -251,7 +265,7 @@ cd frontend && npm install && npm run dev
 ```
 src/
 ├── agents/
-│   ├── base.py                 # BaseAgent（Langfuse 追踪 + 重试 + 双 LLM 路由）
+│   ├── base.py                 # BaseAgent（Langfuse 追踪 + 重试 + LLM 路由）
 │   ├── discovery/              # URL 发现（Firecrawl Search + 域名推断）
 │   ├── collector/              # 并行采集（三级降级 + LLM 结构化抽取）
 │   ├── analyst/                # 结构化分析（claims → CompetitorProfile）
@@ -360,5 +374,5 @@ MIT
 ---
 
 <p align="center">
-  <sub>LangGraph + Claude + DeepSeek + Vue 3 | 多智能体协作 × 反馈闭环 × 全链路溯源 × 实时可观测</sub>
+  <sub>LangGraph + DeepSeek + Vue 3 | 多智能体协作 × 反馈闭环 × 全链路溯源 × 实时可观测</sub>
 </p>
