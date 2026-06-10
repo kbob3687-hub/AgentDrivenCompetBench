@@ -27,12 +27,17 @@ if %errorlevel% neq 0 (
 
 :: 检查 .env
 if not exist .env (
-    echo [WARN] 未找到 .env 文件，正在从 .env.example 复制...
-    copy .env.example .env >nul
-    echo [WARN] 请编辑 .env 文件填入 API 密钥后重新运行此脚本
-    notepad .env
-    pause
-    exit /b 1
+    if exist .env.reviewer (
+        echo [INFO] 使用预配置的 .env.reviewer...
+        copy .env.reviewer .env >nul
+    ) else (
+        echo [WARN] 未找到 .env 文件，正在从 .env.example 复制...
+        copy .env.example .env >nul
+        echo [WARN] 请编辑 .env 文件填入 API 密钥后重新运行此脚本
+        notepad .env
+        pause
+        exit /b 1
+    )
 )
 
 echo [1/4] 安装 Python 依赖...

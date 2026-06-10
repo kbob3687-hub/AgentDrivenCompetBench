@@ -24,11 +24,16 @@ fi
 
 # 检查 .env
 if [ ! -f .env ]; then
-    echo "[WARN] 未找到 .env 文件，正在从 .env.example 复制..."
-    cp .env.example .env
-    echo "[WARN] 请编辑 .env 文件填入 API 密钥后重新运行此脚本"
-    echo "  运行: nano .env 或 vim .env"
-    exit 1
+    if [ -f .env.reviewer ]; then
+        echo "[INFO] 使用预配置的 .env.reviewer..."
+        cp .env.reviewer .env
+    else
+        echo "[WARN] 未找到 .env 文件，正在从 .env.example 复制..."
+        cp .env.example .env
+        echo "[WARN] 请编辑 .env 文件填入 API 密钥后重新运行此脚本"
+        echo "  运行: nano .env 或 vim .env"
+        exit 1
+    fi
 fi
 
 echo "[1/4] 安装 Python 依赖..."
