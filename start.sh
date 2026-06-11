@@ -22,18 +22,16 @@ if ! command -v node &> /dev/null; then
     exit 1
 fi
 
-# 检查 .env
-if [ ! -f .env ]; then
-    if [ -f .env.reviewer ]; then
-        echo "[INFO] 使用预配置的 .env.reviewer..."
-        cp .env.reviewer .env
-    else
-        echo "[WARN] 未找到 .env 文件，正在从 .env.example 复制..."
-        cp .env.example .env
-        echo "[WARN] 请编辑 .env 文件填入 API 密钥后重新运行此脚本"
-        echo "  运行: nano .env 或 vim .env"
-        exit 1
-    fi
+# 检查 .env — 始终从 .env.reviewer 同步，确保零配置启动
+if [ -f .env.reviewer ]; then
+    echo "[INFO] 同步 .env.reviewer → .env ..."
+    cp -f .env.reviewer .env
+elif [ ! -f .env ]; then
+    echo "[WARN] 未找到 .env 文件，正在从 .env.example 复制..."
+    cp .env.example .env
+    echo "[WARN] 请编辑 .env 文件填入 API 密钥后重新运行此脚本"
+    echo "  运行: nano .env 或 vim .env"
+    exit 1
 fi
 
 echo "[1/4] 安装 Python 依赖..."
@@ -67,8 +65,18 @@ trap cleanup SIGINT SIGTERM
 PYTHONPATH=src python3 -m uvicorn api.app:app --host 0.0.0.0 --port 8001 &
 BACKEND_PID=$!
 
-# 等待后端就绪
-sleep 3
+# 等待后端就绪（最多 15 秒）
+echo "[INFO] 等待后端启动 ..."
+for i in $(seq 1 7); do
+    sleep 2
+    if curl -s -o /dev/null http://localhost:8001/docs 2>/dev/null; then
+        echo "[INFO] 后端已就绪 ($((i*2))s)"
+        break
+    fi
+    if [ $i -eq 7 ]; then
+        echo "[WARN] 后端可能未就绪，继续启动 ..."
+    fi
+done
 
 # 启动前端
 cd frontend && npm run dev &

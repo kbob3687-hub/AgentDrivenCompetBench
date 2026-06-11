@@ -1,85 +1,98 @@
 @echo off
-chcp 65001 >nul
+setlocal enabledelayedexpansion
 cd /d "%~dp0"
-title AgentDrivenCompetBench - 一键启动
+
+title AgentDrivenCompetBench
 
 echo ============================================================
-echo   AgentDrivenCompetBench 一键启动脚本 (Windows)
+echo   AgentDrivenCompetBench - One Click Start (Windows)
 echo ============================================================
 echo.
 
-:: 检查 Python
+:: Check Python
 python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [ERROR] 未检测到 Python，请安装 Python 3.11+
-    echo   下载地址: https://www.python.org/downloads/
+if errorlevel 1 (
+    echo [ERROR] Python 3.11+ not found
+    echo   Download: https://www.python.org/downloads/
     pause
     exit /b 1
 )
 
-:: 检查 Node.js
+:: Check Node.js
 node --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [ERROR] 未检测到 Node.js，请安装 Node.js 18+
-    echo   下载地址: https://nodejs.org/
+if errorlevel 1 (
+    echo [ERROR] Node.js 18+ not found
+    echo   Download: https://nodejs.org/
     pause
     exit /b 1
 )
 
-:: 检查 .env
-if not exist .env (
-    if exist .env.reviewer (
-        echo [INFO] 使用预配置的 .env.reviewer...
-        copy .env.reviewer .env >nul
-    ) else (
-        echo [WARN] 未找到 .env 文件，正在从 .env.example 复制...
-        copy .env.example .env >nul
-        echo [WARN] 请编辑 .env 文件填入 API 密钥后重新运行此脚本
-        notepad .env
-        pause
-        exit /b 1
-    )
+:: Check .env — always sync from .env.reviewer for zero-config startup
+if exist .env.reviewer (
+    echo [INFO] Syncing .env from .env.reviewer ...
+    copy /Y .env.reviewer .env >nul
+) else if not exist .env (
+    echo [WARN] No .env found, copying from .env.example ...
+    copy .env.example .env >nul
+    echo [WARN] Please edit .env with your API keys, then re-run
+    notepad .env
+    pause
+    exit /b 1
 )
 
-echo [1/4] 安装 Python 依赖...
+echo [1/4] Installing Python dependencies ...
 pip install -e ".[dev]" -q
-if %errorlevel% neq 0 (
-    echo [ERROR] pip install 失败
+if errorlevel 1 (
+    echo [ERROR] pip install failed
     pause
     exit /b 1
 )
 
-echo [2/4] 安装 Playwright 浏览器...
+echo [2/4] Installing Playwright browser ...
 playwright install chromium >nul 2>&1
-echo        Chromium 已就绪
+echo        Chromium ready
 
-echo [3/4] 安装前端依赖...
+echo [3/4] Installing frontend dependencies ...
 cd frontend
 call npm install --silent 2>nul
 cd ..
 
-echo [4/4] 启动服务...
+echo [4/4] Starting services ...
 echo.
-echo   后端: http://localhost:8001
-echo   前端: http://localhost:5173
+echo   Backend:  http://localhost:8001
+echo   Frontend: http://localhost:5173
 echo.
-echo   按 Ctrl+C 停止所有服务
 echo ============================================================
 
-:: 启动后端（后台运行）
-start /b cmd /c "set PYTHONPATH=src && python -m uvicorn api.app:app --host 0.0.0.0 --port 8001"
+:: Set project root (handle spaces in path)
+set "PROJECT_DIR=%~dp0"
+set "PROJECT_DIR=%PROJECT_DIR:~0,-1%"
 
-:: 等待后端就绪
-timeout /t 3 /nobreak >nul
+:: Start backend in visible window
+start "Backend" /D "%PROJECT_DIR%" cmd /k "set PYTHONPATH=src && echo Starting backend http://localhost:8001 ... && python -m uvicorn api.app:app --host 0.0.0.0 --port 8001"
 
-:: 启动前端（后台运行）
-start /b cmd /c "cd frontend && npm run dev"
+:: Wait for backend to be ready (up to 15s)
+echo [INFO] Waiting for backend ...
+set /a _wait=0
+:wait_backend
+timeout /t 2 /nobreak >nul
+set /a _wait+=2
+curl -s -o nul -w "" http://localhost:8001/docs >nul 2>&1
+if errorlevel 1 (
+    if %_wait% lss 15 goto wait_backend
+    echo [WARN] Backend may not be ready yet, continuing anyway ...
+) else (
+    echo [INFO] Backend ready (%_wait%s)
+)
 
-:: 等待前端就绪后打开浏览器
+:: Start frontend in visible window
+start "Frontend" /D "%PROJECT_DIR%\frontend" cmd /k "echo Starting frontend http://localhost:5173 ... && npm run dev"
+
+:: Wait and open browser
+echo [INFO] Waiting for frontend (5s) ...
 timeout /t 5 /nobreak >nul
 start http://localhost:5173
 
-:: 保持窗口打开
 echo.
-echo 服务已启动，浏览器已打开。关闭此窗口将停止所有服务。
-pause >nul
+echo Services started. Close the "Backend" and "Frontend" windows to stop.
+pause
