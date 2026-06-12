@@ -9,10 +9,10 @@ __pycache__/
 .venv/
 venv/
 
-# 环境变量
+# 环境变量（禁止提交任何 .env 文件）
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
 # IDE
 .idea/
