@@ -22,24 +22,33 @@ if ! command -v node &> /dev/null; then
     exit 1
 fi
 
-# 检查 .env — 始终从 .env.reviewer 同步，确保零配置启动
-if [ -f .env.reviewer ]; then
-    echo "[INFO] 同步 .env.reviewer → .env ..."
-    cp -f .env.reviewer .env
-elif [ ! -f .env ]; then
-    echo "[WARN] 未找到 .env 文件，正在从 .env.example 复制..."
-    cp .env.example .env
-    echo "[WARN] 请编辑 .env 文件填入 API 密钥后重新运行此脚本"
-    echo "  运行: nano .env 或 vim .env"
-    exit 1
+# 检查 .env — 只在缺失时创建，不覆盖已有配置
+if [ ! -f .env ]; then
+    if [ -f .env.reviewer ]; then
+        echo "[INFO] 从 .env.reviewer 创建 .env ..."
+        cp .env.reviewer .env
+    else
+        echo "[WARN] 未找到 .env 文件，正在从 .env.example 复制..."
+        cp .env.example .env
+        echo "[WARN] 请编辑 .env 文件填入 API 密钥后重新运行此脚本"
+        echo "  运行: nano .env 或 vim .env"
+        exit 1
+    fi
 fi
 
 echo "[1/4] 安装 Python 依赖..."
-pip3 install -e ".[dev]" -q
+python3 -m pip install -e ".[dev]" -q
 
 echo "[2/4] 安装 Playwright 浏览器..."
 python3 -m playwright install chromium > /dev/null 2>&1
 echo "       Chromium 已就绪"
+
+# Linux 需要额外安装系统依赖（libnss3 等），否则 Chromium 无法启动
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    echo "[INFO] 安装 Playwright 系统依赖..."
+    python3 -m playwright install-deps chromium 2>/dev/null || \
+        echo "[WARN] 系统依赖安装失败，请手动运行: sudo playwright install-deps chromium"
+fi
 
 echo "[3/4] 安装前端依赖..."
 cd frontend && npm install --silent 2>/dev/null && cd ..

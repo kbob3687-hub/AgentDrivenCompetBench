@@ -359,8 +359,10 @@ async def playwright_fetch(url: str, timeout: float = 30000) -> FetchResult:
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
             )
 
-            await page.goto(url, wait_until="networkidle", timeout=timeout)
-            await page.wait_for_timeout(2000)
+            # 不用 networkidle：飞书等 SPA 有持续 WebSocket/轮询，networkidle 永远触发不了
+            # domcontentloaded + 固定等待 5s 更可靠
+            await page.goto(url, wait_until="domcontentloaded", timeout=timeout)
+            await page.wait_for_timeout(5000)
 
             title = await page.title()
             content = await page.inner_text("body")
