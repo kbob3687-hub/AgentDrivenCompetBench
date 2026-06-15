@@ -27,17 +27,19 @@ if errorlevel 1 (
     exit /b 1
 )
 
-:: Check .env — always sync from .env.reviewer for zero-config startup
-if exist .env.reviewer (
-    echo [INFO] Syncing .env from .env.reviewer ...
-    copy /Y .env.reviewer .env >nul
-) else if not exist .env (
-    echo [WARN] No .env found, copying from .env.example ...
-    copy .env.example .env >nul
-    echo [WARN] Please edit .env with your API keys, then re-run
-    notepad .env
-    pause
-    exit /b 1
+:: Check .env — only create if missing, never overwrite existing
+if not exist .env (
+    if exist .env.reviewer (
+        echo [INFO] Creating .env from .env.reviewer ...
+        copy .env.reviewer .env >nul
+    ) else (
+        echo [WARN] No .env found, copying from .env.example ...
+        copy .env.example .env >nul
+        echo [WARN] Please edit .env with your API keys, then re-run
+        notepad .env
+        pause
+        exit /b 1
+    )
 )
 
 echo [1/4] Installing Python dependencies ...
