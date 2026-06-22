@@ -65,19 +65,19 @@ function agentDotColor(agent: string): string {
       <div class="grid grid-cols-4 gap-3 mb-4">
         <div class="rounded-md border border-slate-200 bg-slate-50 p-3">
           <div class="mb-1 text-xs text-slate-500">总耗时</div>
-          <div class="text-lg font-bold text-slate-800">{{ (totalDuration / 1000).toFixed(1) }}s</div>
+          <div :key="totalDuration" class="metric-value text-lg font-bold text-slate-800">{{ (totalDuration / 1000).toFixed(1) }}s</div>
         </div>
         <div class="rounded-md border border-slate-200 bg-slate-50 p-3">
           <div class="mb-1 text-xs text-slate-500">总 Token</div>
-          <div class="text-lg font-bold text-slate-800">{{ totalTokens.toLocaleString() }}</div>
+          <div :key="totalTokens" class="metric-value text-lg font-bold text-slate-800">{{ totalTokens.toLocaleString() }}</div>
         </div>
         <div class="rounded-md border border-slate-200 bg-slate-50 p-3">
           <div class="mb-1 text-xs text-slate-500">预估成本</div>
-          <div class="text-lg font-bold text-slate-800">${{ estimatedCost.toFixed(4) }}</div>
+          <div :key="estimatedCost" class="metric-value text-lg font-bold text-slate-800">${{ estimatedCost.toFixed(4) }}</div>
         </div>
         <div class="rounded-md border border-slate-200 bg-slate-50 p-3">
           <div class="mb-1 text-xs text-slate-500">Agent 调用</div>
-          <div class="text-lg font-bold text-slate-800">{{ traces.length }} 次</div>
+          <div :key="traces.length" class="metric-value text-lg font-bold text-slate-800">{{ traces.length }} 次</div>
         </div>
       </div>
 
@@ -133,3 +133,20 @@ function agentDotColor(agent: string): string {
     </template>
   </div>
 </template>
+
+<style scoped>
+.metric-value {
+  animation: metric-pop 0.22s ease-out;
+}
+
+@keyframes metric-pop {
+  0% {
+    transform: translateY(2px) scale(0.98);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+</style>

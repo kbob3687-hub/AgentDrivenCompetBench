@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import time
 import uuid
+from datetime import datetime
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
@@ -458,10 +459,10 @@ async def get_task_metrics(task_id: str) -> dict[str, Any]:
         if run and run.get("result"):
             result = run["result"]
 
-    if not result or not result.get("agent_traces"):
+    if not result:
         raise HTTPException(status_code=404, detail="Task not completed or not found")
 
-    traces: list[dict] = result.get("agent_traces", [])
+    traces: list[dict] = result.get("agent_traces") or []
     feedback: list[dict] = result.get("feedback_history", [])
     qa_score = result.get("qa_score", 0.0)
 
@@ -483,6 +484,15 @@ async def get_task_metrics(task_id: str) -> dict[str, Any]:
 
     total_tokens = sum(s["input_tokens"] + s["output_tokens"] for s in agent_stats.values())
     total_duration_ms = sum(s["duration_ms"] for s in agent_stats.values())
+    if not total_duration_ms:
+        total_duration_ms = int(result.get("total_duration_ms", 0) or 0)
+    if not total_duration_ms and result.get("started_at") and result.get("completed_at"):
+        try:
+            started_at = datetime.fromisoformat(str(result["started_at"]))
+            completed_at = datetime.fromisoformat(str(result["completed_at"]))
+            total_duration_ms = max(0, int((completed_at - started_at).total_seconds() * 1000))
+        except ValueError:
+            total_duration_ms = 0
 
     # Coverage: ratio of dimensions that passed QA without issues
     expected_dims = result.get("expected_dimensions", [])
@@ -499,9 +509,13 @@ async def get_task_metrics(task_id: str) -> dict[str, Any]:
         {"iteration": f.get("iteration", i + 1), "score": f.get("score", 0)}
         for i, f in enumerate(feedback)
     ]
+    if not qa_trend and qa_score:
+        qa_trend = [{"iteration": result.get("iteration", 1), "score": qa_score}]
 
     # Sources fetched count
     sources_count = len(result.get("claims", []))
+    if not sources_count:
+        sources_count = int(result.get("sources_fetched", 0) or 0)
     if not sources_count:
         sources_count = sum(1 for t in traces if t.get("agent") == "collector") * 4
 
@@ -512,8 +526,8 @@ async def get_task_metrics(task_id: str) -> dict[str, Any]:
             "ai": total_duration_ms,
             "unit": "ms",
             "human_label": "~4h",
-            "ai_label": f"{total_duration_ms / 1000:.0f}s",
-            "speedup": round(14400000 / max(total_duration_ms, 1), 1),
+            "ai_label": f"{total_duration_ms / 1000:.0f}s" if total_duration_ms else "暂无耗时",
+            "speedup": round(14400000 / total_duration_ms, 1) if total_duration_ms else 0,
         },
         "sources": {
             "human": 5,

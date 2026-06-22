@@ -33,6 +33,13 @@ snapshots/
 # Node / Frontend
 node_modules/
 frontend/dist/
+ppt-js/node_modules/
+ppt-js/.npm-cache/
+ppt-js/ppt.cjs
+ppt-js/ppt.js
+
+# PPT生成临时文件
+.ppt-check-*/
 
 # 系统
 .DS_Store

@@ -100,7 +100,7 @@ function handleIntervene(payload: InterventionAction | InterventionPayload) {
       </div>
 
       <div v-show="activeTab === 'metrics'" class="p-4">
-        <MetricsPanel v-if="showMetrics && taskId" :task-id="taskId" embedded />
+        <MetricsPanel v-if="showMetrics && taskId" :task-id="taskId" :result="result || undefined" embedded />
         <div v-else class="flex items-center justify-center py-10 text-sm text-slate-500">
           任务完成后显示观测指标。
         </div>

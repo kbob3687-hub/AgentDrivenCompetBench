@@ -3,7 +3,7 @@ export type NodeStatus = 'idle' | 'running' | 'done' | 'error' | 'revise'
 export type InterventionAction = 'force_pass' | 'abort' | 'continue'
 
 export interface SSEAgentStart { agent: AgentName; iteration: number }
-export interface SSEAgentEnd { agent: AgentName; iteration: number; duration_ms: number }
+export interface SSEAgentEnd { agent: AgentName; iteration: number; duration_ms: number; report_preview?: string }
 export interface SSELog { message: string; agent?: AgentName; iteration?: number }
 export interface SSEQaVerdict {
   verdict: string
@@ -137,3 +137,16 @@ export interface LogEntry {
   type: 'info' | 'success' | 'warning' | 'error'
   agent?: AgentName
 }
+
+export type SSEEvent =
+  | { type: 'agent_start'; data: SSEAgentStart }
+  | { type: 'agent_end'; data: SSEAgentEnd }
+  | { type: 'log'; data: SSELog }
+  | { type: 'qa_verdict'; data: SSEQaVerdict }
+  | { type: 'iteration_summary'; data: FeedbackRecord }
+  | { type: 'sub_agent_start'; data: SSESubAgentStart }
+  | { type: 'sub_agent_end'; data: SSESubAgentEnd }
+  | { type: 'hitl_pause'; data: PauseContext & { verdict: string } }
+  | { type: 'hitl_resume'; data: { decision: string; iteration: number } }
+  | { type: 'complete'; data: SSEComplete }
+  | { type: 'error'; data: { message: string } }

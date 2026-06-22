@@ -55,7 +55,7 @@ function typeColor(type: LogEntry['type']): string {
     <div
       v-for="(log, idx) in logs"
       :key="idx"
-      class="flex items-start gap-2 py-0.5"
+      class="log-row flex items-start gap-2 py-0.5"
     >
       <span class="text-slate-500 shrink-0">{{ formatTime(log.timestamp) }}</span>
       <span
@@ -68,3 +68,20 @@ function typeColor(type: LogEntry['type']): string {
     </div>
   </div>
 </template>
+
+<style scoped>
+.log-row {
+  animation: log-slide-in 0.18s ease-out;
+}
+
+@keyframes log-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+</style>
