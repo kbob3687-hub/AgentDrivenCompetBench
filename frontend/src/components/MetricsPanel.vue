@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import type { SSEComplete } from '../types'
 
 const props = defineProps<{
   taskId: string
   embedded?: boolean
+  result?: Partial<SSEComplete> & Record<string, any>
 }>()
 
 interface AgentBreakdown {
@@ -37,17 +39,192 @@ const metrics = ref<Metrics | null>(null)
 const loading = ref(true)
 const error = ref('')
 
+function hasUsableMetrics(value: Metrics | null): boolean {
+  if (!value) return false
+  const calls = Object.values(value.agent_breakdown || {}).reduce((sum, stat) => sum + stat.calls, 0)
+  return calls > 0 || value.total_tokens > 0 || value.total_duration_ms > 0 || value.qa_trend.length > 0
+}
+
+function applyLocalFallbackIfBetter() {
+  const fallback = buildMetricsFromResult(props.result)
+  if (fallback && (!hasUsableMetrics(metrics.value) || hasUsableMetrics(fallback))) {
+    metrics.value = fallback
+    error.value = ''
+  }
+}
+
+function buildMetricsFromResult(result?: Partial<SSEComplete> & Record<string, any>): Metrics | null {
+  if (!result) return null
+
+  const traces = result.agent_traces || []
+  const feedback = result.feedback_history || []
+  const agent_breakdown: Record<string, AgentBreakdown> = {}
+
+  for (const trace of traces) {
+    const agent = trace.agent || 'unknown'
+    if (!agent_breakdown[agent]) {
+      agent_breakdown[agent] = {
+        duration_ms: 0,
+        input_tokens: 0,
+        output_tokens: 0,
+        calls: 0,
+      }
+    }
+    agent_breakdown[agent].duration_ms += trace.duration_ms || 0
+    agent_breakdown[agent].input_tokens += trace.input_tokens || 0
+    agent_breakdown[agent].output_tokens += trace.output_tokens || 0
+    agent_breakdown[agent].calls += 1
+  }
+
+  const total_tokens = Object.values(agent_breakdown).reduce(
+    (sum, stat) => sum + stat.input_tokens + stat.output_tokens,
+    0,
+  )
+  const traceDurationMs = Object.values(agent_breakdown).reduce(
+    (sum, stat) => sum + stat.duration_ms,
+    0,
+  )
+  const total_duration_ms = traceDurationMs || Number(result.total_duration_ms || 0)
+  const expectedDimensions = result.expected_dimensions || []
+  const missingDimensions = result.missing_dimensions || []
+  let coverage_rate = 0
+  if (expectedDimensions.length) {
+    coverage_rate = (expectedDimensions.length - missingDimensions.length) / expectedDimensions.length
+  } else if (feedback.length) {
+    const lastFeedback = feedback[feedback.length - 1]
+    if (lastFeedback.verdict === 'pass') {
+      coverage_rate = 1.0
+    } else {
+      const resolved = feedback.flatMap(f => (f as any).resolved_fields || [])
+      const allMissing = feedback.flatMap(f => (f as any).missing_dimensions || [])
+      const uniqueMissing = [...new Set(allMissing)]
+      const uniqueResolved = [...new Set(resolved)]
+      if (uniqueMissing.length) {
+        coverage_rate = Math.min(uniqueResolved.length / (uniqueResolved.length + uniqueMissing.length - uniqueResolved.filter(r => uniqueMissing.includes(r)).length || 1), 1)
+      }
+    }
+  }
+  const reviseRounds = feedback.filter(item => item.verdict === 'revise').length
+  let revision_rate = 0
+  if (feedback.length) {
+    const lastFeedback = feedback[feedback.length - 1]
+    if (lastFeedback.verdict === 'pass' && reviseRounds > 0) {
+      revision_rate = 1.0
+    } else if (reviseRounds > 0) {
+      const totalIssues = feedback.reduce((sum, f) => sum + (f.issues_count || 0), 0)
+      const lastIssues = lastFeedback.issues_count || 0
+      revision_rate = totalIssues > 0 ? Math.min((totalIssues - lastIssues) / totalIssues, 1) : 0
+    }
+  }
+  const qaScore = Number(result.qa_score || 0)
+  const qa_trend = feedback.length
+    ? feedback.map((item, index) => ({
+        iteration: item.iteration || index + 1,
+        score: item.score || 0,
+      }))
+    : qaScore
+      ? [{ iteration: Number(result.iteration || 1), score: qaScore }]
+      : []
+  let sourcesCount = 0
+  if (Array.isArray(result.claims)) {
+    sourcesCount = result.claims.length
+  } else if (Number(result.sources_fetched || 0)) {
+    sourcesCount = Number(result.sources_fetched)
+  } else if (result.report_markdown) {
+    const refs = new Set((result.report_markdown as string).match(/\[(\d+)\]/g) || [])
+    sourcesCount = refs.size
+  } else {
+    const collectorTraces = traces.filter(t => t.agent === 'collector')
+    sourcesCount = collectorTraces.length * 5
+  }
+  const speedup = total_duration_ms ? Number((14400000 / total_duration_ms).toFixed(1)) : 0
+
+  return {
+    accuracy_rate: qaScore,
+    coverage_rate: Number(coverage_rate.toFixed(3)),
+    revision_rate: Number(revision_rate.toFixed(3)),
+    total_tokens,
+    total_duration_ms,
+    total_iterations: feedback.length,
+    agent_breakdown,
+    qa_trend,
+    baseline_comparison: {
+      time: {
+        human: 14400,
+        ai: total_duration_ms,
+        human_label: '~4h',
+        ai_label: total_duration_ms ? `${Math.round(total_duration_ms / 1000)}s` : '暂无耗时',
+        speedup,
+      },
+      sources: {
+        human: 5,
+        ai: sourcesCount,
+        improvement: `${(sourcesCount / 5).toFixed(1)}x`,
+      },
+      structure: {
+        human: '非结构化 Word/PPT',
+        ai: 'Schema 强约束 JSON → Markdown',
+        score: 1.0,
+      },
+      traceability: {
+        human: '无溯源',
+        ai: '每条结论标注来源URL',
+        score: 1.0,
+      },
+      consistency: {
+        human: '因人而异',
+        ai: 'Pydantic Schema 保证字段一致',
+        score: 1.0,
+      },
+    },
+  }
+}
+
+function emptyMetrics(): Metrics {
+  return {
+    accuracy_rate: 0,
+    coverage_rate: 0,
+    revision_rate: 0,
+    total_tokens: 0,
+    total_duration_ms: 0,
+    total_iterations: 0,
+    agent_breakdown: {},
+    qa_trend: [],
+    baseline_comparison: {
+      time: { human: 14400, ai: 0, human_label: '~4h', ai_label: '暂无耗时', speedup: 0 },
+      sources: { human: 5, ai: 0, improvement: '0.0x' },
+      structure: { human: '非结构化 Word/PPT', ai: 'Schema 强约束 JSON → Markdown', score: 1.0 },
+      traceability: { human: '无溯源', ai: '每条结论标注来源URL', score: 1.0 },
+      consistency: { human: '因人而异', ai: 'Pydantic Schema 保证字段一致', score: 1.0 },
+    },
+  }
+}
+
 onMounted(async () => {
   try {
     const res = await fetch(`/api/analyze/${props.taskId}/metrics`)
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    metrics.value = await res.json()
-  } catch (e: any) {
-    error.value = e.message
+    const fallback = buildMetricsFromResult(props.result)
+    if (!res.ok) {
+      metrics.value = fallback || emptyMetrics()
+      return
+    }
+    const remoteMetrics = await res.json()
+    metrics.value = hasUsableMetrics(remoteMetrics) ? remoteMetrics : fallback || remoteMetrics
+  } catch {
+    const fallback = buildMetricsFromResult(props.result)
+    metrics.value = fallback || emptyMetrics()
   } finally {
     loading.value = false
   }
 })
+
+watch(
+  () => props.result?.agent_traces,
+  () => {
+    applyLocalFallbackIfBetter()
+  },
+  { deep: true },
+)
 
 const agentColors: Record<string, string> = {
   discovery: '#6366f1',

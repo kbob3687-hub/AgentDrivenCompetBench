@@ -29,12 +29,12 @@ const PROD_Y = 120
 const QA_Y = 5
 
 const agentNodes = computed(() => [
-  { id: 'discovery', type: 'agent', position: { x: 10,  y: PROD_Y }, data: { label: 'Discovery', sub: 'URL 发现', status: props.nodeStates.discovery }, sourcePosition: Position.Right, targetPosition: Position.Left },
-  { id: 'collector',  type: 'agent', position: { x: 150, y: PROD_Y }, data: { label: 'Collector',  sub: '数据采集',   status: props.nodeStates.collector  }, sourcePosition: Position.Right, targetPosition: Position.Left },
-  { id: 'analyst',    type: 'agent', position: { x: 290, y: PROD_Y }, data: { label: 'Analyst',    sub: '结构化分析',  status: props.nodeStates.analyst    }, sourcePosition: Position.Right, targetPosition: Position.Left },
-  { id: 'writer',     type: 'agent', position: { x: 430, y: PROD_Y }, data: { label: 'Writer',     sub: '报告撰写',   status: props.nodeStates.writer     }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  { id: 'discovery', type: 'agent', position: { x: 10,  y: PROD_Y }, data: { label: 'Discovery', sub: 'URL 发现', status: props.nodeStates.discovery, role: 'discovery' }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  { id: 'collector',  type: 'agent', position: { x: 150, y: PROD_Y }, data: { label: 'Collector',  sub: '数据采集',   status: props.nodeStates.collector,  role: 'collector'  }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  { id: 'analyst',    type: 'agent', position: { x: 290, y: PROD_Y }, data: { label: 'Analyst',    sub: '结构化分析',  status: props.nodeStates.analyst,    role: 'analyst'    }, sourcePosition: Position.Right, targetPosition: Position.Left },
+  { id: 'writer',     type: 'agent', position: { x: 430, y: PROD_Y }, data: { label: 'Writer',     sub: '报告撰写',   status: props.nodeStates.writer,     role: 'writer'     }, sourcePosition: Position.Right, targetPosition: Position.Left },
   // QA 审查层
-  { id: 'qa',         type: 'agent', position: { x: 530, y: QA_Y },  data: { label: 'QA',         sub: '质量审查',   status: props.nodeStates.qa          }, sourcePosition: Position.Bottom, targetPosition: Position.Left },
+  { id: 'qa',         type: 'agent', position: { x: 530, y: QA_Y },  data: { label: 'QA',         sub: '质量审查',   status: props.nodeStates.qa,         role: 'qa'         }, sourcePosition: Position.Bottom, targetPosition: Position.Left },
 ])
 
 const subNodes = computed(() =>
@@ -73,7 +73,7 @@ const nodes = computed(() => [...agentNodes.value, ...subNodes.value, ...overflo
 
 function edgeStyle(animated: boolean) {
   return animated
-    ? { stroke: '#60a5fa', strokeWidth: 2 }
+    ? { stroke: '#818cf8', strokeWidth: 2.5 }
     : { stroke: '#334155', strokeWidth: 1.5 }
 }
 
@@ -94,11 +94,11 @@ const mainEdges = computed(() => [
 ])
 
 // QA 三条回环边 — 按问题类型路由，只亮被触发的那条
-// labelX/labelY 手动偏移，避免三條 label 挤在一起
 function qaEdge(id: string, target: AgentName, lx: number, ly: number, label: string, condition: string) {
   const isActive = props.nodeStates.qa === 'done'
     && (props.nodeStates[target] === 'revise' || props.nodeStates[target] === 'running')
     && props.qaTargetAgent === target
+  const isReject = isActive && target === 'collector'
   return {
     id,
     source: 'qa', target,
@@ -106,12 +106,13 @@ function qaEdge(id: string, target: AgentName, lx: number, ly: number, label: st
     label: `${label}\n(${condition})`,
     labelX: lx, labelY: ly,
     style: {
-      stroke: isActive ? '#fb923c' : '#334155',
-      strokeWidth: isActive ? 2 : 1,
+      stroke: isReject ? '#ef4444' : isActive ? '#fb923c' : '#334155',
+      strokeWidth: isActive ? 2.5 : 1,
       strokeDasharray: isActive ? 'none' : '5 5',
+      filter: isReject ? 'drop-shadow(0 0 6px rgba(239,68,68,0.6))' : undefined,
     },
     labelStyle: {
-      fill: isActive ? '#fb923c' : '#475569',
+      fill: isReject ? '#fca5a5' : isActive ? '#fb923c' : '#475569',
       fontWeight: 600, fontSize: 9,
     },
     labelBgStyle: { fill: '#0b1120', fillOpacity: 0.9 },
@@ -196,10 +197,11 @@ const edges = computed(() => [...mainEdges.value, ...qaEdges.value, ...subEdges.
   stroke-width: 1.5;
 }
 .dag-dark .vue-flow__edge.animated .vue-flow__edge-path {
-  animation: flow-dash 1.4s linear infinite;
+  animation: flow-dash 0.9s linear infinite;
+  stroke-dasharray: 12 6;
 }
 @keyframes flow-dash {
-  from { stroke-dashoffset: 40; }
+  from { stroke-dashoffset: 36; }
   to   { stroke-dashoffset: 0; }
 }
 </style>

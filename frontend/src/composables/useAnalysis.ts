@@ -1,6 +1,6 @@
 import { reactive } from 'vue'
-import type { AnalysisState, AgentName, InterventionAction, InterventionPayload, LogEntry } from '../types'
-import { useSSE, type SSEEvent } from './useSSE'
+import type { AnalysisState, AgentName, InterventionAction, InterventionPayload, LogEntry, SSEEvent } from '../types'
+import { useSSE } from './useSSE'
 
 function createInitialState(): AnalysisState {
   return {
@@ -58,7 +58,7 @@ export function useAnalysis() {
         // Analyst/Writer 完成后立刻把预览推到右侧，Writer 会覆盖 Analyst 的草稿
         if ((agent === 'writer' || agent === 'analyst') && event.data.report_preview) {
           if (!state.result) state.result = {} as any
-          state.result.report_markdown = event.data.report_preview
+          ;(state.result as any).report_markdown = event.data.report_preview
         }
         break
       }
@@ -270,7 +270,21 @@ export function useAnalysis() {
 
   function resetState() {
     close()
-    Object.assign(state, createInitialState())
+    const init = createInitialState()
+    state.taskId = init.taskId
+    state.competitorName = init.competitorName
+    state.industry = init.industry
+    state.status = init.status
+    state.pauseVerdict = init.pauseVerdict
+    state.pauseContext = init.pauseContext
+    state.qaTargetAgent = init.qaTargetAgent
+    state.currentIteration = init.currentIteration
+    state.result = init.result
+    // 数组和对象需要显式替换引用
+    state.logs.splice(0, state.logs.length)
+    state.iterations.splice(0, state.iterations.length)
+    state.subAgents.splice(0, state.subAgents.length)
+    Object.assign(state.nodeStates, init.nodeStates)
     window.location.hash = ''
   }
 
@@ -373,5 +387,9 @@ export function useAnalysis() {
     }
   }
 
-  return { state, startAnalysis, resetState, restoreFromHash, intervene }
+  function processEvent(event: SSEEvent) {
+    handleEvent(event)
+  }
+
+  return { state, startAnalysis, resetState, restoreFromHash, intervene, processEvent }
 }

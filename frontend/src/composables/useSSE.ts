@@ -1,18 +1,5 @@
 import { ref, onUnmounted } from 'vue'
-import type { SSEAgentStart, SSEAgentEnd, SSELog, SSEQaVerdict, SSEComplete, SSESubAgentStart, SSESubAgentEnd, FeedbackRecord, PauseContext } from '../types'
-
-export type SSEEvent =
-  | { type: 'agent_start'; data: SSEAgentStart }
-  | { type: 'agent_end'; data: SSEAgentEnd }
-  | { type: 'log'; data: SSELog }
-  | { type: 'qa_verdict'; data: SSEQaVerdict }
-  | { type: 'iteration_summary'; data: FeedbackRecord }
-  | { type: 'sub_agent_start'; data: SSESubAgentStart }
-  | { type: 'sub_agent_end'; data: SSESubAgentEnd }
-  | { type: 'hitl_pause'; data: PauseContext & { verdict: string } }
-  | { type: 'hitl_resume'; data: { decision: string; iteration: number } }
-  | { type: 'complete'; data: SSEComplete }
-  | { type: 'error'; data: { message: string } }
+import type { SSEEvent } from '../types'
 
 const MAX_RECONNECT_ATTEMPTS = 5
 

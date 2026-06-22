@@ -1258,6 +1258,9 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             }
             for sample in error_samples[:3]
         ]
+        gate = asyncio.Event()
+        _hitl_gates[task_id] = gate
+        _hitl_decisions.pop(task_id, None)
         await _publish(
             task_id,
             EventType.HITL_PAUSE,
@@ -1279,9 +1282,6 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
                 "regressed_fields": [],
             },
         )
-        gate = asyncio.Event()
-        _hitl_gates[task_id] = gate
-        _hitl_decisions.pop(task_id, None)
         await gate.wait()
         _hitl_gates.pop(task_id, None)
 
@@ -1651,14 +1651,14 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
 
     if verdict == "pass":
         # HITL: pause for human confirmation before completing
+        gate = asyncio.Event()
+        _hitl_gates[task_id] = gate
+        _hitl_decisions.pop(task_id, None)
         await _publish(
             task_id,
             EventType.HITL_PAUSE,
             _hitl_payload(f"QA通过(score={score:.2f})，等待人工确认发布..."),
         )
-        gate = asyncio.Event()
-        _hitl_gates[task_id] = gate
-        _hitl_decisions.pop(task_id, None)
         await gate.wait()
         _hitl_gates.pop(task_id, None)
 
@@ -1697,6 +1697,9 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
 
     elif iteration >= max_iter:
         # 达到最大迭代次数，仍需人工审核（不能静默终止）
+        gate = asyncio.Event()
+        _hitl_gates[task_id] = gate
+        _hitl_decisions.pop(task_id, None)
         await _publish(
             task_id,
             EventType.HITL_PAUSE,
@@ -1704,9 +1707,6 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
                 f"已达最大迭代次数({max_iter}轮)，最终 score={score:.2f}，等待人工决策..."
             ),
         )
-        gate = asyncio.Event()
-        _hitl_gates[task_id] = gate
-        _hitl_decisions.pop(task_id, None)
         await gate.wait()
         _hitl_gates.pop(task_id, None)
 
@@ -1750,10 +1750,10 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             if verdict == "reject"
             else "QA打回，等待人工审核决策..."
         )
-        await _publish(task_id, EventType.HITL_PAUSE, _hitl_payload(pause_msg))
         gate = asyncio.Event()
         _hitl_gates[task_id] = gate
         _hitl_decisions.pop(task_id, None)
+        await _publish(task_id, EventType.HITL_PAUSE, _hitl_payload(pause_msg))
         await gate.wait()
         _hitl_gates.pop(task_id, None)
 

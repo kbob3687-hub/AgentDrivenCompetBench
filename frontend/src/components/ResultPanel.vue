@@ -494,7 +494,7 @@ function severityShortLabel(severity: string): string {
 
     <!-- Metrics Tab -->
     <div v-if="activeTab === 'metrics' && taskId" class="p-6 max-h-[700px] overflow-y-auto">
-      <MetricsPanel :task-id="taskId" embedded />
+      <MetricsPanel :task-id="taskId" :result="result" embedded />
     </div>
   </div>
 </template>

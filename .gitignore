@@ -33,6 +33,13 @@ snapshots/
 # Node / Frontend
 node_modules/
 frontend/dist/
+ppt-js/node_modules/
+ppt-js/.npm-cache/
+ppt-js/ppt.cjs
+ppt-js/ppt.js
+
+# PPT生成临时文件
+.ppt-check-*/
 
 # 系统
 .DS_Store
@@ -43,6 +50,12 @@ Thumbs.db
 
 # 本地资料
 templates/architecture.png
+docs/defense/
+docs/一、基础信息.md
+答辩PPT大纲.md
+AGENTS.md
+ppt-js/
+scripts/build_defense_ppt.py
 
 # Playwright browsers
 .playwright-browsers/
