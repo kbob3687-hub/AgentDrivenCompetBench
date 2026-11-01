@@ -112,3 +112,23 @@ ANALYZE_USER_PROMPT_TEMPLATE = """请分析以下关于 **{competitor_name}** �
 5. user_personas必须基于明确描述用户群体/客户类型/使用场景/评价/案例的claims提取，优先使用can_support_user_persona=true的claims；每个segment/pain_point/usage_scenario都必须有对应的evidence_claim_indices。如果没有这类可溯源claims则输出空列表[]
 6. 不要输出“关键洞察”式总结；analysis_summary.key_insights 输出空数组
 """
+
+ANALYST_REPAIR_PROMPT_TEMPLATE = """
+
+## QA返工要求
+
+返工动作：{repair_action}
+
+上一版CompetitorProfile：
+{previous_profile_json}
+
+QA指出的问题：
+{qa_issues_json}
+
+请结合原始claims和上一版结果，输出修复后的完整JSON，并遵守：
+1. 逐项处理QA指出的field_path，保留其他有证据支撑且无需修改的内容
+2. 只能使用原始claims中的事实和来源，不得为了补齐字段而编造
+3. repair_action为drop_or_disclose时，优先依据现有claims纠正；
+   无法支撑的内容输出null或空数组，不得新增Schema字段
+4. 所有evidence_claim_indices仍必须指向本次输入的原始claims索引
+"""

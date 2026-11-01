@@ -95,3 +95,22 @@ WRITE_USER_PROMPT_TEMPLATE = """请基于以下CompetitorProfile生成完整的�
 6. 不要生成“关键洞察”章节，不要做没有直接来源的总结
 7. 遇到没有真实URL来源的profile条目，跳过，不要写进报告
 """
+
+WRITE_REPAIR_PROMPT_TEMPLATE = """
+
+## QA返工要求
+
+返工动作：{repair_action}
+
+上一版Markdown报告：
+{previous_report}
+
+QA指出的问题：
+{qa_issues_json}
+
+请输出修复后的完整Markdown报告，并遵守：
+1. 逐项处理QA指出的问题，保留其他无需修改的内容
+2. 以本次输入的CompetitorProfile为事实依据，不得添加其中没有的信息
+3. 不保留无法由profile和真实URL来源支撑的旧报告表述
+4. 角标与来源附录必须重新对应，不能沿用失效编号
+"""

@@ -30,7 +30,9 @@ class FeedbackRecord(BaseModel):
     # 闭环改善追踪：本轮 QA 给出的字段级 issue 明细 + 与上一轮的 diff
     issues: list[dict[str, Any]] = Field(
         default_factory=list,
-        description="字段级 issue 明细：[{field_path, severity, issue_type, description, suggestion}]",
+        description=(
+            "字段级 issue 明细：[{field_path, severity, issue_type, description, suggestion}]"
+        ),
     )
     resolved_fields: list[str] = Field(
         default_factory=list, description="本轮相比上一轮 已解决 的 field_path 列表"
@@ -74,6 +76,7 @@ class GraphState(TypedDict, total=False):
     sources_fetched: int
     sources_failed: int
     collect_errors: list[str]
+    attempted_urls: list[str]  # URLs already handed to Collector, including failed fetches
 
     # ---- Analyst输出 ----
     profile: dict[str, Any]
@@ -92,6 +95,7 @@ class GraphState(TypedDict, total=False):
     qa_feedback_summary: str
     missing_dimensions: list[str]
     qa_target_agent: str
+    repair_action: str  # "" | repair_content | fetch_more | drop_or_disclose
     suggested_strategy: str  # QA 建议的下一轮 discovery 策略: "" | "open_search"
 
     # ---- 迭代控制 ----
@@ -105,4 +109,5 @@ class GraphState(TypedDict, total=False):
     completed_at: str
     final_status: str
     error: str
+    rework_blocked_reason: str
     agent_traces: list[dict[str, Any]]

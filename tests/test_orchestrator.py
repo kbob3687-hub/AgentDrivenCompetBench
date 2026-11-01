@@ -18,7 +18,7 @@ from api.runner import (
 from orchestrator.edges import qa_routing
 from orchestrator.graph import build_graph
 from orchestrator.nodes import qa_node
-from orchestrator.routing import classify_no_profile_failure
+from orchestrator.routing import classify_no_profile_failure, derive_repair_action
 from orchestrator.state import FeedbackRecord, GraphState
 
 
@@ -62,6 +62,18 @@ class TestLangfuseTraceLinks:
             "https://us.cloud.langfuse.com/project/project-2/traces/"
             "48aea9f9789c4651a257ede9ffaf498c"
         )
+
+
+class TestRepairAction:
+    @pytest.mark.parametrize("target_agent", ["analyst", "writer"])
+    def test_content_target_uses_existing_evidence(self, target_agent):
+        assert derive_repair_action("revise", target_agent) == "repair_content"
+
+    def test_collector_target_fetches_more_evidence(self):
+        assert derive_repair_action("revise", "collector") == "fetch_more"
+
+    def test_pass_clears_repair_action(self):
+        assert derive_repair_action("pass", "analyst") == ""
 
 
 class TestQARouting:
@@ -261,6 +273,7 @@ class TestHitlManualUrls:
         assert update["discovered_urls"] == ["https://source.example/product"]
         assert update["collect_errors"] == []
         assert update["qa_target_agent"] == "collector"
+        assert update["repair_action"] == "fetch_more"
         assert update["final_status"] == "running"
         assert update["max_iterations"] == 4
 

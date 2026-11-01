@@ -12,7 +12,11 @@ from datetime import datetime
 from typing import Any
 
 from agents.base import AgentConfig, BaseAgent
-from agents.writer.prompts import WRITE_USER_PROMPT_TEMPLATE, WRITER_SYSTEM_PROMPT
+from agents.writer.prompts import (
+    WRITE_REPAIR_PROMPT_TEMPLATE,
+    WRITE_USER_PROMPT_TEMPLATE,
+    WRITER_SYSTEM_PROMPT,
+)
 from schemas.message import AgentMessage, MessageType
 
 
@@ -47,6 +51,9 @@ class WriterAgent(BaseAgent):
         args = message.arguments
         competitor_name = args.get("competitor_name", "")
         profile = args.get("profile", {})
+        previous_report = args.get("previous_report", "")
+        qa_issues = args.get("qa_issues", [])
+        repair_action = args.get("repair_action", "")
 
         if not profile or not profile.get("company_name"):
             print(
@@ -74,6 +81,12 @@ class WriterAgent(BaseAgent):
             competitor_name=competitor_name,
             profile_json=profile_json,
         )
+        if repair_action and qa_issues:
+            user_prompt += WRITE_REPAIR_PROMPT_TEMPLATE.format(
+                repair_action=repair_action,
+                previous_report=previous_report,
+                qa_issues_json=json.dumps(qa_issues, ensure_ascii=False, indent=2),
+            )
 
         # 调用Claude生成报告
         response = await self.call_llm(messages=[{"role": "user", "content": user_prompt}])

@@ -23,7 +23,11 @@ from agents.qa.agent import QAAgent
 from agents.writer.agent import WriterAgent
 from api.events import EventType, SSEEvent, event_bus
 from orchestrator.edges import qa_routing
-from orchestrator.routing import classify_no_profile_failure
+from orchestrator.routing import (
+    classify_no_profile_failure,
+    derive_repair_action,
+    repair_context,
+)
 from orchestrator.scoring import iteration_improvement_bonus
 from orchestrator.state import FeedbackRecord, GraphState
 from schemas.message import AgentMessage, MessageContext, MessageType
@@ -222,6 +226,7 @@ def _apply_manual_url_resume(
     update["discovered_urls"] = urls
     update["collect_errors"] = []
     update["qa_target_agent"] = "collector"
+    update["repair_action"] = "fetch_more"
     update["suggested_strategy"] = ""
     update["final_status"] = "running"
 
@@ -1039,6 +1044,7 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             "dimensions_requested": state.get("collect_scope", ["pricing", "features"]),
             "industry_fields": state.get("industry_fields", []),
             "industry": state.get("industry", ""),
+            **repair_context(state, "analyst"),
         },
         state=state,
     )
@@ -1130,6 +1136,7 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
         arguments={
             "competitor_name": state["competitor_name"],
             "profile": profile,
+            **repair_context(state, "writer"),
         },
         state=state,
     )
@@ -1238,6 +1245,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             "feedback_history": history,
             "iteration": iteration + 1,
             "qa_target_agent": target_agent,
+            "repair_action": derive_repair_action("reject", target_agent),
             "missing_dimensions": missing_dimensions,
             "suggested_strategy": suggested_strategy,
         }
@@ -1593,6 +1601,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         "iteration": iteration + 1,
         "missing_dimensions": missing_dims,
         "qa_target_agent": target_agent,
+        "repair_action": derive_repair_action(verdict, target_agent),
     }
 
     # 自适应策略降级：QA 建议下一轮换数据源
@@ -1788,6 +1797,14 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     return update
 
 
+def _route_after_qa(state: GraphState) -> str:
+    if state.get("error"):
+        return "end"
+    if state.get("repair_action") == "drop_or_disclose":
+        return "analyst"
+    return qa_routing(state)
+
+
 def build_sse_graph() -> Any:
     """Build the LangGraph StateGraph with SSE-enabled nodes."""
     graph = StateGraph(GraphState)
@@ -1805,7 +1822,7 @@ def build_sse_graph() -> Any:
 
     graph.add_conditional_edges(
         "qa",
-        qa_routing,
+        _route_after_qa,
         {
             "end": END,
             "collector": "collector",
@@ -1883,6 +1900,7 @@ async def run_analysis(
             "max_iterations": max_iterations,
             "feedback_history": [],
             "missing_dimensions": [],
+            "repair_action": "",
             "trace_id": task_id,
             "started_at": datetime.now().isoformat(),
             "final_status": "running",

@@ -11,7 +11,11 @@ import os
 from typing import Any
 
 from agents.analyst.persona_sources import can_support_user_persona
-from agents.analyst.prompts import ANALYST_SYSTEM_PROMPT, ANALYZE_USER_PROMPT_TEMPLATE
+from agents.analyst.prompts import (
+    ANALYST_REPAIR_PROMPT_TEMPLATE,
+    ANALYST_SYSTEM_PROMPT,
+    ANALYZE_USER_PROMPT_TEMPLATE,
+)
 from agents.analyst.tools import (
     build_competitor_profile,
     group_claims_by_dimension,
@@ -53,7 +57,9 @@ class AnalystAgent(BaseAgent):
         args = message.arguments
         competitor_name = args.get("competitor_name", "")
         claims = args.get("claims", [])
-        dimensions = args.get("dimensions_requested", [])
+        previous_profile = args.get("previous_profile", {})
+        qa_issues = args.get("qa_issues", [])
+        repair_action = args.get("repair_action", "")
         industry = (
             args.get("industry", "") or getattr(message.context, "industry", "")
             if message.context
@@ -114,6 +120,13 @@ class AnalystAgent(BaseAgent):
             claim_count=len(claims),
             claims_json=json.dumps(indexed_claims, ensure_ascii=False, indent=2),
         )
+
+        if repair_action and qa_issues:
+            user_prompt += ANALYST_REPAIR_PROMPT_TEMPLATE.format(
+                repair_action=repair_action,
+                previous_profile_json=json.dumps(previous_profile, ensure_ascii=False, indent=2),
+                qa_issues_json=json.dumps(qa_issues, ensure_ascii=False, indent=2),
+            )
 
         if extension_prompt:
             user_prompt = user_prompt + "\n\n" + extension_prompt
