@@ -18,6 +18,42 @@ from schemas.competitor import (
 )
 
 
+def _list_field(data: dict[str, Any], key: str) -> list[Any]:
+    """An omitted/null optional LLM array is empty; a scalar is malformed."""
+    value = data.get(key)
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise ValueError(f"{key} must be a list, got {type(value).__name__}")
+    return value
+
+
+def _object_list_field(data: dict[str, Any], key: str) -> list[dict[str, Any]]:
+    items = _list_field(data, key)
+    if any(not isinstance(item, dict) for item in items):
+        raise ValueError(f"{key} must contain objects")
+    return items
+
+
+def _object_field(data: dict[str, Any], key: str) -> dict[str, Any] | None:
+    value = data.get(key)
+    if value is not None and not isinstance(value, dict):
+        raise ValueError(f"{key} must be an object, got {type(value).__name__}")
+    return value
+
+
+def _supporting_claims(
+    data: dict[str, Any], original_claims: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    claims = []
+    for index in _list_field(data, "evidence_claim_indices"):
+        if not isinstance(index, int) or isinstance(index, bool):
+            raise ValueError("evidence_claim_indices must contain integers")
+        if 0 <= index < len(original_claims):
+            claims.append(original_claims[index])
+    return _claims_with_sources(claims)
+
+
 def group_claims_by_dimension(claims: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
     """将claims按dimension字段分组"""
     groups: dict[str, list[dict[str, Any]]] = {}
@@ -49,7 +85,7 @@ def cross_validated_confidence(
 
     urls: set[str] = set()
     for c in supporting_claims:
-        for s in c.get("sources", []):
+        for s in c.get("sources") or []:
             url = (s.get("url") or "").strip()
             if url:
                 urls.add(url)
@@ -63,16 +99,14 @@ def cross_validated_confidence(
 
 
 def build_pricing_model(
-    llm_pricing: dict[str, Any],
+    llm_pricing: dict[str, Any] | None,
     original_claims: list[dict[str, Any]],
 ) -> PricingModel | None:
     """从LLM分析结果构建PricingModel对象"""
     if not llm_pricing:
         return None
 
-    indices = llm_pricing.get("evidence_claim_indices", [])
-    supporting_claims = [original_claims[i] for i in indices if i < len(original_claims)]
-    supporting_claims = _claims_with_sources(supporting_claims)
+    supporting_claims = _supporting_claims(llm_pricing, original_claims)
     if not supporting_claims:
         return None
     confidence = llm_pricing.get("confidence") or average_confidence(supporting_claims)
@@ -81,14 +115,14 @@ def build_pricing_model(
     currency = llm_pricing.get("currency") or "USD"
 
     tiers = []
-    for tier_data in llm_pricing.get("tiers", []):
+    for tier_data in _object_list_field(llm_pricing, "tiers"):
         tiers.append(
             PricingTier(
                 name=tier_data.get("name", ""),
                 price=tier_data.get("price", ""),
                 billing_cycle=tier_data.get("billing_cycle"),
-                features=tier_data.get("features", []),
-                limitations=tier_data.get("limitations", []),
+                features=_list_field(tier_data, "features"),
+                limitations=_list_field(tier_data, "limitations"),
             )
         )
 
@@ -116,9 +150,7 @@ def build_feature_tree(
         return []
     nodes = []
     for feat in llm_features:
-        indices = feat.get("evidence_claim_indices", [])
-        supporting_claims = [original_claims[i] for i in indices if i < len(original_claims)]
-        supporting_claims = _claims_with_sources(supporting_claims)
+        supporting_claims = _supporting_claims(feat, original_claims)
         if not supporting_claims:
             continue
         confidence = feat.get("confidence", average_confidence(supporting_claims))
@@ -126,7 +158,7 @@ def build_feature_tree(
         sources = _collect_sources(supporting_claims)
 
         sub_features = []
-        for sub in feat.get("sub_features", []):
+        for sub in _object_list_field(feat, "sub_features"):
             sub_evidence = EvidencedClaim(
                 claim=sub.get("description", sub.get("name", "")),
                 confidence=confidence,
@@ -178,13 +210,11 @@ def build_swot(
     }
 
     for key, category in category_map.items():
-        items_data = llm_swot.get(key, [])
+        items_data = _object_list_field(llm_swot, key)
         evidenced_claims = []
 
         for item in items_data:
-            indices = item.get("evidence_claim_indices", [])
-            supporting = [original_claims[i] for i in indices if i < len(original_claims)]
-            supporting = _claims_with_sources(supporting)
+            supporting = _supporting_claims(item, original_claims)
             if not supporting:
                 continue
             confidence = item.get("confidence", 0.5)
@@ -215,9 +245,7 @@ def build_user_personas(
         return []
     personas = []
     for p in llm_personas:
-        indices = p.get("evidence_claim_indices", [])
-        supporting = [original_claims[i] for i in indices if i < len(original_claims)]
-        supporting = _claims_with_sources(supporting)
+        supporting = _supporting_claims(p, original_claims)
         if not supporting:
             continue
         confidence = p.get("confidence", average_confidence(supporting))
@@ -225,7 +253,7 @@ def build_user_personas(
         sources = _collect_sources(supporting)
 
         pain_claims = []
-        for pain in p.get("pain_points", []):
+        for pain in _list_field(p, "pain_points"):
             pain_claims.append(
                 EvidencedClaim(
                     claim=pain if isinstance(pain, str) else pain.get("claim", ""),
@@ -239,7 +267,7 @@ def build_user_personas(
             UserPersona(
                 segment=p.get("segment", "未知用户群"),
                 pain_points=pain_claims,
-                usage_scenarios=p.get("usage_scenarios", []),
+                usage_scenarios=_list_field(p, "usage_scenarios"),
             )
         )
     return personas
@@ -251,10 +279,14 @@ def build_competitor_profile(
     original_claims: list[dict[str, Any]],
 ) -> CompetitorProfile:
     """从LLM分析结果构建完整的CompetitorProfile"""
-    pricing = build_pricing_model(llm_output.get("pricing"), original_claims)
-    feature_tree = build_feature_tree(llm_output.get("feature_tree") or [], original_claims)
-    swot = build_swot(llm_output.get("swot") or {}, original_claims)
-    user_personas = build_user_personas(llm_output.get("user_personas") or [], original_claims)
+    pricing = build_pricing_model(_object_field(llm_output, "pricing"), original_claims)
+    feature_tree = build_feature_tree(
+        _object_list_field(llm_output, "feature_tree"), original_claims
+    )
+    swot = build_swot(_object_field(llm_output, "swot"), original_claims)
+    user_personas = build_user_personas(
+        _object_list_field(llm_output, "user_personas"), original_claims
+    )
 
     # 从LLM输出或原始claims中提取行业扩展字段
     extensions = _build_extensions(llm_output, original_claims)
@@ -344,7 +376,7 @@ def _collect_sources(claims: list[dict[str, Any]]) -> list[SourceReference]:
     seen_urls: set[str] = set()
 
     for claim in claims:
-        for src in claim.get("sources", []):
+        for src in claim.get("sources") or []:
             url = src.get("url", "")
             if url and url not in seen_urls:
                 seen_urls.add(url)

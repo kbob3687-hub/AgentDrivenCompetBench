@@ -11,6 +11,8 @@ import asyncio
 import os
 import uuid
 from abc import ABC, abstractmethod
+from contextvars import ContextVar
+from time import perf_counter
 from typing import Any
 
 import anthropic
@@ -21,6 +23,11 @@ from pydantic import BaseModel
 
 from schemas.message import AgentMessage, MessageContext, MessageType
 
+# Opt-in, task-local execution audit. API/SSE callers leave this unset.
+execution_records: ContextVar[list[dict[str, Any]] | None] = ContextVar(
+    "execution_records", default=None
+)
+
 
 class LLMResponse(BaseModel):
     """统一的LLM响应格式，屏蔽不同provider差异"""
@@ -28,6 +35,7 @@ class LLMResponse(BaseModel):
     text: str
     input_tokens: int = 0
     output_tokens: int = 0
+    usage_known: bool = False
     model: str = ""
     raw: Any = None
 
@@ -203,6 +211,18 @@ class BaseAgent(ABC):
                 },
             )
 
+        started = perf_counter()
+        audit: dict[str, Any] = {
+            "kind": "llm",
+            "agent": self.role,
+            "model": self.config.model,
+            "input_tokens": None,
+            "output_tokens": None,
+            "status": "running",
+        }
+        records = execution_records.get()
+        if records is not None:
+            records.append(audit)
         try:
             if self.config.provider == "anthropic":
                 result = await self._call_anthropic(messages, tools, response_format)
@@ -213,6 +233,12 @@ class BaseAgent(ABC):
             self.token_usage["input"] += result.input_tokens
             self.token_usage["output"] += result.output_tokens
             self.token_usage["model"] = result.model or self.config.model
+            audit.update(
+                status="completed",
+                model=result.model or self.config.model,
+                input_tokens=result.input_tokens if result.usage_known else None,
+                output_tokens=result.output_tokens if result.usage_known else None,
+            )
 
             generation.update(
                 output=result.text[:2000],
@@ -227,12 +253,17 @@ class BaseAgent(ABC):
             return result
 
         except Exception as e:
+            audit["status"] = "error"
             generation.update(
                 output={"error": str(e)},
                 level="ERROR",
                 status_message=str(e),
             ).end()
             raise
+        finally:
+            audit["latency_seconds"] = perf_counter() - started
+            if audit["status"] == "running":
+                audit["status"] = "cancelled"
 
     async def _call_anthropic(
         self,
@@ -275,6 +306,7 @@ class BaseAgent(ABC):
             text="\n".join(text_parts),
             input_tokens=response.usage.input_tokens,
             output_tokens=response.usage.output_tokens,
+            usage_known=True,
             model=response.model,
             raw=response,
         )
@@ -305,8 +337,13 @@ class BaseAgent(ABC):
 
         return LLMResponse(
             text=text,
-            input_tokens=usage.prompt_tokens if usage else 0,
-            output_tokens=usage.completion_tokens if usage else 0,
+            input_tokens=(usage.prompt_tokens or 0) if usage else 0,
+            output_tokens=(usage.completion_tokens or 0) if usage else 0,
+            usage_known=bool(
+                usage is not None
+                and usage.prompt_tokens is not None
+                and usage.completion_tokens is not None
+            ),
             model=response.model or self.config.model,
             raw=response,
         )

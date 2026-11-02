@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "run": "benchmark/results/20260924T025206Z-9838847b",
+      "task_id": "notion-gold-001-r1-c1"
+    },
+    {
+      "run": "benchmark/results/20260924T025206Z-9838847b",
+      "task_id": "clickup-gold-001-r1-c1"
+    },
+    {
+      "run": "benchmark/results/20260924T030259Z-53a6a170",
+      "task_id": "openproject-features-gold-001-r1-c1"
+    }
+  ]
+}

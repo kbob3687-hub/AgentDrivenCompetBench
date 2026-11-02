@@ -1,0 +1,11 @@
+[
+  {
+    "id": "clickup-pricing-source-001",
+    "competitors": ["ClickUp"],
+    "required_dimensions": ["features", "pricing", "persona", "swot"],
+    "collect_scope": ["pricing", "features", "user_personas"],
+    "target_urls": {
+      "ClickUp": ["https://clickup.com/pricing"]
+    }
+  }
+]

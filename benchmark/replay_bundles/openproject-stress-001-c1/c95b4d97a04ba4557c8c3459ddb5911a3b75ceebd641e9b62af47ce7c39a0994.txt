@@ -1,0 +1,500 @@
+![](https://www.openproject.org/assets/images/pricing/pricing-hero-8b165716.svg)
+
+# Pricing
+
+OpenProject is the best open source project management software.
+
+Self-managed or in the cloud, we have the perfect plan for every team.
+
+## The perfect plan for your team
+
+EU / €US / $
+
+Number of users
+
+Users can be selected in increments of 5. [Learn more](https://www.openproject.org/pricing/#faq)
+
+25
+
+5
+
+50
+
+100
+
+150
+
+200
+
+250+
+
+unlimited
+
+Hosting mode
+
+Choose your hosting preference: on-premises is hosted on your own infrastructure, while the cloud is hosted and maintained by us. [Learn more](https://www.openproject.org/pricing/#faq)
+
+On-premisesCloud
+
+Subscription period
+
+1 month (+$1.25 per user)1 year2 years (5 months free) 3 years (8 months free) 4 years (11 months free) 5 years (15 months free)
+
+Select a runtime for your subscription. Please note, the 1 month period is available only for Cloud Basic. [Learn more](https://www.openproject.org/pricing/#faq)
+
+BIM+$1.25 per user
+
+On top of the general project management features, OpenProject BIM enables construction teams to better plan, communicate and collaborate in their building projects. [Learn more](https://www.openproject.org/pricing/#add-ons)
+
+Support level
+
+Choose your support and features level. All plans include the Community features and the features of all lower plans.
+
+### Community
+
+#### Free
+
+No minimum users
+
+- Community features
+- **Community support**
+  - Community tickets
+  - Community forum
+  - User guides
+
+![Our recommendation for at least 5 users](https://www.openproject.org/assets/images/pricing/star-6c3716bf.svg)Our recommendation for at least 5 users
+
+### Basic
+
+#### $7.25
+
+per user per month25 minimum users
+
+- All from Community, plus
+- **Basic Enterprise add-ons**
+- **Basic support**
+Mon-Fri, 9:30-16:00 CETMon-Fri, 9:30 am - 4 pm ET
+
+All Community support, plus
+
+  - Email support
+
+![Our recommendation for at least 25 users](https://www.openproject.org/assets/images/pricing/star-6c3716bf.svg)Our recommendation for at least 25 users
+
+### Professional
+
+#### $13.50
+
+per user per month25 minimum users
+
+- All from Basic, plus
+- **Professional Enterprise add-ons**
+- **Professional support**
+Mon-Fri, 9:30-17:00 CETMon-Fri, 9:30 am - 5 pm ET
+
+All Basic support, plus
+
+  - Phone support
+
+![Our recommendation for at least 100 users](https://www.openproject.org/assets/images/pricing/star-6c3716bf.svg)Our recommendation for at least 100 users
+
+### Premium
+
+#### $19.50
+
+per user per month100 minimum users
+
+- All from Professional, plus
+- **Premium Enterprise add-ons**
+- **Premium support**
+Mon-Fri, 9:30-17:30 CETMon-Fri, 9:30 am - 5:30 pm ET
+
+All Professional support, plus
+
+  - Remote hands
+  - Installation and upgrade assistance
+
+![Our recommendation for at least 250 users](https://www.openproject.org/assets/images/pricing/star-6c3716bf.svg)Our recommendation for at least 250 users
+
+### Corporate
+
+#### On request
+
+250 minimum users
+
+- All from Premium, plus
+- **Corporate Enterprise add-ons**
+- OpenID Connect for Nextcloud Hub integration
+- openDesk integration
+- **Corporate support**
+Mon-Fri, 9:00-18:00 CETMon-Fri, 9 am - 6 pm ET
+
+All Premium support, plus
+
+  - Custom plugin support
+  - Dedicated support engineer
+  - Training material and best practices
+  - Onboarding training
+  - Dedicated onboarding manager (3h)
+
+[Compare all plans](https://www.openproject.org/pricing/#features)
+
+### Not sure yet?
+
+#### Try OpenProject for free
+
+You can test the OpenProject Enterprise cloud 14 days for free, or you can get a 14 days free trial license key to upgrade your self-hosted Community edition to the Enterprise on-premises – risk-free without cancellation.
+
+[Start free cloud trial](https://start.openproject.com/) Get a free on-premise trial license
+
+[Contact our sales team](https://www.openproject.org/contact/)
+
+![](https://www.openproject.org/assets/images/pricing/pricing-trial-mobile-bf0a3e10.svg)
+
+![](https://www.openproject.org/assets/images/pricing/features-6049f0c0.svg)
+
+## Feature comparison
+
+### Features per plan
+
+Choose a plan to see what is included CommunityBasicProfessionalPremiumCorporate
+
+| Features | Community | Basic | Professional | Premium | Corporate |
+| --- | --- | --- | --- | --- | --- |
+| Community features | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| A **dashboard with important project information** that you can customize with widgets and graphs to your needs.<br>[Learn more](https://www.openproject.org/docs/user-guide/projects/project-home/)<br>Project overview page | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Get a clear overview of project timelines across portfolios to easily assess project status and make informed portfolio decisions.<br>[Learn more](https://www.openproject.org/docs/user-guide/projects/project-settings/project-life-cycle/)<br>Project life cycle | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Break-down your work** in a project: create tasks and subtasks, features, phases and milestones and assign them across your team.<br>[Learn more](https://www.openproject.org/docs/user-guide/work-packages/)<br>Work packages | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Get an **overview of the different relations and dependencies** directly in the work package table.<br>[Learn more](https://www.openproject.org/docs/user-guide/work-packages/work-package-relations-hierarchies/#display-relations-in-a-work-package-table)<br>Display relations in the work package table | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Easily create and visualize **project plans and timelines** and share them with your team and other stakeholders.<br>[Learn more](https://www.openproject.org/docs/user-guide/gantt-chart/)<br>Gantt charts / timelines | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Set a **project baseline and compare changes with yesterday**. The full baseline feature, which allows comparisons with any date (range), is part of the Enterprise version.<br>[Learn more](https://www.openproject.org/docs/user-guide/work-packages/baseline-comparison/)<br>Baseline comparison (to yesterday) | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Set notifications and reminders to **never miss a work package** that is upcoming or overdue.<br>[Learn more](https://www.openproject.org/docs/user-guide/notifications/notification-settings/#date-alerts)<br>Date alerts for upcoming and overdue tasks | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Agile boards help you to **organize and prioritize** your work with your team.<br>[Learn more](https://www.openproject.org/docs/user-guide/agile-boards/)<br>Agile boards basic | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Visualize the workload and **know who is working on what**.<br>[Learn more](https://www.openproject.org/docs/user-guide/agile-boards/#assignee-board)<br>Team boards | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Facilitate the **planning of product versions**.<br>[Learn more](https://www.openproject.org/docs/user-guide/agile-boards/#version-board)<br>Version boards | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Distribute and **visualize the workload** across different (sub)projects and organizations.<br>[Learn more](https://www.openproject.org/docs/user-guide/agile-boards/#subproject-board)<br>Subprojects boards | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create and **visualize a work breakdown structure** for your projects.<br>[Learn more](https://www.openproject.org/docs/user-guide/agile-boards/#parent-child-board)<br>Work breakdown structure | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| A **Kanban board for status updates** to visualize and continuously improve the workflow.<br>[Learn more](https://www.openproject.org/docs/user-guide/agile-boards/#action-boards)<br>Kanban boards (status) | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Schedule your work with an **automatic scheduling mode and a manual scheduling mode** to plan your project top-down without knowing all tasks yet.<br>[Learn more](https://www.openproject.org/docs/user-guide/gantt-chart/scheduling/)<br>Scheduling | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Define working and non-working days for the scheduling of work packages.<br>[Learn more](https://www.openproject.org/docs/user-guide/work-packages/set-change-dates/#working-days)<br>Work week | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Support your Scrum teams and create a **product backlog and a sprint boards**, estimate story points, view the burndown chart.<br>[Learn more](https://www.openproject.org/docs/user-guide/backlogs-scrum/)<br>Scrum (product backlog and sprint board) | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create and share your **meeting agenda and meeting minutes** and link them directly to work packages.<br>[Learn more](https://www.openproject.org/docs/user-guide/meetings/)<br>Meetings management | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Keep and eye on your deadlines and display the project’s **work packages in your calendar**.<br>[Learn more](https://www.openproject.org/docs/user-guide/calendar/)<br>Calendar | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Log your time** for the day or week on the work packages and see your time log history.<br>[Learn more](https://www.openproject.org/docs/user-guide/time-and-costs/time-tracking/)<br>Time tracking | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Track and evaluate estimated and spent **unit costs or labor costs** for your projects.<br>[Learn more](https://www.openproject.org/docs/user-guide/time-and-costs/cost-tracking/)<br>Costs | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Define working hours, future schedule changes, and time off.<br>[Learn more](https://www.openproject.org/docs/user-guide/account-settings/schedule-and-availability/)<br>Schedule and availability | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Evaluate your spent time and costs in **detailed reports**.<br>[Learn more](https://www.openproject.org/docs/user-guide/time-and-costs/reporting/)<br>Reports | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Plan **labour and unit costs** for your projects and keep an eye on the status.<br>[Learn more](https://www.openproject.org/docs/user-guide/budgets/)<br>Budgeting | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create and **track bugs** based on individual templates and keep track of the status.<br>[Learn more](https://www.openproject.org/collaboration-software-features/task-management/#bug-tracking)<br>Bug tracking | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create and **share project information**, e.g. documentation, references, guidelines, user manuals, and more in one central place.<br>[Learn more](https://www.openproject.org/docs/user-guide/wiki/)<br>Wiki | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Upload, share and **edit documents in real time** with live collaborative editing.<br>[Learn more](https://www.openproject.org/docs/user-guide/documents/)<br>Documents and collaborative editing | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Discuss and comment** on topics in a project with the team.<br>[Learn more](https://www.openproject.org/docs/user-guide/forums/)<br>Forums | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Add your **own custom fields** for work packages, spent time, projects, project lists, versions, users, and groups.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/custom-fields/)<br>Custom fields | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Define your **own custom workflows** that your work package is going through.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/manage-work-packages/work-package-types/workflows/)<br>Custom workflows | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create and **manage groups** and configure detailed permissions.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/users-permissions/groups/#manage-groups)<br>User groups & permissions | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Track user attributes such as job titles, key skills, and languages.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/users-permissions/user-attributes/)<br>User attributes | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Organize users with departments and an organizational structure.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/users-permissions/organization/)<br>Organizational structure | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create new work packages types and **add default descriptions** and input fields.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/manage-work-packages/work-package-types/#create-new-work-package-type)<br>Work package templates | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Highlight status, priority and finish date** based on their values and see right away which tasks require your attention.<br>[Learn more](https://www.openproject.org/docs/user-guide/work-packages/work-package-table-configuration/#attribute-highlighting)<br>Attribute highlighting | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Set up everything that you want to have **available for future projects**.<br>[Learn more](https://www.openproject.org/docs/user-guide/projects/project-templates/#use-a-project-template)<br>Project templates | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Your personal dashboard that displays **information about all your projects**.<br>[Learn more](https://www.openproject.org/docs/getting-started/my-page/#my-page)<br>My page (personal dashboard) | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Keep informed about all changes and **updates in your project** in the notification center.<br>[Learn more](https://www.openproject.org/docs/user-guide/notifications/)<br>In-app Notifications | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Get **regular email digests** about changes in your projects.<br>[Learn more](https://www.openproject.org/docs/user-guide/account-settings/notification-and-email/#email-reminders)<br>Email summaries | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Aside from **full-text search**, you can search work packages based on their attached file name or even within the content of an attachment.<br>[Learn more](https://www.openproject.org/docs/user-guide/search/)<br>Full text search, incl. work package attachments | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Specify **descriptions for any work package or project attribute** (including custom fields) and display the description by clicking on the question mark.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/attribute-help-texts/)<br>Help texts | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Link files and folders from Nextcloud** directly to OpenProject work packages.<br>[Learn more](https://www.openproject.org/docs/user-guide/file-management/nextcloud-integration/)<br>Nextcloud integration | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Migrate projects, issues, users, and more from Jira** with the guided OpenProject Jira Migrator.<br>[Learn more](https://www.openproject.org/docs/installation-and-operations/jira-migration/)<br>Jira Migrator | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Our **REST API** lets you integrate with any system, automates actions or lets you integrate own plugins.<br>[Learn more](https://www.openproject.org/docs/api/)<br>API | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Integrate a **SVN or GIT repository** in a project.<br>[Learn more](https://www.openproject.org/docs/user-guide/projects/project-settings/repository/)<br>Repositories (SVN, GIT) | Translation missing: en.components.accessibility.n | only on-premises | only on-premises | only on-premises | only on-premises |
+| **Authenticate with your LDAP** user in OpenProject.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/authentication/ldap-connections/)<br>LDAP authentication | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Adds an **additional level of security** with a second factor to authenticate.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/authentication/two-factor-authentication/)<br>Two-factor authentication | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Relevant channels are monitored regarding security topics and the responsible contact person will be informed to get sent instructions for security fixes. Sign up to our security mailing list to receive the security alerts.<br>[Learn more](https://www.openproject.org/docs/security-and-privacy/statement-on-security/#security-alerts)<br>Security alerts | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| The **security badge** shows the current status of your OpenProject installation. It will inform the administrators if new releases or security updates are available for your platform.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/information/#security-badge)<br>Security badge | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Enterprise add-ons | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Set a **project baseline** and visualize changes compared to any date or date range in the past. Comparisons to yesterday are part of the Community edition.<br>[Learn more](https://www.openproject.org/docs/user-guide/work-packages/baseline-comparison/)<br>Baseline comparisons | only for yesterday | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Automate your workflows** with buttons to avoid errors and reduce manual work.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/manage-work-packages/custom-actions/)<br>Intelligent workflows with custom action buttons | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Organize complex data hierarchies in multi-level custom field formats.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/custom-fields/#hierarchy-custom-field-enterprise-add-on)<br>Custom fields of type hierarchy | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create your **own theme and upload your logo** to comply with your company’s corporate identity.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/design/)<br>Custom theme and logo | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Export PDFs with the **fonts of your choice** to comply with your organization’s font requirements.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/design/)<br>Custom font for PDF exports | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Configure the work package forms for different types, **add or change the attribute groups (headlines)** and add tables of related work packages.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/manage-work-packages/work-package-types/form-configuration/)<br>Configure work package forms | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Easily export Gantt charts in PDF format.<br>[Learn more](https://www.openproject.org/docs/user-guide/gantt-chart/)<br>Gantt charts PDF export | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create **users without email address in the system** and already assign tasks to these users in the project.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/users-permissions/placeholder-users/)<br>Placeholder users | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create **read-only modes for work packages to restrict modifications**.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/manage-work-packages/work-package-status/#create-a-new-work-package-status)<br>Read-only mode for work packages | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Plan work by **team member and week**.<br>[Learn more](https://www.openproject.org/docs/user-guide/team-planner/)<br>Team planner | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create **consistent agendas and structures** quickly by using reusable meeting templates.<br>[Learn more](https://www.openproject.org/docs/user-guide/meetings/one-time-meetings/#meeting-templates-enterprise-add-on)<br>Reusable meetings templates | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Share sprints with stakeholders for **greater transparency and alignment**.<br>[Learn more](https://www.openproject.org/docs/user-guide/backlogs-scrum/#sprint-sharing)<br>Sprint sharing | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Activate **multiple sprints** at the same time without sharing sprints across project.<br>[Learn more](https://www.openproject.org/docs/user-guide/backlogs-scrum/#multiple-active-sprints)<br>Multiple active sprints | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Link files and folders from OneDrive and SharePoint** directly to OpenProject work packages.<br>[Learn more](https://www.openproject.org/integrations/onedrive-sharepoint/)<br>OneDrive and SharePoint integrations | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Share your work packages with **external users and groups**.<br>[Learn more](https://www.openproject.org/docs/user-guide/work-packages/share-work-packages/)<br>Share work packages with external users | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Standardize your task names** with automatically generated work package subjects.<br>[Learn more](https://www.openproject.org/docs/user-guide/work-packages/automatic-subjects/)<br>Work package subject generation | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Share work package comments with a specific group of people.<br>[Learn more](https://www.openproject.org/docs/user-guide/activity/#internal-comments-enterprise-add-on)<br>Internal comments for work packages | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Ensure **precise time tracking** by requiring users to log exact start and end times.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/time-and-costs/#define-default-time-settings-enterprise-add-on)<br>Require exact time tracking | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Control and secure access to your projects by **supporting the main authentication providers, such as CAS, SAML, OpenID Connect, Kerberos, and Okta**.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/authentication/)<br>Single sign-on (SSO) | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Bring **AI to your projects** with the secure Model Context Protocol (MCP) Server.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/integrations/mcp-server/)<br>Model Context Protocol (MCP) | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Align strategy at a glance** with a high-level portfolio view across programs and projects.<br>[Learn more](https://www.openproject.org/docs/user-guide/portfolios/)<br>Portfolio management | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Streamline project initiation process** and guide your team through a standardized workflow tailored to your organization’s requirements.<br>[Learn more](https://www.openproject.org/docs/user-guide/projects/project-initiation-request/)<br>Automated project initiation request | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Edit, add or re-arrange project phases and phase gates.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/projects/project-life-cycle/)<br>Customize project life cycle | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Effectively plan work based on people’s availability, skills and capacity.<br>[Learn more](https://www.openproject.org/docs/user-guide/resource-management/)<br>Resource management | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Evaluate and compare projects based on consistent criteria.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/projects/project-attributes/)<br>Calculated values for project evaluation and scoring | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Prioritize options with **weighted item lists** to calculate scores based on predefined values.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/projects/project-attributes/#weighted-item-list-project-attribute-enterprise-add-on)<br>Custom fields of type weighted items | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Easily share your project lists with individuals and groups.<br>[Learn more](https://www.openproject.org/docs/user-guide/projects/project-lists/#share-project-lists-with-individual-users-and-groups-enterprise-add-on)<br>Share project lists | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| **Check OpenProject users against LDAP** and synchronize LDAP group memberships.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/authentication/ldap-connections/ldap-group-synchronization/)<br>LDAP users and group sync | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Increase security awareness by warning users before they navigate to external links.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/system-settings/external-links/)<br>Capture external links | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Enjoy seamless integration of Nextcloud and OpenProject user sessions using **OIDC & JWT**.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/authentication/openid-providers/)<br>OpenID Connect for Nextcloud Hub integration | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+| Combine all the project management features with **other open source collaboration, communication and productivity tools, all in one place**.<br>[Learn more](https://www.openproject.org/opendesk/)<br>openDesk integration | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+| Link project work with enterprise knowledge management in one open source ecosystem.<br>[Learn more](https://www.openproject.org/integrations/xwiki)<br>XWiki integration | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+| Simplify user management with **SCIM API Integration for OpenProject**.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/authentication/scim/)<br>SCIM provisioning | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+| **Scan all uploaded files for viruses** with ClamAV antivirus engine to ensure compliance **(only for on-premises installations)**.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/files/attachments/virus-scanning/)<br>Antivirus scanning | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+
+Feature comparison
+
+![](https://www.openproject.org/assets/images/pricing/support-e5a446eb.svg)
+
+## Support comparison
+
+### Support per plan
+
+Choose a plan to see what is included CommunityBasicProfessionalPremiumCorporate
+
+| Support | Community | Basic | Professional | Premium | Corporate |
+| --- | --- | --- | --- | --- | --- |
+| Installation support |  |  |  |  |  |
+| Experienced software engineers consult you regarding system requirements and give guidance with the complete installation process in your own infrastructure, including the application, database, and operating system.<br>[Learn more](https://www.openproject.org/docs/enterprise-guide/support/#installation-support-for-enterprise-on-premises)<br>Installation support | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| You have access to 3 hours of assistance from a dedicated onboarding manager. This can be used for training sessions (onboarding training or system admin training) or for consulting.<br>[Learn more](https://www.openproject.org/docs/enterprise-guide/support/)<br>Personal onboarding manager | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+| Functional support |  |  |  |  |  |
+| User guides | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Videos | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| The training covers the main functionalities and basic navigation concepts in OpenProject. It significantly reduces the learning curve for new users. Training materials will be distributed after the training.<br>[Learn more](https://www.openproject.org/training-and-consulting/#getting-started)<br>Getting started training | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+| Technical support |  |  |  |  |  |
+| Support channel |  |  |  |  |  |
+| Community ticket (best effort) | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Community forum (best effort) | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Email | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Phone | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| A support engineer provides help through a screen sharing session or (optionally) remote access in case of bugs or problems with the application. Please note that we do not provide support for generic questions or issues regarding server administration.<br>Remote login and remote hands | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Dedicated support engineer | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+| Named support contacts | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | 1 | 3 | 8 |
+| Support service levels |  |  |  |  |  |
+| Service hours | Translation missing: en.components.accessibility.no | Monday to Friday<br>9:30-16:00 CET<br>9:30 am - 4 pm ET | Monday to Friday<br>9:30-17:00 CET<br>9:30 am - 5 pm ET | Monday to Friday<br>9:30-17:30 CET<br>9:30 am - 5:30 pm ET | Monday to Friday<br>9:00-18:00 CET<br>9 am - 6 pm ET |
+| Response time - critical incidents | Translation missing: en.components.accessibility.no | 8h | 6h | 2h | 2h |
+| Response time - major incidents | Translation missing: en.components.accessibility.no | Best effort | 12h | 6h | 6h |
+| Response time - minor incidents | Translation missing: en.components.accessibility.no | Best effort | 48h | 24h | 24h |
+| Scheduled standby and upgrade assistance | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | On-premises only | On-premises only | On-premises only |
+| Security alerts | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Ticketing system | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Priority development and escalation | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Support customizations |  |  |  |  |  |
+| Support for the core application which is adapted by custom plugins | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+| Support for custom plugins | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Monthly billing according to time spent |
+
+Support comparison
+
+![](https://www.openproject.org/assets/images/pricing/addons-b14cce0a.svg)
+
+## Add-ons comparison
+
+### Add-ons per plan
+
+Choose a plan to see what is included CommunityBasicProfessionalPremiumCorporate
+
+| Add-ons | Community | Basic | Professional | Premium | Corporate |
+| --- | --- | --- | --- | --- | --- |
+| BIM features | Translation missing: en.components.accessibility.no | On demand | On demand | On demand | On demand |
+| Upload and view your 3D building models with an integrated IFC viewer.<br>[Learn more](https://www.openproject.org/docs/bim-guide/ifc-viewer/)<br>IFC 3D model upload and viewer | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Work with your building models in IFC format directly in OpenProject.<br>[Learn more](https://www.openproject.org/docs/bim-guide/ifc-viewer/#ifc-viewer-toolbar)<br>Manage multiple building models in IFC format in parallel | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create, inspect and manage your BIM issues (BCF) with OpenProject.<br>[Learn more](https://www.openproject.org/docs/bim-guide/bim-issue-management/)<br>BCF management | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Create, inspect and manage your BIM issues (BCF) with OpenProject.<br>[Learn more](https://www.openproject.org/docs/bim-guide/bim-issue-management/)<br>Customized permissions for BCF management | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Use your OpenProject BIM directly within your Autodesk Revit environment.<br>[Learn more](https://www.openproject.org/docs/bim-guide/revit-add-in/)<br>Revit integration | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| All BIM features are tightly integrated with the other project management features, e.g. work packages, Gantt charts or agile boards.<br>[Learn more](https://www.openproject.org/docs/user-guide/)<br>Integration with all OpenProject project management features | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+
+Add-ons comparison
+
+![](https://www.openproject.org/assets/images/icons/integrations-5e32f0b4.svg)
+
+## Integration comparison
+
+### Integrations per plan
+
+Choose a plan to see what is included CommunityBasicProfessionalPremiumCorporate
+
+| Integrations | Community | Basic | Professional | Premium | Corporate |
+| --- | --- | --- | --- | --- | --- |
+| With the GitHub integration, you can connect your project management directly with the development environment and have everything in view.<br>[Learn more](https://www.openproject.org/integrations/github/)<br>GitHub integration | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| OpenProject provides seamless integration with GitLab merge requests, aligning software development closely with planning and specification processes. Generate merge requests within GitLab and effortlessly connect them to work packages in your projects.<br>[Learn more](https://www.openproject.org/integrations/gitlab/)<br>GitLab integration | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Use the **Nextcloud integration** to link files and folders in Nextcloud with work packages in OpenProject.<br>[Learn more](https://www.openproject.org/integrations/nextcloud/)<br>Nextcloud integration | Translation missing: en.components.accessibility.n | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Use the **OneDrive/SharePoint integration** to link files and folders in OneDrive with work packages in OpenProject.<br>[Learn more](https://www.openproject.org/integrations/onedrive-sharepoint/)<br>OneDrive/SharePoint integration | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes | Translation missing: en.components.accessibility.yes |
+| Use the **XWiki integration** to connect project management with collaborative documentation and knowledge management.<br>[Learn more](https://www.openproject.org/integrations/xwiki/)<br>XWiki integration | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+| Enjoy seamless integration of Nextcloud Hub and OpenProject user sessions.<br>[Learn more](https://www.openproject.org/docs/system-admin-guide/integrations/nextcloud/oidc-sso/)<br>Nextcloud Hub | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+| Benefit from well-known open source tools as part of openDesk.<br>[Learn more](https://www.openproject.org/opendesk/)<br>openDesk | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.no | Translation missing: en.components.accessibility.yes |
+
+Integration comparison
+
+### Price Calculation
+
+Plan:
+
+Basic
+
+$7.25
+
+\+ $1.25 monthly subscription
+
+\+ $1.25 BIM edition
+
+per user per month
+
+Users:
+
+25 users
+
+unlimited
+
+Starting from 250 users
+
+Period:
+
+1 year
+
+unlimited
+
+Hosting mode:
+
+On-premises
+
+Add-ons:
+
+BIM
+
+Total:
+
+$2,175.00
+
+you save
+
+Book now [Contact us](https://www.openproject.org/contact/) [Free Download](https://www.openproject.org/download-and-installation/) Request a quote
+
+Back to calculator
+
+### Our discounts
+
+## We offer special rates for educational institutions and NGOs
+
+We want to help make a difference and support educational institutions and NGOs with discounts. For more information and if your organization is eligible for a special rate, please check in with us.
+
+[Contact our sales team](https://www.openproject.org/contact/)
+
+![](https://www.openproject.org/assets/images/pricing/special-rates-02-febc9dc2.svg)
+
+![](https://www.openproject.org/assets/images/art/faq-section-783bb739.svg)
+
+## Frequently asked questions
+
+Public Money, Public Code! Why do I have to pay for open source software?
+
+At OpenProject, we strongly believe in the “Public Money, Public Code” principle. That is why we continue to invest in our free and open source Community edition, and regularly release features from our Enterprise edition to Community one.
+
+By choosing a paid Enterprise plan, you are helping fund the ongoing development of OpenProject — including the Community edition. Your support enables us to keep improving the platform for everyone, building new features, fixing bugs, and ensuring long-term sustainability. Paying for the Enterprise edition doesn’t just benefit your organization — it benefits the entire OpenProject Community.
+
+What are the benefits of the OpenProject Enterprise edition?
+
+The OpenProject Enterprise plans (hosted or on-premises) include different [support packages](https://www.openproject.org/pricing/#support) as well as [Enterprise add-ons and additional security features](https://www.openproject.org/pricing/#features). Depending on what features you require, select the Enterprise plan that works best for your organization.
+
+What is the difference between the OpenProject on-premises and the cloud?
+
+The main difference between the two is the hosting mode. The on-premises version will be self-hosted on your own infrastructure while the cloud version will be hosted and maintained by us. Please note that some of the plans are not available for the cloud hosting mode.
+
+Is Nextcloud integration part of Community or Enterprise edition?
+
+The [integration between OpenProject and Nextcloud](https://www.openproject.org/integrations/nextcloud/) is part of the open source and free of charge Community edition, including all file management functionalities. However, please note that setting up the Single Sign-on via OpenID Connect Identity Provider is an Enterprise Add-on and can only be used with Enterprise cloud or Enterprise on-premises (available under the Enterprise Corporate plan).
+
+How can I test OpenProject?
+
+We offer a free trial for both hosting options - For the cloud, simply create a 14 days free trial on [https://start.openproject.com/](https://start.openproject.com/). If you do not decide to upgrade after this time, it will be blocked and deleted automatically without the need of cancellation.
+
+For the on-premises, if you already have the Community version installed, navigate to → Administration → Enterprise edition in your installation. Here, you can simply click the green **Start free trial button** and you will get a 14 days free trial token via email. If you do not decide to upgrade after this time, it will automatically switch back to the Community version without the need of cancellation. Please find the detailed instruction [here](https://www.openproject.org/docs/enterprise-guide/enterprise-on-premises-guide/enterprise-on-premises-trial/).
+
+What payment options do you offer?
+
+In general we offer credit card payment for the cloud and on-premises version. On top of that, we offer payment via invoice (bank transfer) for annual cloud plans and the on-premises plans. However, bank transfer is only possible for organizations based in the EU, Switzerland and the United States.
+
+Please note that we cannot accept payment via check nor PayPal.
+
+Can I change the number of users later on?
+
+Yes, you can always upgrade the amount of users in increments of 5 users. The additional users will be charged on a prorated basis for the current subscription period. A downgrade of users is only possible at the end of a running subscription period.
+
+How are the additional users priced?
+
+The additional users are charged on a prorated basis. You will only pay for the remaining time of a current subscription period for these additional users.
+
+Can I change the subscription period or the plan itself later on?
+
+Yes, you can upgrade your plan length or the plan itself any time. A downgrade (shorter subscription period or smaller plan) will take effect at the end of a current subscription period.
+
+Do you count named or concurrent users for the user limit?
+
+In OpenProject the number of named users is counted. However, you can block a user in order to free up a user slot for another user. If a user no longer requires access to OpenProject, you can lock that user. The user’s data still persists but the user can no longer sign in. Instead, you can invite another user to your OpenProject environment. To learn more, find out how to [manage users](https://www.openproject.org/docs/system-admin-guide/users-permissions/users/).
+
+Do you offer discounts?
+
+Yes, for our multi-annual plans we provide discounts. Special arrangements exist for NGOs and educational purposes only.
+
+Do you support XRechnungen (eInvoices)?
+
+Yes, we can also issue XRechnungen / eInvoices if needed. In case you require us to issue XRechnungen for you, please contact us via email ( [[邮箱]](mailto:[邮箱])).
+
+We require an EVB-IT contract. Can you help?
+
+Yes, we can. Please consult the [EVB-IT](https://www.openproject.org/legal/evb-it/) page for further steps.
+
+Can you provide us as an American organization with a W9 form?
+
+We are happy to assist with the W9 form. However, as OpenProject is based in Germany, we will fill in the form W8-BEN-E and send it to you. Please contact us via email ( [[邮箱]](mailto:[邮箱])) to request this form.
+
+[See all FAQs](https://www.openproject.org/docs/faq/)
+
+### Successful companies trust OpenProject
+
+![Siemens](https://www.openproject.org/assets/images/logos/openproject-customer-siemens-fd70815c.svg)
+
+![Stadt Köln](https://www.openproject.org/assets/images/logos/openproject-customer-stadt-koeln-11d9c6f2.svg)
+
+![Deutsche Bahn](https://www.openproject.org/assets/images/logos/openproject-customer-deutsche-bahn-7e8b5301.svg)
+
+![Fraunhofer-Gesellschaft](https://www.openproject.org/assets/images/logos/openproject-customer-fraunhofer-53a8c091.svg)
+
+![Harvard University](https://www.openproject.org/assets/images/logos/openproject-customer-harvard-efd48451.svg)
+
+![Greenpeace](https://www.openproject.org/assets/images/logos/openproject-customer-greenpeace-7529f077.svg)
+
+![Charité](https://www.openproject.org/assets/images/logos/openproject-customer-charite-891f9fb1.svg)
+
+![AMG](https://www.openproject.org/assets/images/logos/openproject-customer-amg-5c500afa.svg)
+
+[See more customers](https://www.openproject.org/customers/)
+
+Choose support time zone and currency (EU/€ or US/$)
+
+Our recommendation for at least 5 users
+
+Our recommendation for at least 25 users
+
+Our recommendation for at least 100 users
+
+Our recommendation for at least 250 users
+
+This plan can be selected only for the on-premises hosting mode.
+
+ Open link in a new tab
+
+Search area:
+
+- All
+- User guides
+- Docs
+- Blog
+- Website
+- API
+- Release notes
+
+Enter your search term here …

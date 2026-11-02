@@ -1,0 +1,21 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T14:08:33.155479+00:00",
+  "source_run": "capture-20261102T140832Z-fa359a9b",
+  "source_tasks": [
+    "notion-stress-001-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://www.notion.so/pricing",
+      "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.123906+00:00",
+      "content_sha256": "14f94952760d709418f3bf31e3082a4a32fe44b57bec61d6e1329cbde3843d91",
+      "content_path": "14f94952760d709418f3bf31e3082a4a32fe44b57bec61d6e1329cbde3843d91.txt"
+    }
+  ]
+}

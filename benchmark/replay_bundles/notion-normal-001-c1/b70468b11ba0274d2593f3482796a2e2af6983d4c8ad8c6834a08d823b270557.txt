@@ -1,0 +1,154 @@
+# Customer stories
+
+See how leading companies streamline workflows, consolidate tools, and bring everyone’s knowledge into one connected workspace.
+
+[![](https://images.ctfassets.net/spoqsaf9291f/75O9653Z83boVzSMBMSY2D/4b36e928296e00612213aff4bdd369f2/toyota-black.svg)](https://www.notion.com/customers/toyota)[![](https://images.ctfassets.net/spoqsaf9291f/4KBpzIRuWO9Bkoho07RwHW/7e608b80b697431b92ffb144e545cf3c/Ramp.svg)](https://www.notion.com/customers/ramp)[![](https://images.ctfassets.net/spoqsaf9291f/6gu2Rybt4VdhS2GEEA99PO/da29ed051a3b0821f5dac4868dcb4403/OpenAI-homepage-cropped.svg)](https://www.notion.com/customers/openai)[![](https://images.ctfassets.net/spoqsaf9291f/4ljglPuQFOp4jC8kIacMa1/73c44685b85c73a717baac0329633d59/clay-mono-black.svg)](https://www.notion.com/customers/clay)[![](https://images.ctfassets.net/spoqsaf9291f/5zvQQUAMUwmWaGbC9qhXpK/633c8d40bbbb2b42faec7ea3339788ff/cursor-logo-mono.svg)](https://www.notion.com/customers/cursor)[![](https://images.ctfassets.net/spoqsaf9291f/6NEhbP27yAbhvWdLKPHTFV/6978b1603c567d69f5fe7b4895b1d30f/Vercel.svg)](https://www.notion.com/customers/vercel)[![](https://images.ctfassets.net/spoqsaf9291f/2lvHXS3UJ5sJscJTW8GTpc/c22ac415979069ab3be881b2749e0d77/Faire_logo_-_black.svg)](https://www.notion.com/customers/faire)[![](https://images.ctfassets.net/spoqsaf9291f/6T4QxYfpIzIbZgWUSa5Rb1/8c6cb40bbf2304f8486222d777314b83/Figma_Wordmark__Black_.svg)](https://www.notion.com/customers/figma)![](https://images.ctfassets.net/spoqsaf9291f/27zUO0UMDpEBMwPKUUilFH/daba398de4e970fcda7a138ff09d480a/Nvidia.svg)![](https://images.ctfassets.net/spoqsaf9291f/1TZBxOqNgDNBTJUEkD9Rn2/95219318a8bc7198d69e3fe0190ea94c/Volvo_Spread_Word_Mark_2025_bl.svg)
+
+Featured Story
+
+## Remote Built a World-Class IT Help Desk with Orchestrated Notion Custom Agents
+
+×![](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F6ZVUaDoQZ55MG7bGE90gR9%2Ffc792aa922194e1e2c02c75777eae17b%2FRemote_Logo_Black.png&w=3840&q=75)
+
+![story image](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F2t7jvdxBOYHqJqeL4lC0ZU%2Fbcc59337bfe2d9b18dca172204f7481c%2Fremote-EnglishUS.png&w=3840&q=75)
+
+## Customers
+
+Team sizes
+
+Small (1-99 employees)
+
+Medium (100–999 employees)
+
+Enterprise (1000+ employees)
+
+Industries
+
+Technology
+
+Ecommerce
+
+Manufacturing
+
+Transportation
+
+Professional services
+
+Media
+
+Education
+
+Non-profit
+
+Hospitality
+
+Advertising
+
+Entertainment
+
+Clear
+
+![black logo for Baseten](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F1vUa2mMD88Hzwe7rJFCK2S%2F32261d62cfacbd665a722cd718db4338%2FBaseten_Logotype-9.png&w=3840&q=75)
+
+![Baseten customer story thumbnail](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F4s7taLPNcWkxW4sE46mZkq%2F3866699344c84ebc8626901612ebcdb2%2Fbaseten-thumbnail-image__1920x1200_.png&w=3840&q=75)
+
+## The Digital Double: How Baseten Scaled Its Most-Asked Expert
+
+5-10× the number of questions asked daily
+
+![](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F2Kxd0s7jxoiTvPyFOyf6pp%2Fcb8b28976c1be66428b95ab3568a4236%2FClay_Logo_Primary_Blk.png&w=1920&q=75)
+
+![Clay Hero Media - ](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F7EQh3LWHRX9yHzmYkU3YJi%2Fbe270da225da62db03afd34eec907d08%2Fproduct-screen-image__1920x1200_.png&w=1920&q=75)
+
+## Clay’s New Default: Workflows That Happen in the Background
+
+80+ active custom agents
+
+[How the world's fastest-growing startup stays fast with Notion](https://www.notion.com/customers/cursor)
+
+![](https://images.ctfassets.net/spoqsaf9291f/6SjSLOEn5vfK6rYcigGkY6/fb816956c2893458a02b06c155b456b4/Cursor_logo.svg)
+
+> Using the most AI-native tools like Notion is an important competitive advantage for us to stay small while doing a lot.
+
+Michael Truell, Co-founder & CEO
+
+[Ramp runs on Notion: How they built an AI operating system for work](https://www.notion.com/customers/ramp)
+
+![](https://images.ctfassets.net/spoqsaf9291f/7p2zRzbkWlj9tbCkSj43R8/a1cb7fcc239c8c5c7ad3dffce2830eed/Ramp-Lockup-RGB-Slate-0125.svg)
+
+- 70%cut in productivity-tool costs
+- 3 minto a build custom agent
+
+300+ active custom agents
+
+![](https://images.ctfassets.net/spoqsaf9291f/6NEhbP27yAbhvWdLKPHTFV/6978b1603c567d69f5fe7b4895b1d30f/Vercel.svg)
+
+![](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F5GBVV7oq9NG0UZlbfUNR7C%2Fb2630ccaa4e483af6f8bb95939e51d45%2Fvercel.png&w=3840&q=75)
+
+## How Vercel Uses Notion to Scale Launches Across the Company
+
+35% faster shipping
+
+![OpenAI](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2FjWkCPMAAj0Av69704DQoB%2F84499b606028b276e0bf94c238f07097%2FOpenAI-black-wordmark-cropped.png&w=3840&q=75)
+
+![](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F6UrNqHnIt2u2HwjyH2iHYK%2Fff7ea4315a4a5f624fc5d80a6c1f1718%2Fopenai.jpg&w=2048&q=75)
+
+## How OpenAI turns shared knowledge into faster workflows with Notion
+
+![](https://images.ctfassets.net/spoqsaf9291f/ah3EdAFJU8mj5niLcDR25/6f09da8023d0b8df6f9101e6858de6ba/dana-mono-black.svg)
+
+![](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F4QEeVBxODzMziPXfQ9JWjK%2Faf49f1ba8db8adfa22392ed5688c43e8%2F26b5719e-8de2-436a-a421-3f4589ae17e5.jpg&w=3840&q=75)
+
+## How DANA Indonesia ran a massive code migration with Cursor agents inside Notion
+
+96% faster to review-ready PRs
+
+[How HiBob centralized fragmented work across 1,400+ employees in seven weeks](https://www.notion.com/customers/hibob)
+
+![](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F6yh0AoGasFrwR8dwhNrSOx%2F383d1b005f2f3e956c8e56cbac601dbb%2FHiBob_logo_for_light_BG.png&w=3840&q=75)
+
+> Our story doesn’t start with a company-wide decision. One team began working differently in Notion, and adoption spread organically, breaking down silos along the way.
+
+Ana Luísa Morgado, People Growth Lead
+
+![](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F5OXPsLwKVYpsaG1tLDb1Du%2F157ed606a651a24e00d3a384d6b280f0%2FCandidly_Logo.png&w=3840&q=75)
+
+![](https://www.notion.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fspoqsaf9291f%2F58Dml7Uagd4OIOygP4T4F2%2F68817d49315ef8134e15a613dc54c32f%2FFrame_4.jpg&w=3840&q=75)
+
+## How Candidly uses Notion to make Cursor agents multiplayer and ship 73% more value
+
+73% more value shipped per EPD employee
+
+G2’s #1 knowledge base for 3 consecutive years
+
+100M Users in over 50 countries
+
+Over 50% of YC companies
+
+1.4M+ community members
+
+62% of Fortune 100 use Notion
+
+G2’s #1 knowledge base for 3 consecutive years
+
+100M Users in over 50 countries
+
+Over 50% of YC companies
+
+1.4M+ community members
+
+62% of Fortune 100 use Notion
+
+G2’s #1 knowledge base for 3 consecutive years
+
+100M Users in over 50 countries
+
+Over 50% of YC companies
+
+1.4M+ community members
+
+62% of Fortune 100 use Notion
+
+## Get pricing help, demos, use-cases, and more.
+
+[Request a demo](https://www.notion.com/contact-sales)

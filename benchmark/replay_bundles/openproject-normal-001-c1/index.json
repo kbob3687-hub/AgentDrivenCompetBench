@@ -1,0 +1,41 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T14:08:33.629380+00:00",
+  "source_run": "capture-20261102T140832Z-fa359a9b",
+  "source_tasks": [
+    "openproject-normal-001-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://www.openproject.org/docs/",
+      "title": "Documentation & Help - OpenProject",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.529412+00:00",
+      "content_sha256": "d6d1a252fa9c7b6af6b730d25a1d24dbb34d668c05fff813b2ee3c3757f1f205",
+      "content_path": "d6d1a252fa9c7b6af6b730d25a1d24dbb34d668c05fff813b2ee3c3757f1f205.txt"
+    },
+    {
+      "url": "https://www.openproject.org/features",
+      "title": "Project Collaboration Software Features - OpenProject",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.526415+00:00",
+      "content_sha256": "f6497338ae08f721286bae22e8905aaddd4c22100aa5736a7117ce9255ded19f",
+      "content_path": "f6497338ae08f721286bae22e8905aaddd4c22100aa5736a7117ce9255ded19f.txt"
+    },
+    {
+      "url": "https://www.openproject.org/pricing",
+      "title": "OpenProject Pricing - from €0. Start your free trial now.",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.524409+00:00",
+      "content_sha256": "c95b4d97a04ba4557c8c3459ddb5911a3b75ceebd641e9b62af47ce7c39a0994",
+      "content_path": "c95b4d97a04ba4557c8c3459ddb5911a3b75ceebd641e9b62af47ce7c39a0994.txt"
+    }
+  ]
+}

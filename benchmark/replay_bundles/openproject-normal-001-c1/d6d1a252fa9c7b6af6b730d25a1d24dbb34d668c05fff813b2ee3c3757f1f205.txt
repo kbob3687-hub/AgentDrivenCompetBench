@@ -1,0 +1,145 @@
+# Hello, how can we help you?
+
+Search area:
+
+- All
+- User guides
+- Docs
+- Blog
+- Website
+- API
+- Release notes
+
+Enter your search term here …
+
+Sort by date
+
+Searching in All
+
+- [First steps\\
+![Getting started](https://www.openproject.org/assets/images/icons/getting-started-58195ed6.svg)\\
+\\
+Getting started\\
+\\
+Learn about the first steps \\
+\\
+with OpenProject](https://www.openproject.org/docs/getting-started/)
+- [All features\\
+![User guide](https://www.openproject.org/assets/images/icons/user-guide-c95038e8.svg)\\
+\\
+User guide\\
+\\
+In-depth guide of all features \\
+\\
+in OpenProject](https://www.openproject.org/docs/user-guide/)
+- [![FAQ](https://www.openproject.org/assets/images/icons/faq-b2e0344e.svg)\\
+\\
+FAQ\\
+\\
+General frequently asked questions](https://www.openproject.org/docs/faq/)
+- [![Use Cases](https://www.openproject.org/assets/images/icons/use-cases-51dbcec7.svg)\\
+\\
+Use Cases\\
+\\
+Detailed step-by-step instructions](https://www.openproject.org/docs/use-cases/)
+- [![Glossary](https://www.openproject.org/assets/images/icons/glossary-93441a34.svg)\\
+\\
+Glossary\\
+\\
+A dictionary of project management terms](https://www.openproject.org/docs/glossary/)
+- [![Enterprise edition guide](https://www.openproject.org/assets/images/icons/openproject-enterprise-edition-08123e1a.svg)\\
+\\
+Enterprise edition guide\\
+\\
+Manage your OpenProject \\
+\\
+Enterprise edition](https://www.openproject.org/docs/enterprise-guide/)
+- [![PM² methodology guide](https://www.openproject.org/assets/images/icons/project-planning-1367f85d.svg)\\
+\\
+PM² methodology guide\\
+\\
+Learn about project management \\
+\\
+with OpenProject](https://www.openproject.org/docs/project-management-guide)
+- [![Security & privacy](https://www.openproject.org/assets/images/icons/systemsicherheit-3a0f1af3.svg)\\
+\\
+Security & privacy\\
+\\
+Data protection and information security are of central importance for the OpenProject team.](https://www.openproject.org/docs/security-and-privacy/)
+- [![Contributions Guide](https://www.openproject.org/assets/images/icons/collaboration-beyond-5fd36e48.svg)\\
+\\
+Contributions Guide\\
+\\
+Learn how to contribute to OpenProject](https://www.openproject.org/docs/contributions-guide/)
+- [![System admin guide](https://www.openproject.org/assets/images/icons/system-admin-guide-229fe831.svg)\\
+\\
+System admin guide\\
+\\
+Learn how to configure your \\
+\\
+OpenProject](https://www.openproject.org/docs/system-admin-guide/)
+- [![Release Notes](https://www.openproject.org/assets/images/icons/release-notes-7a231f12.svg)\\
+\\
+Release Notes\\
+\\
+See the latest changes \\
+\\
+in OpenProject](https://www.openproject.org/docs/release-notes/)
+- [![BIM Guide](https://www.openproject.org/assets/images/icons/bim-guide-f60380b6.svg)\\
+\\
+BIM Guide\\
+\\
+Additional BIM features for construction teams](https://www.openproject.org/docs/bim-guide/)
+- [![Installation and operations guide](https://www.openproject.org/assets/images/icons/installation-operations-02983909.svg)\\
+\\
+Installation and operations guide\\
+\\
+Find out how to install \\
+\\
+and operate OpenProject](https://www.openproject.org/docs/installation-and-operations/)
+- [![Development](https://www.openproject.org/assets/images/icons/development-guide-98a6498e.svg)\\
+\\
+Development\\
+\\
+Learn about how to contribute \\
+\\
+to OpenProject](https://www.openproject.org/docs/development/)
+- [![API](https://www.openproject.org/assets/images/icons/api-docs-ff3b8f3b.svg)\\
+\\
+API\\
+\\
+Learn about the API \\
+\\
+powering OpenProject](https://www.openproject.org/docs/api/)
+- [![Mobile app guide](https://www.openproject.org/assets/images/icons/responsivness-for-mobile-6f166335.svg)\\
+\\
+Mobile app guide\\
+\\
+The companion application \\
+\\
+to OpenProject](https://www.openproject.org/docs/mobile-app-guide/)
+
+## Most popular topics
+
+- [![Installing OpenProject](https://www.openproject.org/assets/images/features/installation-support-4afe2e15.svg)\\
+\\
+Installing OpenProject\\
+\\
+Learn how to download and install OpenProject on your own servers.](https://www.openproject.org/docs/installation-and-operations)
+- [![Enterprise add-ons](https://www.openproject.org/assets/images/icons/enterprise-addon-bbbf4368.svg)\\
+\\
+Enterprise add-ons\\
+\\
+Find out about the OpenProject Enterprise add-ons to boost your project management.](https://www.openproject.org/enterprise-edition/#enterprise-add-ons)
+- [![OpenProject hosting](https://www.openproject.org/assets/images/features/high-security-hosting-37c89f2c.svg)\\
+\\
+OpenProject hosting\\
+\\
+Get started easily with OpenProject hosting from the experts.](https://www.openproject.org/enterprise-edition/#hosting-options)
+- [![Support](https://www.openproject.org/assets/images/features/support-by-open-project-874508bd.svg)\\
+\\
+Support\\
+\\
+Find out how to get maintenance and support for OpenProject in your organization.](https://www.openproject.org/pricing#support)
+
+ Open link in a new tab

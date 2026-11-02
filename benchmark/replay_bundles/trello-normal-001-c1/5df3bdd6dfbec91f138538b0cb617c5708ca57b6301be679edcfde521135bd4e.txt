@@ -1,0 +1,223 @@
+[Skip to main content](https://trello.com/pricing#skip-target)
+
+Keep the boards, lists, and cards you love, and let AI do the busywork. Upgrade to unlock our new AI features, starting at **$5 a month**. [Upgrade now](https://trello.com/select-team-to-upgrade)
+
+# Trello your way.
+
+Trusted by millions.
+
+Explore which option is right for you.
+
+## Free
+
+$0USD
+
+Free for up to 10 collaborators per Workspace
+
+Capture your to-dos, get organized, and get sh\*t done.
+
+[Get started](https://id.atlassian.com/signup?application=trello--direct-signup&continue=https%3A%2F%2Ftrello.com%2Fauth%2Fatlassian%2Fcallback%3FcreateMember%3Dtrue)
+
+See what's included
+
+### Included in Free:
+
+- Unlimited cards
+- Up to 10 boards per Workspace
+- Quickly capture to-dos from email, Slack, and Teams
+- Inbox
+- Unlimited Power-Ups per board
+- Unlimited storage (10MB/file)
+- 250 Workspace command runs per month
+- Custom backgrounds & stickers
+- Unlimited activity log
+- Assignee and due dates
+- iOS and Android mobile apps
+- 2-factor authentication
+
+## Standard
+
+$5USD
+
+Per user/month if billed annually ($6 billed monthly)
+
+Get more stuff done with AI features, unlimited boards, card mirroring, and more automation.
+
+[Sign up now](https://id.atlassian.com/signup?application=trello--direct-signup&continue=https%3A%2F%2Ftrello.com%2Fauth%2Fatlassian%2Fcallback%3FcreateMember%3Dtrue)
+
+See what's included
+
+### Everything in Free, plus:
+
+- AI
+- Unlimited boards
+- Quickly capture to-dos from email, Slack, and Teams — powered by AI
+- Planner
+- Advanced checklists
+- Card mirroring
+- Custom Fields
+- List colors
+- Collapsible lists
+- Unlimited storage (250MB/file)
+- 1,000 Workspace command runs per month
+- Single board guests
+- Saved searches
+
+[Learn more about Standard](https://trello.com/standard)
+
+## Premium
+
+$10USD
+
+Per user/month if billed annually ($12.50 billed monthly)
+
+Add AI to your boards and admin controls to your toolkit. Plus, get more perspective with views.
+
+[Try for free](https://id.atlassian.com/signup?application=trello--direct-signup&continue=https%3A%2F%2Ftrello.com%2Fauth%2Fatlassian%2Fcallback%3FcreateMember%3Dtrue)
+
+See what's included
+
+### Everything in Standard, plus:
+
+- AI
+- Views: Calendar, Timeline, Table, Dashboard, and Map
+- Workspace views: Table and Calendar
+- Unlimited Workspace command runs
+- Admin and security features
+- Workspace-level templates
+- Collections
+- Observers
+- Simple data export
+
+[Learn more about Premium](https://trello.com/premium)
+
+## Enterprise
+
+$17.50USD
+
+Per user/month - billed annually ($210.00 annual price per user)
+
+Add enterprise-grade security and controls. This plan includes Atlassian Guard Standard and 24/7 Enterprise Admin support.
+
+Est. cost forusers
+
+[Contact sales](https://trello.com/enterprise#contact)
+
+See what's included
+
+### Everything in Premium, plus:
+
+- Unlimited Workspaces
+- Organization-wide permissions
+- Organization-visible boards
+- Public board management
+- Multi-board guests
+- Attachment permissions
+- Power-Up administration
+- Free SSO and user provisioning with Atlassian Guard
+
+[Learn more about Enterprise](https://trello.com/enterprise)
+
+## Compare our plans
+
+| Features | Free | Standard | Premium | Enterprise |
+| --- | --- | --- | --- | --- |
+| Unlimited cards | True | True | True | True |
+| Quick capture<br>Instantly capture to-dos, notes, and messages, from email, Slack, and Microsoft Teams. | True | True | True | True |
+| Quick Capture powered by AI<br>Instantly capture to-dos, notes, and messages from email, Slack, and Microsoft Teams using AI. | False | True | True | True |
+| Inbox<br>Gather messages and to-dos in this personal space before organizing them into your boards. | True | True | True | True |
+| Planner (view-only)<br>View your scheduled cards on a calendar and synchronize events from your favorite tools. | True | True | True | True |
+| Planner (full access)<br>Drag and drop cards on a calendar to block any available time. Sync with more events in your favorite tools. | False | True | True | True |
+| AI Summarization<br>Enhance Trello card descriptions and comments effortlessly with AI-driven content generation, grammar correction, and brainstorming. | False | True | True | True |
+| AI organization<br>Spend less time organizing your board and more time doing. AI features in Trello generate checklists and images, add due dates, merge cards, and schedule focus blocks.<br>[Learn more](https://support.atlassian.com/organization-administration/docs/atlassian-intelligence-features-in-trello/) | False | True | True | True |
+| AI-GENERATED BOARDS<br>Describe your goal and instantly get a personalized, ready-to-use board to help you get started, complete with lists and cards.<br>[Learn more](https://support.atlassian.com/trello/docs/ai-generated-boards/) | False | True | True | True |
+| Card mirroring<br>Keep your to-dos aligned across boards. Mirror a single card to multiple boards to view and edit it from anywhere. | False | True | True | True |
+| Built-in automation<br>Powerful no-code automation is built into every Trello board.<br>[Start automating](https://trello.com/butler-automation) | True | True | True | True |
+| Assignee and due dates | True | True | True | True |
+| iOS and Android mobile apps<br>[Download mobile apps](https://trello.com/platforms) | True | True | True | True |
+| Desktop app<br>[Download desktop app](https://trello.com/platforms) | True | True | True | True |
+| Unlimited activity logs | True | True | True | True |
+| Trello templates<br>Give your team a blueprint for success with tried-and-true templates from the Trello community.<br>[Try a template](https://trello.com/templates) | True | True | True | True |
+| 2-factor authentication | True | True | True | True |
+| Mobile device management<br>Enforce security controls on mobile app usage through built-in mobile device management (MDM) support for iOS and Android. | True | True | True | True |
+| Unlimited power-ups<br>Integrate with more than 200+ apps and tools your team depends on like Slack, Google Drive, Salesforce, and more directly into your Trello boards. (Note: Some Power-Ups by our partners require an additional subscription fee.)<br>[Learn more](https://trello.com/power-ups) | True | True | True | True |
+| Unlimited Workspace collaborators | Up to 10 collaborators | True | True | True |
+| Unlimited boards<br>Create as many Trello boards as your team sees fit; from onboarding new hires, to sprint planning, and every team meeting agenda in between. | False | True | True | True |
+| Advanced checklists<br>Break down projects into byte-sized tasks and get granular by assigning members and due dates to individual tasks. | False | True | True | True |
+| Custom fields<br>Bring process and formality to your workflow by structuring information on Trello cards to the task at hand with Custom Fields. | False | True | True | True |
+| Collapsible lists<br>Keep your Trello boards tidy and focus on what matters by easily hiding and revealing list details.<br>[Learn more](https://www.atlassian.com/blog/trello/new-list-features) | False | True | True | True |
+| List colors<br>Brighten up your boards by using list colors to easily spot priorities and keep your to-dos organized and on track.<br>[Learn more](https://www.atlassian.com/blog/trello/new-list-features) | False | True | True | True |
+| Dashboard view<br>Trello’s reporting tool lets you access real-time insights and communicate your team’s progress in a visual and meaningful way.<br>[Learn more](https://trello.com/views/dashboard) | False | False | True | True |
+| Map view<br>Plan an offsite, scout new office locations, or manage product distribution points by adding locations to your cards and visualizing them geographically on a map.<br>[Learn more](https://trello.com/views/map) | False | False | True | True |
+| Timeline view<br>Plan your project, stay on top of every sprint, and see how all of the moving parts fit together over time with Timeline.<br>[Learn more](https://trello.com/views/timeline) | False | False | True | True |
+| Table View<br>Bring a clearer perspective to all the work happening across a single board in a list format where you can create and edit cards in just a few clicks.<br>[Learn more](https://trello.com/views/table) | False | False | True | True |
+| Calendar view<br>Calendar displays start dates, due dates, and advanced checklist items so you can see what lies ahead for your project and stay on top of today’s to-dos.<br>[Learn more](https://trello.com/views/calendar) | False | False | True | True |
+| Workspace table view<br>See your projects and tasks across Workspaces and boards in a spreadsheet-style list that can be sorted and filtered to drill down to exactly the cards you need to see.<br>[Learn more](https://trello.com/views/workspace) | False | False | True | True |
+| Workspace calendar view<br>Workspace calendar displays items with start dates and due dates across your projects and boards, so you can see what lies ahead for all your teamwork.<br>[Learn more](https://trello.com/views/workspace) | False | False | True | True |
+| Workspace-level templates | False | False | True | True |
+| Command run administration<br>Premium or Enterprise administrators can disable commands on behalf of other users, and perform other command maintenance. | False | False | True | True |
+| Board collections<br>Premium and Enterprise teams can use Board Collections to easily group boards together whether by Workspace, department, or major project. | False | False | True | True |
+| Observers<br>Observers are a Premium security setting that limit a user’s actions within a board. | False | False | True | True |
+| Domain-restricted invites | False | False | True | True |
+| Deactivate members | False | False | True | True |
+| Simple data export | False | False | True | True |
+| Unlimited command runs | False | False | True | True |
+| SAML SSO via Atlassian Guard<br>Atlassian Guard is a separate subscription that your company can enable across all your Atlassian products and starts at $4/month/user.<br>[Learn more](https://www.atlassian.com/software/access) | Available | Available | Available | True |
+| Unlimited workspaces | False | False | False | True |
+| Power-up administration | False | False | False | True |
+| Attachment restrictions | False | False | False | True |
+| Organization wide permissions | False | False | False | True |
+| Organization visible boards | False | False | False | True |
+| Public board management | False | False | False | True |
+| Support<br>[Learn more](https://confluence.atlassian.com/support/atlassian-support-offerings-193299636.html) | Community Support | Local Business Hours | 24/5 Premium Support | 24/7 Enterprise Admin Support |
+
+### Didn’t find what you were looking for?
+
+[Make a suggestion](https://help.trello.com/article/724-submitting-feature-requests-for-trello)
+
+## Frequently asked questions
+
+### +Does Trello offer a Premium free trial?
+
+We sure do. All users can enroll their Workspace in a [free trial of Trello Premium](https://trello.com/premium). With that trial your Workspace will get access to create unlimited Trello boards, automate as much as you’d like, take advantage of Timeline, Dashboard, and other new views, and much more!
+
+### +Do you offer any discounted plans?
+
+Yes! Trello offers both a [non-profit community discount](https://help.trello.com/article/1132-non-profit-discount) as well as an [education discount](https://help.trello.com/article/1133-educational-discount).
+
+### +What payment methods do you accept?
+
+You can purchase a monthly or annual Trello Standard or Premium subscription with any major credit card. We offer more options for Enterprise customers, if you’re interested in learning more about Trello Enterprise [contact our sales team.](https://trello.com/enterprise#contact)
+
+### +How do I cancel my Trello Standard or Premium subscription?
+
+If you aren’t 100% satisfied with Trello Standard or Premium you may downgrade at any time. When a team downgrades from Standard or Premium, it retains its Standard or Premium features and unlimited boards until the end of its prepaid service period. At the end of its prepaid service period, it becomes a free Trello Workspace that can hold 10 boards. Learn more about canceling your Standard or Premium subscription [here.](https://help.trello.com/article/836-cancel-trello-business-class)
+
+### +How are users counted towards billing?
+
+A Trello user who is added as a member to a Workspace—either as a normal member or as a team admin—is considered a billable team member that is included in the cost of Trello Standard or Premium.
+
+Any Guest that is on more than one board within the Workspace is considered a Multi-Board Guest and is billed at the same rate as Standard or Premium Workspace members. [See this page](https://help.trello.com/article/855-how-billing-works-with-trello-business-class) for more information on Multi-Board Guests.
+
+### +Is there an on-premises version of Trello?
+
+Trello is proudly a cloud-only product. We offer access via the web, desktop, and our [awesome mobile apps](https://trello.com/platforms).
+
+### +Can I have Trello Standard or Premium just for my own account?
+
+Trello Standard and Premium are designed for all teams—even teams of one! To upgrade to Standard or Premium you’ll need to create a Workspace and then upgrade that Workspace.
+
+### +How secure is Trello?
+
+Trello, Inc. (“we”, “us” or “our”) is SOC2 Type 2 certified—we receive and review our data hosting providers’ SOC1 and SOC2 reports every 6 months under NDA. Trello is ISO/IEC 27001 certified which validates our information security management system (ISMS) and the implementation of our security controls. More information is available on the Atlassian Trust Management System. Trello is PCI-DSS certified. Learn more about Trello’s security protocols [here](https://trello.com/legal/security).
+
+![](https://images.ctfassets.net/rz1oowkt5gyp/3oImeBPuXSABEX9sc9qyQ6/0d1d339a90d63b64175cb03a3c168549/TREL-210_Trello_Access_Spot_Illo.svg_fill.png?w=540)
+
+### Best-in-class security and centralized administration with Atlassian Guard
+
+- SAML single sign-on
+- Enforced 2FA
+
+Atlassian Guard is a separate subscription that your company can enable across all your Atlassian products and starts at $4/month/user. Trello is an Atlassian product.
+
+[Learn more](https://www.atlassian.com/software/guard)

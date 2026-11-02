@@ -1,0 +1,31 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T14:12:08.487586+00:00",
+  "source_run": "capture-20261102T140832Z-fa359a9b",
+  "source_tasks": [
+    "asana-stress-001-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://asana.com/pricing",
+      "title": "Asana Pricing | Personal, Starter, Advanced, & Enterprise plans • Asana",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.913799+00:00",
+      "content_sha256": "380f7c11f586d26ac7fed3b85a821575f2ee3b678d840a8c2a29f13c8e7f08bb",
+      "content_path": "380f7c11f586d26ac7fed3b85a821575f2ee3b678d840a8c2a29f13c8e7f08bb.txt"
+    },
+    {
+      "url": "https://www.g2.com/products/asana/reviews",
+      "title": "Asana Reviews 2025 | G2",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:11:19.921401+00:00",
+      "content_sha256": "fbdaaead136b0dbe4ed0bf1ac0f4c9b35d8c81d49cf550a6bfc6686592a183f0",
+      "content_path": "fbdaaead136b0dbe4ed0bf1ac0f4c9b35d8c81d49cf550a6bfc6686592a183f0.txt"
+    }
+  ]
+}

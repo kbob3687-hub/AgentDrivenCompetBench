@@ -1,0 +1,1586 @@
+![AWM Icon](<Base64-Image-Removed>)
+
+# Agentic Work Management
+
+## Power every team with AI
+
+Monthly
+
+YearlySave up to 18%
+
+### Personal
+
+For one or two people managing personal projects.
+
+$0
+
+Free forever
+
+[Sign up](https://asana.com/create-account?pricing_tier=personal)
+
+Manage tasks and personal to-dos:
+
+- 2 users
+
+- Unlimited tasks and projects
+
+
+
+
+
+
+
+Never run out of space for work. Create as many tasks and projects as you need to track to‑dos and tie them to higher‑level goals.
+
+- List, board, and calendar views
+
+
+
+
+
+
+
+See work the way you need – flip between lists for details, boards for flow, or calendars for deadlines without losing context.
+
+- Unlimited storage, 100MB max per file
+
+
+
+
+
+
+
+Keep all your documents in one place. Upload as many files as you need (up to 100 MB each) so your team never has to hunt for content.
+
+- Status updates
+
+
+
+
+
+
+
+Keep everyone aligned. Post concise updates on what’s been accomplished and what’s ahead so teams stay focused.
+
+- Time tracking with integrations
+
+
+
+
+
+
+
+Know how long work really takes. By syncing with your time‑tracking tools, Asana shows actual effort so you can plan budgets and schedules confidently.
+
+- 100+ free integrations
+
+
+
+Use your favorite tools without friction. Integrate Asana with Slack, Google Drive, Zoom and 100+ apps to centralize conversations and files.
+
+
+### Starter
+
+For small teams and professionals that need to track their projects progress and hit deadlines.
+
+$10.99
+
+Per user, per month billed annually
+
+[Sign up](https://asana.com/create-account?pricing_tier=starter) [Purchase now](https://asana.com/pricing#buy-starter)
+
+Asana AI included:
+
+- AI Teammates and Asana Dash
+
+
+
+Includes 5 requests per user per month, up to 50 requests per account
+
+- AI Studio
+
+
+
+Includes 50K credits per billing account per month
+
+- **Everything in Personal, plus:**
+
+- No user seat limits
+
+- Timeline and Gantt views
+
+
+
+
+
+
+
+Plan projects with confidence. Visualize schedules on a timeline and dive into task dependencies and progress with interactive Gantt charts.
+
+- Reporting dashboards
+
+
+
+See the big picture at a glance. Dashboards turn project data into charts and metrics so you instantly know if you’re on track.
+
+- Unlimited automations
+
+
+
+Let routine work run itself as many times as you need to. Create automations to assign work, send alerts and keep statuses current.
+
+- Forms
+
+
+
+
+
+
+
+Get all the info you need. Intake forms capture requests and details and automatically create tasks, so nothing gets lost.
+
+- Custom templates
+
+
+
+Standardize how work starts. Create templates that mirror your best practices so every new project kicks off quickly and consistently.
+
+- Custom fields
+
+
+
+
+
+
+
+Capture the data your team needs. Custom fields let you tag tasks with priorities, budgets and statuses so reporting reflects reality.
+
+- Unlimited free guests
+
+
+
+
+
+
+
+Bring partners into the loop. Unlimited free guest seats let clients and contractors collaborate without increasing your license count.
+
+
+### Advanced
+
+For growing teams that turn goals into actionable projects, plan team capacity, and keep decisions moving.
+
+$24.99
+
+Per user, per month billed annually
+
+[Sign up](https://asana.com/create-account?pricing_tier=advanced) [Purchase now](https://asana.com/pricing#buy-advanced)
+
+Asana AI included:
+
+- AI Teammates and Asana Dash
+
+
+
+Includes 5 requests per user per month, up to 50 requests per account
+
+- AI Studio
+
+
+
+Includes 75K credits ber billing account per month
+
+- **Everything in Starter, plus:**
+
+- Unlimited portfolios
+
+
+
+
+
+
+
+See the forest, not just the trees. Portfolios let you organize related projects and track overall health from one place.
+
+- Goals
+
+
+
+
+
+
+
+Make strategy tangible. Goals connect your team’s daily tasks to higher‑level objectives so everyone sees progress toward what matters most.
+
+- Resource management
+
+
+
+Identify who's overloaded, who has capacity, and rebalance work instantly, within one portfolio
+
+- Approvals and proofing
+
+
+
+Keep work moving. Annotate PDFs and images, request approvals, and know exactly when a deliverable is ready to launch.
+
+- Forms branching & customization
+
+
+
+Capture only what matters. Dynamic forms adjust questions based on answers, ensuring you gather complete details without overwhelming your submitters.
+
+- Time tracking
+
+
+
+Stop guessing. Compare estimated and actual time spent so you can forecast staffing and budgets more accurately.
+
+- Scaled security
+
+
+
+
+
+
+
+Trust that your data is safe. Asana’s security controls protect sensitive information and provide granular access policies across teams and contractors.
+
+- Connect Salesforce, Tableau, PowerBI Support
+
+
+
+Stop switching between tools to piece together the full picture. Connect Salesforce, Tableau, and Power BI to your project data and get unified reporting across every workstream.
+
+
+### Enterprise
+
+For organizations that scale work across departments with security built in.
+
+Contact sales for pricing
+
+[Contact sales](https://asana.com/sales)
+
+Asana AI included:
+
+- AI Teammates and Asana Dash
+
+
+
+Includes 5 requests per user per month, up to 250 requests per account
+
+- AI Studio
+
+
+
+Includes 200K credits ber billing account per month
+
+- **Everything in Advanced, plus:**
+
+- SAML authentication
+
+
+
+One set of credentials for everything. Use SAML‑based SSO so employees sign in through your identity provider and IT stays in control.
+
+- User provisioning (SCIM)
+
+
+
+Make onboarding and off‑boarding effortless. SCIM automatically creates accounts for new hires and revokes access when they leave, protecting data without manual work.
+
+- Universal resource management
+
+
+
+Get a bird’s‑eye view of capacity. Organization‑wide workload reveals who’s overbooked or free across all work so you can reassign tasks and prevent burnout.
+
+- Capacity planning
+
+
+
+
+
+
+
+Protect your people and your timelines. Capacity planning highlights when teams are at risk of overload so you can shift work and keep projects on schedule.
+
+- Service accounts
+
+
+
+Automate safely. Service accounts give integrations their own credentials for bulk data access, keeping personal accounts secure.
+
+- View-only licenses
+
+
+
+Include everyone who needs to know. View‑only licenses let stakeholders see progress without increasing seat costs or risking unwanted edits.
+
+- Guest invitation permissions
+
+
+
+Protect your workspace’s boundaries. Decide who’s allowed to invite outside collaborators so only trusted members extend access.
+
+- Project admin controls
+
+
+
+Empower without losing control. Delegated project administration lets team leads manage settings on their own projects while central settings stay locked down.
+
+- **Enterprise+ available for advanced security and compliance**
+
+
+
+For the highest security and compliance needs, Enterprise+ adds SIEM integration, data residency, audit logs and dedicated workspaces.
+
+
+### Personal
+
+For one or two people managing personal projects.
+
+$0
+
+Free forever
+
+[Sign up](https://asana.com/create-account?pricing_tier=personal)
+
+Manage tasks and personal to-dos:
+
+- 2 users
+
+- Unlimited tasks and projects
+
+
+
+
+
+
+
+Never run out of space for work. Create as many tasks and projects as you need to track to‑dos and tie them to higher‑level goals.
+
+- List, board, and calendar views
+
+
+
+
+
+
+
+See work the way you need – flip between lists for details, boards for flow, or calendars for deadlines without losing context.
+
+- Unlimited storage, 100MB max per file
+
+
+
+
+
+
+
+Keep all your documents in one place. Upload as many files as you need (up to 100 MB each) so your team never has to hunt for content.
+
+- Status updates
+
+
+
+
+
+
+
+Keep everyone aligned. Post concise updates on what’s been accomplished and what’s ahead so teams stay focused.
+
+- Time tracking with integrations
+
+
+
+
+
+
+
+Know how long work really takes. By syncing with your time‑tracking tools, Asana shows actual effort so you can plan budgets and schedules confidently.
+
+- 100+ free integrations
+
+
+
+Use your favorite tools without friction. Integrate Asana with Slack, Google Drive, Zoom and 100+ apps to centralize conversations and files.
+
+
+Show more
+
+### Starter
+
+For small teams and professionals that need to track their projects progress and hit deadlines.
+
+$10.99
+
+Per user, per month billed annually. $13.49 billed monthly
+
+[Sign up](https://asana.com/create-account?pricing_tier=starter) [Purchase now](https://asana.com/pricing#buy-starter)
+
+Asana AI included:
+
+- AI Teammates and Asana Dash
+
+
+
+Includes 5 requests per user per month, up to 50 requests per account
+
+- AI Studio
+
+
+
+Includes 50K credits per billing account per month
+
+- **Everything in Personal, plus:**
+
+- No user seat limits
+
+- Timeline and Gantt views
+
+
+
+
+
+
+
+Plan projects with confidence. Visualize schedules on a timeline and dive into task dependencies and progress with interactive Gantt charts.
+
+- Reporting dashboards
+
+
+
+See the big picture at a glance. Dashboards turn project data into charts and metrics so you instantly know if you’re on track.
+
+- Unlimited automations
+
+
+
+Let routine work run itself as many times as you need to. Create automations to assign work, send alerts and keep statuses current.
+
+- Forms
+
+
+
+
+
+
+
+Get all the info you need. Intake forms capture requests and details and automatically create tasks, so nothing gets lost.
+
+- Custom templates
+
+
+
+Standardize how work starts. Create templates that mirror your best practices so every new project kicks off quickly and consistently.
+
+- Custom fields
+
+
+
+
+
+
+
+Capture the data your team needs. Custom fields let you tag tasks with priorities, budgets and statuses so reporting reflects reality.
+
+- Unlimited free guests
+
+
+
+
+
+
+
+Bring partners into the loop. Unlimited free guest seats let clients and contractors collaborate without increasing your license count.
+
+
+Show more
+
+### Advanced
+
+For growing teams that turn goals into actionable projects, plan team capacity, and keep decisions moving.
+
+$24.99
+
+Per user, per month billed annually. $30.49 billed monthly
+
+[Sign up](https://asana.com/create-account?pricing_tier=advanced) [Purchase now](https://asana.com/pricing#buy-advanced)
+
+Asana AI included:
+
+- AI Teammates and Asana Dash
+
+
+
+Includes 5 requests per user per month, up to 50 requests per account
+
+- AI Studio
+
+
+
+Includes 75K credits ber billing account per month
+
+- **Everything in Starter, plus:**
+
+- Unlimited portfolios
+
+
+
+
+
+
+
+See the forest, not just the trees. Portfolios let you organize related projects and track overall health from one place.
+
+- Goals
+
+
+
+
+
+
+
+Make strategy tangible. Goals connect your team’s daily tasks to higher‑level objectives so everyone sees progress toward what matters most.
+
+- Resource management
+
+
+
+Identify who's overloaded, who has capacity, and rebalance work instantly, within one portfolio
+
+- Approvals and proofing
+
+
+
+Keep work moving. Annotate PDFs and images, request approvals, and know exactly when a deliverable is ready to launch.
+
+- Forms branching & customization
+
+
+
+Capture only what matters. Dynamic forms adjust questions based on answers, ensuring you gather complete details without overwhelming your submitters.
+
+- Time tracking
+
+
+
+Stop guessing. Compare estimated and actual time spent so you can forecast staffing and budgets more accurately.
+
+- Scaled security
+
+
+
+
+
+
+
+Trust that your data is safe. Asana’s security controls protect sensitive information and provide granular access policies across teams and contractors.
+
+- Connect Salesforce, Tableau, PowerBI Support
+
+
+
+Stop switching between tools to piece together the full picture. Connect Salesforce, Tableau, and Power BI to your project data and get unified reporting across every workstream.
+
+
+Show more
+
+### Enterprise
+
+For organizations that scale work across departments with security built in.
+
+Contact sales for custom pricing for your organization
+
+[Contact sales](https://asana.com/sales)
+
+Asana AI included:
+
+- AI Teammates and Asana Dash
+
+
+
+Includes 5 requests per user per month, up to 250 requests per account
+
+- AI Studio
+
+
+
+Includes 200K credits ber billing account per month
+
+- **Everything in Advanced, plus:**
+
+- SAML authentication
+
+
+
+One set of credentials for everything. Use SAML‑based SSO so employees sign in through your identity provider and IT stays in control.
+
+- User provisioning (SCIM)
+
+
+
+Make onboarding and off‑boarding effortless. SCIM automatically creates accounts for new hires and revokes access when they leave, protecting data without manual work.
+
+- Universal resource management
+
+
+
+Get a bird’s‑eye view of capacity. Organization‑wide workload reveals who’s overbooked or free across all work so you can reassign tasks and prevent burnout.
+
+- Capacity planning
+
+
+
+
+
+
+
+Protect your people and your timelines. Capacity planning highlights when teams are at risk of overload so you can shift work and keep projects on schedule.
+
+- Service accounts
+
+
+
+Automate safely. Service accounts give integrations their own credentials for bulk data access, keeping personal accounts secure.
+
+- View-only licenses
+
+
+
+Include everyone who needs to know. View‑only licenses let stakeholders see progress without increasing seat costs or risking unwanted edits.
+
+- Guest invitation permissions
+
+
+
+Protect your workspace’s boundaries. Decide who’s allowed to invite outside collaborators so only trusted members extend access.
+
+- Project admin controls
+
+
+
+Empower without losing control. Delegated project administration lets team leads manage settings on their own projects while central settings stay locked down.
+
+- **Enterprise+ available for advanced security and compliance**
+
+
+
+For the highest security and compliance needs, Enterprise+ adds SIEM integration, data residency, audit logs and dedicated workspaces.
+
+
+Show more
+
+Compare all features
+
+PersonalStarterAdvancedEnterpriseEnterprise+
+
+[Sign up](https://asana.com/create-account?pricing_tier=personal) [Get started](https://asana.com/create-account?pricing_tier=starter) [Get started](https://asana.com/create-account?pricing_tier=advanced) [Contact sales](https://asana.com/sales) [Contact sales](https://asana.com/sales)
+
+Project management essentials
+
+Unlimited tasks
+
+Tasks are to-do items that show who needs to do what by when.
+
+Unlimited projects
+
+Projects help you organize related tasks into a single space with different views like lists, boards, or timelines so you can see the big picture.
+
+Unlimited comments
+
+Comments let you and your team discuss tasks directly within each task, keeping all communication centered where the work happens.
+
+Unlimited storage, 100MB per file
+
+Store an unlimited number of files, each up to 100MB in size, directly within Asana.
+
+Unlimited messages
+
+Send direct messages and have team conversations in Asana to keep discussions all in one place instead of scattered across email and chat apps.
+
+Activity logs
+
+Asana activity logs automatically track important changes to a task, giving teams visibility into task history and accountability.
+
+iOS and Android mobile apps
+
+Asana offers desktop apps for macOS and Windows for optimal performance, plus iOS and Android apps for managing work on the go.
+
+Recurring tasks
+
+Set up recurring tasks that automatically generate the next instance with updated due dates when you complete them.
+
+Multi-select and bulk actions
+
+Select multiple tasks at once to perform bulk actions like editing or deleting.
+
+Multi-home tasks to projects
+
+With multi-homing, you can add the same task to multiple projects and any updates to that task sync automatically across all instances.
+
+Asana AI
+
+AI Teammates and Asana Dash
+
+Put 30+ AI Teammates to work, each with the right skills for the job and context from your work. Asana Dash routes work to the right Teammate and surfaces what’s next.
+
+Includes 5 requests per user per month, up to 50 requests per accountIncludes 5 requests per user per month, up to 50 requests per accountIncludes 5 requests per user per month, up to 250 requests per accountIncludes 5 requests per user per month, up to 250 requests per account
+
+AI Studio (with additional credits for purchase)
+
+Use Asana's AI-powered no-code builder to design workflows, embed AI agents, and deploy workflows directly where teams are already working.
+
+Includes 50K credits per billing account per monthIncludes 75K credits per billing account per monthIncludes 200K credits per billing account per monthIncludes 200K credits per billing account per month
+
+AI Assists
+
+AI assistance built into your projects, tasks, goals, and more, included on every paid plan.
+
+Views
+
+Project overview
+
+Get a high-level snapshot of project details, including key milestones and team members.
+
+List
+
+View tasks in list format for straightforward task management.
+
+Board
+
+Visualize tasks using a Kanban-style board to track your work through different stages.
+
+Calendar
+
+Display tasks on a calendar to track deadlines and check schedules.
+
+My tasks
+
+View and manage your assigned work in one personalized list, helping you prioritize and stay focused on what needs to get done.
+
+Notes
+
+Create and share project notes, meeting minutes, and documentation to keep important information accessible to your team.
+
+Timeline
+
+Use a Gantt-style timeline to plan and visualize project schedules and dependencies.
+
+Gantt
+
+Gantt charts show project tasks, dependencies, and milestones mapped on a timeline.
+
+Goals
+
+Asana goals help you track progress on what matters most by connecting your everyday tasks to bigger company-wide objectives.
+
+Portfolios
+
+In Asana, a portfolio is a digital folder that organizes multiple projects in one place, giving a high-level view of your progress.
+
+Workflows and automation
+
+100+ free integrations, including Microsoft 365, Google Workspace, Slack, and [other everyday apps](https://asana.com/apps)
+
+Connect Asana with your favorite tools like Microsoft 365, Google Workspace, and Slack to streamline workflows and reduce app switching.
+
+Forms
+
+Collect information and requests through customizable forms that feed directly into Asana projects.
+
+Start dates and times
+
+Set when tasks should begin, not just when they're due, for better project scheduling.
+
+Task dependencies
+
+Task dependencies allow you to define the order in which tasks need to be completed so your team can see what's blocked and what's ready to move forward.
+
+Workflow builder
+
+Design and automate routine workflows with our no-code builder. to enhance efficiency and reduce manual effort.
+
+Custom field management dashboard
+
+Create standardized custom fields that can be assigned to any project or task to track data like priority, budget, or status.
+
+Reference custom fields
+
+Link tasks to the people, teams, or work they reference, so everyone sees the right context without searching.
+
+Project template management dashboard
+
+Build reusable project templates with standardized tasks, assignees, and due dates that can be applied to new projects instantly.
+
+Custom templates
+
+Create reusable templates tailored to your team's processes for consistent project setup.
+
+Custom task types
+
+Create custom task types like Bug, Design, or Request that align with your team's workflows and make task tracking more meaningful for your specific work processes.
+
+Unlimited rules
+
+Rules let you set triggers and actions once, then they automatically handle routine updates so nothing falls through the cracks.
+
+Forms with branching logic
+
+Build dynamic forms that show different questions based on what people answer, so you get exactly the information you need.
+
+Critical path
+
+Identify which tasks directly impact your project deadline so you can prioritize the work that matters most and avoid costly delays.
+
+Proofing
+
+Review and provide feedback on creative assets directly within Asana.
+
+Approvals
+
+Set up approval workflows to ensure work is reviewed and authorized appropriately.
+
+Integration with Jira Cloud (two-way sync)
+
+Synchronize tasks between Asana and Jira Cloud to maintain consistency across platforms.
+
+Workflow bundles
+
+Apply standardized workflows across multiple projects or teams for consistency.
+
+Script actions
+
+Extend Asana Rules with custom code. Script Actions let you run Node.js scripts that call the Asana API as part of a rule — automating workflows beyond Asana's built-in actions.
+
+Goals
+
+Goals (company, team, and individual levels)
+
+Set and track goals at every level--from personal wins to company-wide objectives--all in one spot.
+
+Goal strategy map
+
+Visualize how all of of your goals connect so you can see the strategy behind the work.
+
+Automatic goal progress
+
+Let Asana update your goal progress automatically based on completed tasks and projects, no manual updates needed.
+
+Weighted goals
+
+Assign different importance levels to goals so they reflect what matters most to your organization.
+
+Reporting on goals
+
+Generate detailed reports for your stakeholders that show goal progress, completion rates, and performance trends.
+
+Saved grid views
+
+Save your favorite grid layouts and switch between them instantly—no need to reconfigure filters and columns every time.
+
+Goal templates and goal types (objectives, key results)
+
+Use pre-built goal frameworks like OKRs to standardize how you set objectives.
+
+Reporting
+
+CSV and PDF export
+
+Export your project data and reports in CSV or PDF format to share with stakeholders or analyze in other tools.
+
+Status updates
+
+Keep everyone informed by sharing regular progress updates on your projects, highlighting what's been accomplished and what's coming up.
+
+Custom fields
+
+Add extra details to your tasks like priority levels, budgets, or approval status to track the information that matters most to your team.
+
+Reference custom fields
+
+Link tasks to the people, teams, or work they reference, so everyone sees the right context without searching.
+
+Project dashboards
+
+Get a visual overview of your project's progress with charts and metrics that show how your work is tracking toward goals.
+
+Charts customization
+
+Tailor your dashboard charts to display exactly the data you need, from task completion rates to team workload distribution.
+
+Charts template library
+
+Choose from pre-built chart templates to quickly visualize common project metrics without starting from scratch.
+
+Advanced search
+
+Find exactly what you're looking for across all your projects using filters like assignee, due date, project, or custom field values.
+
+Milestones
+
+Mark important due dates and achievements in your projects so everyone knows when key milestones are reached.
+
+Universal reporting
+
+Pull data from across all your projects and teams into one place to see the bigger picture of how work is progressing.
+
+Formulas
+
+Asana formulas are custom fields that automatically calculate values like project duration, budgets, and costs using data from your tasks and projects.
+
+Integrations with Salesforce, Tableau, and Power BI
+
+Connect your project data with your business intelligence and CRM tools for unified reporting and insights across all your work streams.
+
+Portfolio dashboards
+
+See high-level progress and health across multiple related projects in a single dashboard.
+
+Portfolio summary report (PDF export)
+
+Create a polished PDF summary of your portfolio's performance that you can easily share with stakeholders.
+
+PowerPoint export (portfolios, dashboards)
+
+Turn your project data into presentation-ready slides instantly, so you can share progress with stakeholders without manual formatting.
+
+Resource management
+
+Timesheets
+
+Understand progress and drive efficiency by tracking billable and non-billable hours with centralized timesheet management, giving real-time visibility into where teams are spending time.
+
+Timesheets & Budgets add-onTimesheets & Budgets add-onTimesheets & Budgets add-onTimesheets & Budgets add-on
+
+User rates
+
+Set hourly rates for your team members to track costs against workload, so you always have a clear picture of project health.
+
+Timesheets & Budgets add-onTimesheets & Budgets add-onTimesheets & Budgets add-onTimesheets & Budgets add-on
+
+Project budgets
+
+Monitor project health with confidence by pulling in user rates, time data, and other cost data to quickly compare estimated and actual project spend.
+
+Timesheets & Budgets add-onTimesheets & Budgets add-onTimesheets & Budgets add-onTimesheets & Budgets add-on
+
+Time tracking
+
+Compare the estimated time for a task with the actual time it takes to complete to understand true effort and improve planning, forecasting, and budgeting.
+
+Portfolio resource management
+
+Check workload just for the projects in a single portfolio—perfect for keeping one program or initiative on track.
+
+Universal resource management
+
+See everyone’s workload across all projects and portfolios—great for balancing resources across the whole organization.
+
+Capacity planning
+
+See how teams are allocated across all projects in a single view so you can make smarter staffing decisions
+
+Placeholder profiles
+
+Plan projects early with custom placeholder roles to improve forecasting and headcount planning, then swap in real Asana users later for accurate, flexible resourcing.
+
+Privacy and security
+
+SOC 2 Type II
+
+Asana works with independent third-party auditors to attest to our control effectiveness on an annual basis
+
+Multi-factor authentication
+
+Enforce two-factor authentication for domain members and guests
+
+256-bit encryption at rest and in-transit
+
+Data is encrypted in transit and at rest
+
+Cross regional backups
+
+Data is automatically backed up to a recovery location to maintain availability in the event of an outage
+
+Data deletion
+
+You can permanently remove your Asana account data, including user profile information, project details, and task history.
+
+Google SSO
+
+Let employees use their existing Google work account to authenticate into Asana
+
+Microsoft SSO
+
+Let your team sign in with their existing Microsoft credentials. Admins on paid plans can require it as the login method across their organization.
+
+SAML
+
+Connect Asana to your company's single sign-on system for centralized access control.
+
+Read-only link management
+
+Share project timelines and calendars with external partners so they can view real-time updates without being able to edit or comment.
+
+Audit Log API (built to support SIEM)
+
+Asana's audit log API helps enterprise admins track important system and login events, making it easy to investigate potential security issues.
+
+Compliance mgmt. add-on
+
+SIEM integration (Splunk)
+
+Asana's integration with Splunk helps IT teams spot suspicious activity and security issues in real-time by automatically tracking what's happening in their workspace.
+
+Compliance mgmt. add-on
+
+eDiscovery integration (Exterro, Hanzo)
+
+Asana's integration with Exterro and Hanzo helps legal teams quickly collect data for legal or regulatory purposes, saving time and money by pinpointing only relevant data.
+
+Compliance mgmt. add-on
+
+Data Loss Prevention (DLP) integration (Netskope)
+
+Asana's integration with Netskope helps admins monitor and protect sensitive company information from being accidentally shared or leaked.
+
+Compliance mgmt. add-on
+
+Archiving integration (Theta Lake)
+
+Asana's integration with Theta Lake automatically archives Asana communications to meet retention and regulatory requirements.
+
+Compliance mgmt. add-on
+
+Organization exports
+
+Create a complete JSON backup of your entire Asana organization, including all projects, tasks, comments, and custom fields for data backup, compliance, and system integration.
+
+Compliance mgmt. add-on
+
+Managed workspaces
+
+Centrally control multiple Asana workspaces from one admin panel.
+
+Compliance mgmt. add-on
+
+IP allowlisting
+
+IP allowlisting restricts access to your Asana organization to only approved IP addresses or network ranges. This adds security by ensuring users can only access Asana from trusted locations you specify.
+
+Compliance mgmt. add-on
+
+Data residency, [see requirements](https://help.asana.com/s/article/data-residency-for-asana)
+
+Choose the region in which your data is stored.
+
+Add-onOpt-in
+
+Enterprise Key Management, [subject to eligibility](https://help.asana.com/s/article/enterprise-key-management-ekm)
+
+Control the encryption keys for your domain database, attachments, search, and most user data in your Organization.
+
+Opt-in
+
+HIPAA compliance available, [see requirements](https://help.asana.com/s/article/hipaa-compliance)
+
+Use Asana in compliance with the U.S. Health Insurance Portability and Accountability Act (HIPAA).
+
+Opt-in
+
+Admin and data controls
+
+User limit
+
+Up to 2 seats per project and team. All paid plans let you add unlimited members.
+
+2 seatsUnlimitedUnlimitedUnlimitedUnlimited
+
+Access controls
+
+Set permissions for who can view or edit projects, portfolios, and goals.
+
+Project only
+
+Private teams
+
+Create teams that are only visible to invited members.
+
+Private projects
+
+Make projects accessible only to the people you choose to keep sensitive work confidential
+
+Unlimited free guests
+
+invite external collaborators to work on projects without incurring additional costs or impacting your user count.
+
+Admin console
+
+IT and team admins have a centralized dashboard to manage team members, security settings, and permissions across their organization.
+
+Comment-only projects
+
+Let users view, comment on, and participate in conversations within a project without the ability to edit or make changes to tasks or project structure.
+
+Team sharing on projects
+
+Share entire projects with specific teams at once.
+
+Pause a member’s license
+
+Temporarily suspend someone's access without removing them completely.
+
+App management
+
+Control which third-party apps, personal access tokens, and service accounts your team can connect to Asana.
+
+Lock custom fields
+
+Prevent users from changing or deleting important custom field settings.
+
+Custom branding
+
+Add your company logo and colors to your Asana workspace for a more polished and professional look,
+
+Custom onboarding
+
+Create personalized welcome experiences for new team members, guiding them through setup automatically so they get started faster.
+
+Admin announcements
+
+Send organization-wide messages to all users from the admin console.
+
+User and group provisioning and deprovisioning (SCIM)
+
+Automatically add new employees and then remove access when they leave the company, saving you time while keeping data secure
+
+Guest invite permissions
+
+Control who can invite external people to your projects.
+
+Project controls via project admin
+
+Give limited project admin rights to trusted team members so you can keep your main workspace settings secure and prevent unwanted changes.
+
+Team membership controls via team admin
+
+Let designated admins manage who joins or leaves specific teams.
+
+Service accounts
+
+Service accounts let apps and integrations automatically access Asana data for bulk operations without needing a real person's login credentials.
+
+View-only licensing
+
+Include more people in projects at lower cost by giving some users visibility without editing permissions.
+
+Automatic guest removal
+
+Automatically remove access to guests after a certain period of inactivity. Newly invited or recently restored guests will have a grace period to become active.
+
+Permissions mgmt. add-on
+
+Allow guests to be invited from a trusted domain
+
+Let collaborators from trusted domains join as guests—safe, simple collaboration.
+
+Permissions mgmt. add-on
+
+Mobile app controls
+
+Manage the ways your team can use Asana on mobile devices, such as limiting downloads, screenshots, and copy/paste.
+
+Permissions mgmt. add-on
+
+Video recording management
+
+Control screen recording features within your organization (e.g. asynchronous video messaging).
+
+Permissions mgmt. add-on
+
+Form access for domains
+
+Limit form access to people from trusted domains for more secure submissions.
+
+Permissions mgmt. add-on
+
+Disable file attachments
+
+Prevent team members from uploading files to projects and tasks to keep things streamlined or to meet your organization's security needs.
+
+Permissions mgmt. add-on
+
+Custom role-based access controls
+
+Set different permission levels for your team members so the right people can access the right projects and information.
+
+Permissions mgmt. add-on
+
+Advanced permissions
+
+Fine-tune who can view, edit, or share work within Asana projects, portfolios, goals, and teams for stronger control.
+
+Permissions mgmt. add-on
+
+Sandboxes
+
+Create isolated testing environments separate from your main workspace.
+
+Multi-org deployment
+
+Manage multiple separate Asana organizations from a single interface.
+
+Opt-in
+
+Customer support
+
+Asana Forum
+
+Connect with other Asana users to share tips, ask questions, and learn best practices from the Asana community.
+
+Asana Academy
+
+Access courses and certifications to master Asana's features and boost your team's productivity.
+
+Asana webinars
+
+Access live and recorded webinars covering Asana features, best practices, and productivity tips.
+
+Asana Help Center
+
+Find step-by-step guides, tutorials, and answers to common questions about using Asana.
+
+Asana Developer Guide
+
+Access APIs, integrations, and technical documentation to build custom solutions with Asana.
+
+Asana Support (direct)
+
+Get direct help from Asana's support team to resolve technical issues and implementation challenges.
+
+Customer Success options
+
+Work with dedicated specialists to optimize your Asana setup and achieve your team's goals (eligibility requirements apply).
+
+24/7 support
+
+Get help whenever you need it with round-the-clock technical assistance.
+
+99.9% uptime SLA
+
+Rely on Asana's guaranteed service availability to keep your team productive without interruptions.
+
+Weekend support for complex data migrations
+
+Receive specialized assistance during off-hours to ensure smooth transitions of your important data.
+
+![Abstract workflow line showing a user avatar connected to a second path with another user avatar collaborating alongside a blue AI teammate icon in image](<Base64-Image-Removed>)
+
+## AI for every workflow
+
+AI TeammatesAsana Dash
+
+![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%271320%27%20height=%27990%27/%3e)![Asana UI showing the AI teammate gallery. A grid displays pre-built AI agents categorized by function like Marketing and IT. Example cards include a Competitive Market Researcher, Campaign Brief Writer, and Content Localization Manager.](https://assets.asana.biz/transform/d5ce1026-12f2-4217-82fa-64e8e1546753/awm-ai-teammates?io=transform:fill,width:2560&format=webp)
+
+![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%272160%27%20height=%272160%27/%3e)![Asana's Dash AI assistant welcome screen with a search prompt and suggested actions including "What should I focus on today?" and "Recommend ways to improve my workflow"](https://assets.asana.biz/transform/f362cd6b-3654-4fe5-9efa-410006a1c4dc/dash-guide-1?io=transform:fill,width:2560&format=webp)
+
+### Ready-to-go AI Teammates supercharge your team
+
+- 30+ ready-to-go AI Teammates
+
+- AI that shows up where work happens
+
+- AI that gets smarter with every workflow
+
+- Enterprise-grade governance built in
+
+
+[Get started](https://asana.com/create-account)
+
+### Stay a step ahead with Asana Dash
+
+Introducing Asana Dash - it summarizes your meetings, emails, and tasks so you're always a step ahead
+
+- Access everything through one interface
+
+- Never lose a decision or next step again
+
+- Always know what to do next, before you even have to ask
+
+
+[Get started](https://asana.com/create-account)
+
+### One flat rate for every AI request
+
+Pre-paid AI requests are $0.50 per request
+
+#### No rate cards, no surprises
+
+Every AI request is charged at the published rate—no credit tables to decode.
+
+#### Administrative tasks are included
+
+Administrative tasks with Asana Dash, like prioritizing your day or analyzing data in your Work Graph®, are included at no extra cost.
+
+#### Flexible AI usage
+
+Annual customers can use AI requests anytime during their contract term. Pay as you go for exact usage, or prepay upfront for a discount.
+
+### Buy AI usage packs or pay as you go
+
+PREPAID
+
+### Usage packs
+
+Give your team the capacity they need to accomplish more. Prepaid AI requests are yours for your full contract terms with no monthly resets.
+
+Available on Starter, Advanced, Enterprise, and Enterprise+ plans
+
+* * *
+
+- $0.50 per AI request, billed upfront
+
+- Buy as many packs as your team needs
+
+- Live usage dashboard for visibility and control
+
+- Yours for your full contract team, no monthly resets
+
+
+[Get started](https://asana.com/create-account)
+
+ON DEMAND
+
+### Pay as you go
+
+Pay as you go for exact usage with on demand billing. No upfront commitment required, billed monthly.
+
+$5.99 per user, per month billed annually. Available on Starter, Advanced, Enterprise, and Enterprise+ plans
+
+* * *
+
+- $0.60 per AI request, billed monthly
+
+- Set a monthly spend cap
+
+- Manage on demand billing directly in-product
+
+- Live usage dashboard for visibility and control
+
+
+[Get started](https://asana.com/create-account)
+
+# ADD-ONS
+
+### Extend Asana with optional modules
+
+Add only what your team needs - billed separately on eligible plans
+
+ADD-ON
+
+### Timesheets and Budgets
+
+Improve project outcomes with real-time visibility into budgets, time, and costs—all in one place.
+
+Available as an add-on to Starter, Advanced or Enterprise plans.
+
+* * *
+
+- Track progress with accurate timesheet data
+
+- Monitor project health with budget tracking
+
+- Manage resources with flexible rate cards
+
+
+[Purchase now](https://go.asana.com/buy-tbao) [Learn more](https://asana.com/features/resource-management/timesheets-budgets)
+
+ADD-ON
+
+### Compliance management
+
+Give your legal, IT, and security teams the tools they need to stay compliant and reduce risk.
+
+Available as an add-on to Enterprise plan.
+
+* * *
+
+- Track activity with detailed audit logs
+
+- Enforce security policies at the network level
+
+- Preserve and export data for compliance needs
+
+
+[Contact sales](https://asana.com/sales) [Learn more](https://help.asana.com/s/article/compliance-management-add-on)
+
+ADD-ON
+
+### Permissions management
+
+Let admins and IT easily manage user permissions, app usage, and mobile and guest access all in one secure place.
+
+Available as an add-on to Enterprise plan.
+
+* * *
+
+- Define roles that match your org structure
+
+- Control access across apps, guests, and devices
+
+- Enforce content-sharing policies with precision
+
+
+[Contact sales](https://asana.com/sales) [Learn more](https://help.asana.com/s/article/permissions-management-add-on)
+
+#### Loved by 100,000+ organizations across the globe
+
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+
+### Deliver real productivity for every team
+
+Learn more about the pricing details of Asana's products
+
+![Large Product Icon Asana Client Management](<Base64-Image-Removed>)
+
+#### Asana Client Management
+
+Build lasting client relationships on an AI-Native platform built for agency work
+
+[Learn more](https://asana.com/pricing/client-management)
+
+![Asana Service Management](<Base64-Image-Removed>)
+
+#### Asana Service Management
+
+One AI-native enterprise service level management platform for IT, HR, facilities, and legal.
+
+[Learn more](https://asana.com/product/service-management#pricing)
+
+### Frequently asked questions about task management tools
+
+##### What is an AI request?
+
+An AI request is one successful unit of work executed by AI Teammates or Asana Dash, which share a single pool of AI requests. Administrative tasks in Dash are included at no extra cost. You're only charged when work gets done; failed, timed-out, or canceled tasks don't count.
+
+For Dash, AI requests only count when Dash completes complex work (e.g., integrations, web search, long-form content generation) or hands off the work to an AI Teammate.
+
+##### What is the contract term for my paid AI requests?
+
+Paid usage packs are valid for your entire billing cycle. For monthly customers: packs expire at month's end. For annual customers: packs can be used anytime across your contract term with no monthly resets. On-demand, pay-as-you-go billing is also available, billed monthly for exactly what you used with no upfront commitment.
+
+##### How do I purchase additional AI requests?
+
+You have two options. Prepaid usage packs at $0.50 per request, valid for your full billing cycle. On-demand, pay-as-you-go billing at $0.60 per request, billed monthly in arrears.
+
+##### How do I monitor and control my costs?
+
+Your admin console shows a live dashboard of requests consumed, remaining balance, and usage by user and AI Teammate. Alerts fire at 65%, 85%, and 100% of your allotment. Admins can set a spending cap on on-demand billing and toggle AI request access per user at any time.
+
+##### Can I change or cancel my plan?
+
+You can cancel at any time, and if you cancel before your next renewal, you'll retain access to paid features through the end of your current subscription period. To cancel your paid plan, log in to your Asana account and access your admin console.
+
+##### How many users are included in my plan?
+
+Asana offers flexible subscription options based on the features you need and the size of your team. For smaller teams, we have plans designed for 2 members.
+
+##### How is AI Studio priced?
+
+AI Studio is available on Starter, Advanced, Enterprise, and Enterprise+ plans.
+
+AI Studio is available in three options:
+
+- **AI Studio Basic:** Included access to AI Studio to explore how AI can help take on routine, manual work (includes rate limits).
+
+- **AI Studio Plus:** Paid access to AI Studio to level up productivity for individuals and small teams (available on monthly & annual plans).
+
+- **AI Studio Pro:** Paid access to AI Studio to scale complex workflows and business operations with advanced billing controls (available on an annual plan).
+
+
+To get started, ensure your admin has Asana AI enabled. From there, all members of your domain will be able to build smart workflows. [Learn more here](https://help.asana.com/s/article/ai-studio).
+
+##### How can I add people to my plan?
+
+You can grow your team by adding seats in increments as follows:
+
+- **Between 2 and 5 total users:** add seats in increments of 1
+
+- **Up to 30 total users:** add seats in increments of 5
+
+- **Up to 100 total users:** add seats in increments of 10
+
+- **Up to 500 total users:** add seats in increments of 25
+
+- **More than 500 users:** add seats in increments of 50
+
+
+##### How secure is Asana?
+
+Asana is committed to protecting customer data. We build our platform using best practices for highly available, scalable, and secure cloud applications. We regularly monitor and assess our program to ensure that it meets or exceeds compliance and regulatory requirements. Please visit our [Trust Center](https://asana.com/trust) for more information.
+
+##### Do you offer academic pricing?
+
+We’re happy to work with student groups using Asana. [Contact us](https://asana.com/students).
+
+##### Should I upgrade my organization or my team?
+
+If you need administrators and premium package features for all teams, upgrade your entire organization. If you don't need administrators or premium features for all teams, but want to add more guests, set per-project permissions, or hide a team, you can upgrade an individual team. [Learn more](https://asana.com/guide/help/organizations/basics).
+
+##### Will I be charged sales tax?
+
+Yes. We will apply state and local sales tax based on your billing address to your total charge.
+
+##### Is there an on-premises version of Asana?
+
+We are passionate about the web and do not plan to offer an internally hosted version of Asana.
+
+##### How does Asana protect my data?
+
+Asana is committed to protecting and honoring your global privacy rights as well as securing the data you provide to us through the use of our products. For more information and details about our privacy and security programs, please visit our [Trust Center](https://security.asana.com/).
+
+##### How does Asana store my data?
+
+The Asana subscription service is hosted on dedicated servers within secure, industry-leading data centers provided by Amazon Web Services. These data centers have achieved and maintain SOC 2 compliance and provide 24-hour physical security including biometric access controls and continuous surveillance.
+
+##### Will I be charged VAT/GST?
+
+Asana may be required to charge VAT, GST, and other taxes on your subscription in accordance with local laws and regulations. Some jurisdictions do not require VAT/GST to be charged if the purchaser is registered for VAT/GST. If you are registered for VAT or GST purposes, please add your VAT/GST registration number during the checkout process to have your exemption processed. For more information, please visit our Asana VAT Help [page](https://help.asana.com/s/article/vat-gst-sales-tax).
+
+##### Does Asana offer a discount for nonprofits?
+
+Asana is happy to offer eligible nonprofit organizations a discount on an Asana Starter or Asana Advanced annual plan. You can learn about the [Asana nonprofit discount here](https://asana.com/industry/nonprofit).
+
+##### What is your refund policy?
+
+We do not offer refunds. If you cancel your plan before the next renewal cycle, you will retain access to paid features until the end of your subscription period. When your subscription expires, you will lose access to paid features and all data associated with those features.
+
+## Get your team and your agents working together
+
+[Get started](https://asana.com/create-account) [Contact sales](https://asana.com/sales?utm_source=web_cta&utm_medium=website&utm_campaign=awm_pricing_contact_sales)
+
+a5324015129067520.cdn.optimizely.com
+
+# a5324015129067520.cdn.optimizely.com is blocked
+
+This page has been blocked by an extension
+
+- Try disabling your extensions.
+
+ERR\_BLOCKED\_BY\_CLIENT
+
+Reload
+
+
+This page has been blocked by an extension
+
+![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)

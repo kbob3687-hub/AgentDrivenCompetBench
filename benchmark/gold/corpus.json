@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "selection": "Four saved real standalone tasks: three QA-pass products plus one source-limited task. The two products in notion-vs-clickup-001 are separate workflow tasks.",
+  "tasks": [
+    {
+      "id": "notion-qa-pass",
+      "raw": "benchmark/results/20260922T142325Z-e088bf16/raw/notion-vs-clickup-001-r1-c1.json"
+    },
+    {
+      "id": "clickup-qa-pass",
+      "raw": "benchmark/results/20260922T142325Z-e088bf16/raw/notion-vs-clickup-001-r1-c2.json"
+    },
+    {
+      "id": "openproject-qa-pass",
+      "raw": "benchmark/results/20260923T004554Z-1895dea2/raw/openproject-cold-001-r1-c1.json"
+    },
+    {
+      "id": "notion-source-limited",
+      "raw": "benchmark/results/20260923T131634Z-4e7a6704/raw/notion-single-source-001-r1-c1.json"
+    }
+  ]
+}

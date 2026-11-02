@@ -1,0 +1,16 @@
+[
+  {
+    "id": "notion-single-source-001",
+    "competitors": ["Notion"],
+    "required_dimensions": ["features", "pricing", "persona", "swot"],
+    "collect_scope": ["pricing", "features", "user_personas"],
+    "target_urls": {
+      "Notion": ["https://www.notion.so/customers"]
+    }
+  },
+  {
+    "id": "openproject-cold-001",
+    "competitors": ["OpenProject"],
+    "required_dimensions": ["features", "pricing", "persona", "swot"]
+  }
+]

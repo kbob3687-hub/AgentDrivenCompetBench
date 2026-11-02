@@ -1,0 +1,31 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T14:08:33.451713+00:00",
+  "source_run": "capture-20261102T140832Z-fa359a9b",
+  "source_tasks": [
+    "clickup-stress-001-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://clickup.com/customers",
+      "title": "ClickUp™ Customer Stories",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.368480+00:00",
+      "content_sha256": "d7de0843093c882f03c967333abdd70a4379f52fe1207ac21e14f54d6c3010a9",
+      "content_path": "d7de0843093c882f03c967333abdd70a4379f52fe1207ac21e14f54d6c3010a9.txt"
+    },
+    {
+      "url": "https://clickup.com/pricing",
+      "title": "ClickUp Pricing and Plans",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.364941+00:00",
+      "content_sha256": "49ccccc8fc2f9d6f25f91ff56ddc8f0543bb4f72f25cce70db3f80ab822c6931",
+      "content_path": "49ccccc8fc2f9d6f25f91ff56ddc8f0543bb4f72f25cce70db3f80ab822c6931.txt"
+    }
+  ]
+}
