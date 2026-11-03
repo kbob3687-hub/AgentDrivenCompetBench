@@ -3,14 +3,15 @@
   <img src="https://img.shields.io/badge/Vue-3.5-4FC08D?logo=vue.js&logoColor=white" />
   <img src="https://img.shields.io/badge/LangGraph-0.2+-orange" />
   <img src="https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white" />
-  <img src="https://img.shields.io/badge/测试-81_通过-brightgreen?logo=pytest&logoColor=white" />
+  <img src="https://img.shields.io/badge/测试-237_通过-brightgreen?logo=pytest&logoColor=white" />
+  <img src="https://img.shields.io/badge/自建Benchmark-冻结回放+三实验臂-8A2BE2" />
   <img src="https://img.shields.io/badge/Langfuse-全链路追踪-purple" />
   <img src="https://img.shields.io/badge/采集合规-robots.txt+PII脱敏-green" />
 </p>
 
 # AgentDrivenCompetBench
 
-> **多智能体协作的竞品分析系统** — 5 个专职 Agent 组成"数字调研小组"，从公开信息采集到结构化报告全链路自动化，QA 反馈闭环驱动迭代式自我校验，每条结论可一键溯源到原始数据。
+> **多智能体协作的竞品分析系统** — 5 个专职 Agent 组成"数字调研小组"，从公开信息采集到结构化报告全链路自动化，QA 反馈闭环驱动迭代式自我校验，每条结论可一键溯源到原始数据；配套自建 Benchmark（冻结快照回放 + 三实验臂对照）让质量主张可复现、可验证。
 
 ---
 
@@ -130,6 +131,26 @@ QA 路由决策不是简单的"通过/打回"，而是**按问题分类精准路
 
 ---
 
+## 评测体系（Benchmark）
+
+系统不只有 Demo，还内置一套自建的评测框架（`benchmark/`），用可复现的实验回答"多 Agent 流水线是否优于单次 LLM、QA 闭环贡献了多少质量与成本"：
+
+- **冻结快照回放**：6 个项目管理 SaaS 产品（Notion / ClickUp / Asana / Trello / Monday.com / OpenProject）× 常规/压力场景 = 12 个正式 case、37 个网页正文，以 SHA-256 冻结为回放包。所有实验臂在**逐字节相同的输入**上运行，彻底排除采集波动这一混淆因素；回放时任何快照缺失都会大声报错，绝不静默回退联网
+- **三实验臂对照**：`single_llm`（一次 LLM 调用直接产出画像 + 报告）/ `multi_agent_no_qa` / `multi_agent_qa_fixed`（完整闭环），同模型、同快照、同输出 Schema、同 Token 口径公平比较
+- **五类评测器**：Schema 合法性、证据引用可回溯（citation）、维度覆盖（coverage）、内容深度（depth）、工作流轨迹（workflow），指标全部支持离线重算
+- **人工黄金标签流水线**：`benchmark/gold/` 把"快照原文 → 大白话主张 → 是/否裁决"做成最小人工核验循环，支撑忠实度类指标
+- **A/B 对照工具**：自动校验两次运行的配置可比性（case / 模型 / 代码版本 / 快照一致），再生成对照报告，防止"拿不同输入硬比"
+
+```bash
+# 回放运行（不联网，输入来自冻结快照包）
+python -m benchmark.runner --cases benchmark/cases/final_cases.json --replay-root benchmark/replay_bundles
+
+# 两次运行的 A/B 对照报告
+python -m benchmark.compare <runA目录> <runB目录>
+```
+
+---
+
 ## Agent 间通信协议
 
 所有 Agent 间通过 **AgentMessage 结构化消息** 通信，而非自然语言对话：
@@ -215,7 +236,7 @@ Trace (task_id)
 | 可观测性 | **Langfuse v4** | trace → span → generation 三层追踪，Token 成本聚合 |
 | 数据校验 | **Pydantic v2** | 结构化输出运行时强校验，Schema 演化可控 |
 | 合规 | **robots.txt + PII 脱敏** | 遵守爬取协议，手机/身份证/邮箱自动脱敏 |
-| 测试 | **pytest + pytest-asyncio** | 81 个用例，全量 2 秒通过 |
+| 测试 | **pytest + pytest-asyncio** | 237 个用例，覆盖 Agent 链路与 Benchmark 评测 |
 
 ---
 
@@ -309,6 +330,16 @@ src/
     ├── events.py               # EventBus（11 种事件类型）
     └── routes/                 # REST + SSE + Compare + Survey 路由
 
+benchmark/
+├── cases/                      # 正式 case 集（6 产品 × 常规/压力 = 12 case，已冻结）
+├── replay_bundles/             # SHA-256 冻结快照回放包（37 页）
+├── replay.py                   # 快照回放模块（缺失即报错，不回退联网）
+├── baselines/single_llm.py     # 单次 LLM 基线实验臂
+├── evaluators/                 # schema / citation / coverage / depth / workflow 评测器
+├── gold/                       # 人工黄金标签流水线（原文对照 + 是/否裁决）
+├── runner.py                   # 实验运行器（串行 / 回放 / 快照捕获）
+└── compare.py                  # A/B 对照报告（配置可比性校验）
+
 frontend/src/
 ├── components/
 │   ├── DagView.vue             # Agent DAG 可视化（条件路由边 + 状态着色）
@@ -327,7 +358,7 @@ frontend/src/
 ## 测试覆盖
 
 ```bash
-pytest tests/ -v    # 81 个用例，约 2 秒
+pytest tests/ -v    # 237 个用例
 ```
 
 | 测试模块 | 覆盖范围 |
@@ -338,6 +369,7 @@ pytest tests/ -v    # 81 个用例，约 2 秒
 | 并行采集 | 并行执行、失败容错、信号量控制、URL 降级链 |
 | API 路由 | compare / history / intervene / 全局错误处理 |
 | 合规 | PII 正则精度测试、robots.txt 遵守 |
+| Benchmark | 快照回放防呆、五类评测器、A/B 对照可比性校验、QA 返工闭环、单 LLM 基线 |
 
 ---
 
@@ -384,7 +416,9 @@ pytest tests/ -v    # 81 个用例，约 2 秒
 - [x] 多竞品横向对比
 - [x] 用户调研工具（问卷 + 访谈提纲生成）
 - [x] 采集合规（robots.txt + PII 脱敏）
-- [x] 81 个测试用例
+- [x] 自建评测体系（冻结快照回放 + 三实验臂对照 + 人工黄金标签流水线）
+- [x] 237 个测试用例
+- [ ] 主实验全量运行（12 case × 3 实验臂）
 - [ ] 向量检索增强（Qdrant RAG）
 - [ ] 导出 PDF / PPT
 
