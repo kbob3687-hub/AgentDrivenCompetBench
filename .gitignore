@@ -25,6 +25,9 @@ venv/
 logs/
 
 # 数据
+benchmark/results/
+benchmark/gold/review.draft.json
+benchmark/gold/review.summary.json
 data/
 snapshots/
 *.sqlite

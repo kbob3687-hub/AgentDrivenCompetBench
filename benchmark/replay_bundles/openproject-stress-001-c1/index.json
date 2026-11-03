@@ -1,0 +1,21 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T14:08:33.717564+00:00",
+  "source_run": "capture-20261102T140832Z-fa359a9b",
+  "source_tasks": [
+    "openproject-stress-001-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://www.openproject.org/pricing",
+      "title": "OpenProject Pricing - from €0. Start your free trial now.",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.682214+00:00",
+      "content_sha256": "c95b4d97a04ba4557c8c3459ddb5911a3b75ceebd641e9b62af47ce7c39a0994",
+      "content_path": "c95b4d97a04ba4557c8c3459ddb5911a3b75ceebd641e9b62af47ce7c39a0994.txt"
+    }
+  ]
+}

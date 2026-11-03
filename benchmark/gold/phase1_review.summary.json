@@ -1,0 +1,38 @@
+{
+  "status": "human_reviewed",
+  "reviewed_by": "硝酸铜",
+  "reviewed_at": "2026-10-28T21:31:56+08:00",
+  "check_counts": {
+    "pricing_basis": {
+      "partial": 2,
+      "supported": 1,
+      "unsupported": 0,
+      "unverifiable": 0
+    },
+    "feature_snippet_support": {
+      "partial": 0,
+      "supported": 3,
+      "unsupported": 0,
+      "unverifiable": 0
+    },
+    "persona_snippet_support": {
+      "partial": 0,
+      "supported": 3,
+      "unsupported": 0,
+      "unverifiable": 0
+    },
+    "swot_snippet_support": {
+      "partial": 0,
+      "supported": 3,
+      "unsupported": 0,
+      "unverifiable": 0
+    },
+    "missing_disclosure": {
+      "honest": 3,
+      "misleading": 0,
+      "not_applicable": 0,
+      "unverifiable": 0
+    }
+  },
+  "note": "Counts of human judgments only; no composite score or automated truth claim."
+}

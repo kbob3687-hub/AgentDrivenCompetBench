@@ -1,0 +1,34 @@
+# Page not found
+
+Unfortunately, we couldn't find this page. Try checking your URL or return to our [home page](https://www.capterra.com/).
+
+Here are some other helpful links:
+
+- [Software Categories](https://www.capterra.com/categories/)
+- [Write a Review](https://reviews.capterra.com/search)
+- [Blogs & Research](https://www.capterra.com/resources/)
+
+or if you're not sure where to go, feel free to email us at [[邮箱]](mailto:[邮箱])
+
+![error 404](https://cdn0.capterra-static.com/error/error-page-404.gif)
+
+Independent research methodology
+
+Capterra’s researchers use a mix of verified reviews, independent research and objective methodologies to bring you selection and ranking information you can trust. While we may earn a referral fee when you visit a provider through our links or speak to an advisor, this has no influence on our research or methodology. [Learn more](https://www.capterra.com/resources/proprietary-data-research/)
+
+How Capterra verifies reviews
+
+Capterra carefully verified over 2.5 million+ reviews to bring you
+authentic software experiences from real users. Our
+human moderators verify that reviewers are real people and that
+reviews are authentic. They use leading tech to analyze text
+quality and to detect plagiarism and generative AI. [Learn more](https://www.capterra.com/resources/how-we-verify-reviews/)
+
+How Capterra ensures transparency
+
+Capterra lists all providers across its website—not just those
+that pay us—so that users can make informed purchase decisions.
+Capterra is free for users. Software providers pay us
+for sponsored profiles to receive web traffic and sales
+opportunities. Sponsored profiles include a link-out icon that
+takes users to the provider’s website. [Learn more](https://www.capterra.com/resources/how-we-ensure-transparency/)

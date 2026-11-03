@@ -1,0 +1,813 @@
+# One tool to run your company.
+
+Trusted by teams at
+
+![](https://images.ctfassets.net/spoqsaf9291f/6gu2Rybt4VdhS2GEEA99PO/da29ed051a3b0821f5dac4868dcb4403/OpenAI-homepage-cropped.svg)![](https://images.ctfassets.net/spoqsaf9291f/6T4QxYfpIzIbZgWUSa5Rb1/8c6cb40bbf2304f8486222d777314b83/Figma_Wordmark__Black_.svg)![](https://images.ctfassets.net/spoqsaf9291f/1TZBxOqNgDNBTJUEkD9Rn2/95219318a8bc7198d69e3fe0190ea94c/Volvo_Spread_Word_Mark_2025_bl.svg)![](https://images.ctfassets.net/spoqsaf9291f/4KBpzIRuWO9Bkoho07RwHW/7e608b80b697431b92ffb144e545cf3c/Ramp.svg)![](https://images.ctfassets.net/spoqsaf9291f/5zvQQUAMUwmWaGbC9qhXpK/633c8d40bbbb2b42faec7ea3339788ff/cursor-logo-mono.svg)
+
+## Essentials for staying organized.
+
+### Free
+
+$0per seat / month
+
+For individuals to organize personal projects and life.
+
+[Sign up](https://www.notion.com/signup)
+
+### Plus\*
+
+$10per seat / month
+
+For small teams and professionals to work together.
+
+[Get started](https://www.notion.com/signup?target=plans)
+
+**Includes:**
+
+- Trial AI capabilities like generating docs, or autofilling databases
+
+
+
+
+
+Trial of Notion AI
+
+- Capture, organize, and act on responses right inside Notion.
+
+
+
+
+
+Basic forms
+
+- Publish a Notion page to the web
+
+
+
+
+
+Basic sites
+
+- Connect multiple Calendars to manage work and time together.
+
+
+
+
+
+Notion Calendar
+
+- Organize hundreds or thousands of items in one place, like projects or tasks
+
+
+
+
+
+Databases including subtasks, dependencies, custom properties and more
+
+
+**Everything in Free, and:**
+
+- Trial AI capabilities like generating docs, or autofilling databases
+
+
+
+
+
+Trial of Notion AI
+
+- Remove Notion branding from public forms
+
+
+
+
+
+Custom forms
+
+- Customize your top header, choose a light or dark theme, add a custom favicon, and integrate with Google Analytics.
+
+
+
+
+
+Custom sites
+
+- Visualize data from databases in different ways (e.g. donut, bar, and line charts).
+
+
+
+
+
+Charts
+
+- Blocks are pieces of content you add to a page (e.g. to-do checkboxes, paragraphs, bullet points, etc.).
+
+
+
+
+
+Collaborative blocks
+
+- A per file size limit may apply to any file that you upload to a Notion page or database.
+
+
+
+
+
+File uploads
+
+- Connect to some tools like Slack & Google Drive
+
+
+
+
+
+Basic connections
+
+
+![OpenAI logo](https://www.notion.com/front-static/logos/generic/en/openai-v2.svg)
+
+> There’s power in a single platform where you can do all your work out of. Notion is that single place.
+
+Nick ErdenbergerGTM, OpenAI
+
+[Watch video→](https://www.notion.com/customers/openai)
+
+## The AI workspace for work that matters.
+
+![](https://www.notion.com/front-static/pages/pricing/notion-agents.png)
+
+### BusinessRecommended
+
+$20per seat / month
+
+For growing businesses to streamline teamwork.
+
+[Get started](https://www.notion.com/signup?target=plans)
+
+### Enterprise\*
+
+Custom pricing
+
+For organizations to operate with scalability, control, and security.
+
+[Contact Sales](https://www.notion.com/contact-sales)
+
+**Everything in Plus, and:**
+
+- Does work for you. Completes complex, multi-step tasks using context from Notion, your connected apps, and the web.
+
+
+
+
+
+Notion Agent
+
+- AI agents handle repetitive tasks autonomously, so your team doesn’t have to.
+
+
+
+
+
+Custom Agents
+
+- Automate your meeting notes and follow-ups, no bot needed
+
+
+
+
+
+AI Meeting Notes
+
+- Search across connected apps like Slack, Github & more
+
+
+
+
+
+Enterprise SearchBeta
+
+- Manage employee access at scale with secure single sign-on.
+
+
+
+
+
+SAML SSO
+
+- Collaborate in Notion databases without giving access to the entire database. Limit access to rows where the collaborator is assigned.
+
+
+
+
+
+Granular database permissions
+
+- Add a verified badge to pages that are up to date. Appears in search results and AI citations.
+
+
+
+
+
+Verify any page
+
+- Create teamspaces that can’t be seen or discovered by anyone except those you add. Great for sensitive information like company planning or performance reviews.
+
+
+
+
+
+Private teamspaces
+
+- Verify ownership of an email domain to access advanced security features including single-sign on.
+
+
+
+
+
+Domain verification
+
+- Connect to GitHub, Asana & more
+
+
+
+
+
+Premium connections
+
+- Extend Notion with custom code to build agent tools, sync external data, and trigger Notion workflows from anywhere
+
+
+
+
+
+WorkersBeta
+
+- Per seat. Used for work where Notion picks the model, like Notion Agent on Auto, AI Meeting Notes, and Database Autofill.
+
+
+
+
+
+1,500 Standard credits / month
+
+- Per seat. Used for work where you pick the model, plus Custom Agents you own.
+
+
+
+
+
+500 Select credits / month
+
+
+**Everything in Business, and:**
+
+- When using Notion AI, our LLM providers utilize zero data retention for Enterprise plan workspaces
+
+
+
+
+
+Zero data retention with LLM providers
+
+- Access the Notion SCIM API to provision and manage users and groups.
+
+
+
+
+
+User provisioning (SCIM)
+
+- Unlock extra permission controls to prevent certain people from sharing pages externally, disable guests, and set workspace-level rules.
+
+
+
+
+
+Advanced security & controls
+
+- Access a detailed log of security and safety-related activity for your workspace account to identify potential security issues, investigate suspicious behavior, or troubleshoot access.
+
+
+
+
+
+Audit log
+
+- Our team of Customer Success Managers are experts to help you get the most out of Notion.
+
+
+
+
+
+Customer success manager
+
+- Connect to SIEM and DLP tools to automatically centralize audit logs & set policies to detect sensitive content in your workspace and trigger automated actions to remediate.
+
+
+
+
+
+Security & Compliance connections (DLP, SIEM)
+
+- Establish ownership of your company domain and take actions on workspaces that belong to your verified domain (request ownership transfer, delete, claim)
+
+
+
+
+
+Domain management
+
+- Connect to even more tools
+
+
+
+
+
+Advanced connections
+
+- Custom credit amounts
+
+### **Notion Credits**
+
+Admins can purchase Notion credits for their workspaces to cover additional AI usage. [Learn more→](https://www.notion.com/help/manage-your-ai-credits)
+
+![OpenAI logo](https://www.notion.com/front-static/logos/generic/en/openai-v2.svg)
+
+> There’s power in a single platform where you can do all your work out of. Notion is that single place.
+
+Nick ErdenbergerGTM, OpenAI
+
+[Watch video→](https://www.notion.com/customers/openai)
+
+\\* Plans may not be available for every workspace.
+
+## Plans and features
+
+Free$0 per seat/month [Sign up](https://www.notion.com/signup)
+
+Plus\*$10 per seat/month [Get started](https://www.notion.com/signup?target=plans)
+
+Business$20 per seat/month [Get started](https://www.notion.com/signup?target=plans)
+
+Enterprise\*Custom pricing [Contact us](https://www.notion.com/contact-sales)
+
+Content
+
+Blocks are pieces of content you add to a page (e.g. to-do checkboxes, paragraphs, bullet points, etc.). Teams who want to try collaborating in Notion can use the Free Plan with up to certain number of blocks before upgrading.
+
+Pages & blocks
+
+Limited for 2+ members
+
+On the Free plan, you can upload images, videos and file attachments up to 5 MB each. Upgrade to a paid plan to upload files up to 5 GB each.
+
+File uploads
+
+Up to 5 MB
+
+Up to 5 GB
+
+Up to 5 GB
+
+Up to 5 GB
+
+Restore your page to a previous version.
+
+Page history
+
+7 days
+
+30 days
+
+90 days
+
+Custom
+
+Add a verified badge to pages that are up to date. Appears in search results and AI citations.
+
+Verify any page
+
+Use Notion offline on the desktop and mobile app.
+
+Offline
+
+Choose pages to download for offline use.
+
+Recents and Favorites auto-download for offline use.
+
+Recents and Favorites auto-download for offline use.
+
+Recents and Favorites auto-download for offline use.
+
+Sharing & collaboration
+
+Guests are external collaborators outside your organization, such as agencies, partners, contractors, or vendors.
+
+External guest limit
+
+10
+
+Create dedicated areas for folks to work together, without creating information silos. People can join the teamspaces that interest them, and leave the ones that don’t.
+
+Teamspaces (open & closed)
+
+Create teamspaces that can’t be seen or discovered by anyone except those you add. Great for sensitive information like company planning or performance reviews.
+
+Teamspaces (private)
+
+Create groups of people according to role or department to streamline page & teamspace permissions.
+
+Permission groups
+
+Override teamspace permissions for specific people or groups, giving you even more control over who has view vs. edit access to content.
+
+Advanced teamspace permissions
+
+Collaborate in Notion databases without giving access to the entire database. Limit access to rows where the collaborator is assigned.
+
+Granular database permissions
+
+Notion AI
+
+Used for work where Notion picks the model, like Notion Agent on Auto, AI Meeting Notes, and Database Autofill.
+
+Standard Credits
+
+Limited Trial
+
+Limited Trial
+
+1500 per seat/month
+
+Custom
+
+Used for work where you pick the model, plus Custom Agents you own and Routines (coming soon).
+
+Select Credits
+
+500 per seat/month
+
+Custom
+
+Chat about anything, generate and edit docs, autofill databases, and find answers across your Notion workspace.
+
+Notion Agent (chat, generate, autofill, translate)
+
+Automatically transcribes your meetings, along with a helpful summary.
+
+Meeting notes
+
+Reusable instructions for agents, shared with your teams.
+
+Skills library
+
+Find quick answers using info across your Notion workspace, and connected tools like Slack, Microsoft Teams, GitHub and more.
+
+Jira, Box, OneDrive, Salesforce, and Asana are currently in Beta.
+
+Enterprise Search
+
+AI agents handle repetitive tasks autonomously, so your team doesn’t have to.
+
+Custom Agents
+
+Run custom code on Notion to extend agents, sync data, and trigger workflows. No infra required.
+
+WorkersBeta
+
+When using Notion AI, our LLM providers utilize zero data retention for Enterprise plan workspaces
+
+Data retention
+
+30 day retention
+
+30 day retention
+
+30 day retention
+
+Zero data retention
+
+Database features
+
+Add subtasks, and link dependencies.
+
+Subtasks and dependencies
+
+Add database properties and filters to organize information.
+
+Custom properties and filtering
+
+Visualize data from databases in different ways (e.g. donut, bar, and line charts).
+
+Charts
+
+1
+
+Capture, organize, and act on responses right inside Notion.
+
+Forms
+
+Basic
+
+Custom
+
+Custom
+
+\+ conditional logic
+
+Custom
+
+\+ conditional logic
+
+Bring charts, tables, and lists into one dashboard for a unified view of your work.
+
+Dashboards
+
+API automations & integrations
+
+Build bespoke integrations to connect your Notion workspace to internal tools and workflows.
+
+Public API
+
+Send real-time updates to your integrations when content changes in Notion.
+
+Webhooks
+
+Paste a link to a GitHub PR, Jira ticket, Figma artboard & more to add a dynamic preview of content in your docs & notes.
+
+Embeds and link previews
+
+Send information from Notion to Slack, and vice versa. Or connect to Zapier to create automated workflows with the tools you rely on.
+
+Connected properties
+
+Same as business
+
+Automatically create pages and new blocks, set status, assignee, and property values, and more.
+
+Automations
+
+Basic
+
+buttons only
+
+Custom
+
+database automations
+
+Same as plus
+
+Same as plus
+
+See up-to-date information from Jira, GitHub & Asana, all synced into Notion as a database.
+
+1-way database syncs
+
+Same as business
+
+Web publishing
+
+Share your pages on the web.
+
+Published pages
+
+Select a custom notion.site domain for your published pages.
+
+notion.site domains
+
+1
+
+5
+
+5
+
+5
+
+Turn on search engine indexing for any Site. Upgrade to a paid plan to customize your title and description metadata.
+
+Search engine indexing (SEO)
+
+Basic
+
+Advanced
+
+Advanced
+
+Advanced
+
+Set a homepage, customize your Site’s favicon and share preview, build a custom header bar, and set light or dark mode.
+
+Site customizations
+
+Connect a custom domain to your Site and remove Notion branding for $8/month/domain paid annually, or $10/month per domain paid monthly.
+
+Custom domains and branding
+
+Pay per domain
+
+Pay per domain
+
+Pay per domain
+
+Admin & security
+
+Create a backup of all the pages and content across your workspace.
+
+Export entire workspace as HTML, Markdown, & CSV
+
+Enable an extra layer of account security with a second method of verification, also known as 2FA or MFA.
+
+2-step verification
+
+Export all your content at once as PDFs. Perfect for legal or compliance backups.
+
+Export entire workspace as PDF
+
+Manage employee access at scale with secure single sign-on.
+
+SAML single sign-on (SSO)
+
+Automatically provision members in and out of your workspace with identity providers like Okta.
+
+User provisioning (SCIM)
+
+Unlock extra permission controls to prevent certain people from sharing pages externally, disable guests, and set workspace-level rules.
+
+Advanced workspace & teamspace security controls
+
+Organization level controls
+
+Organization level controls
+
+Get actionable insights about how folks use your Notion workspace, from the most popular pages to overall traffic. Analytics data begins after Enterprise Plan start date.
+
+Workspace analytics
+
+Designate membership admins who can add and remove members from the workspace and groups, but can’t access other security & billing settings.
+
+Granular admin roles
+
+Access a detailed log of security and safety-related activity for your workspace account to identify potential security issues, investigate suspicious behavior, or troubleshoot access.
+
+Audit log
+
+Admin content search provides Workspace owners visibility into the content of their Notion workspace, letting them filter, search, and troubleshoot permissions.
+
+Admin content search
+
+Establish ownership of your company domain and take actions on workspaces that belong to your verified domain (request ownership transfer, delete, claim)
+
+Domain Management
+
+Consolidate content from multiple workspaces, including users, page content, and permissions, into your main workspace as teamspace(s) that keep their structure.
+
+Workspace consolidation
+
+Custom
+
+Manage the users within your domain, including a dashboard where you can get information and make changes.
+
+Managed users dashboard & controls
+
+Connect to SIEM and DLP tools to automatically centralize audit logs & set policies to detect sensitive content in your workspace and trigger automated actions to remediate.
+
+Security & Compliance connections
+
+Workspace members can send guest invite requests to their workspace owners for review when guests are disabled in the workspace.
+
+Guest invite requests
+
+Control over when pages are deleted from Trash, and how long they are retained afterward.
+
+Custom data retention settings
+
+Admins can auto-delete AI meeting transcripts on a customizable schedule to meet your data retention policies.
+
+AI Meeting Notes transcript deletion
+
+Support
+
+We’re always around to help. Just click the ( ? ) button at the bottom left on desktop, or tap “Help & support” if you’re on mobile.
+
+Priority support
+
+Tailored, proactive around-the-clock support offerings for teams with more specialized needs.
+
+Premium support
+
+Custom
+
+Our team of Customer Success Managers are experts to help you get the most out of Notion.
+
+Customer success manager
+
+Custom
+
+\\* Plans may not be available for every workspace.
+
+## Questions & answers
+
+How does Notion AI use my data?
+
+We follow our standard [data protection practices](https://notion.so/security) to keep your data encrypted and private. Notion AI will not use your data to train our models unless you opt in to a request to share your data.
+
+Any information used to power Notion AI will be shared with AI subprocessors for the sole purpose of providing you with the Notion AI features. We specifically have contractual agreements in place with our AI subprocessors that prohibit the use of customer data to train their models. [Learn more about Notion AI security and privacy practices here](https://www.notion.so/help/notion-ai-security-practices).
+
+Where can I find my invoices?
+
+Workspace admins can access, view, and download your workspace's invoices by going to `Settings & members` → `Billing`, then scrolling to `Invoices`. There you can click on "View invoice" to see the invoice PDF.
+
+What are your accepted payment methods?
+
+We currently accept all major credit and debit card brands.
+
+What is a block?
+
+A block is any single piece of content you add to your page, like a paragraph of text, a to-do item, an image, a code block, an embedded file, etc. Think of your page as being made up of these building blocks. Learn more about blocks [here →](https://www.notion.com/help/what-is-a-block)
+
+What happens when I go over the block storage limit on a Free Plan?
+
+If you’re using a Free Plan workspace by yourself, you’ll be able to add as many pages and blocks as you like.
+
+If you’re using a Free Plan workspace with multiple members, you’ll be able to add a limited number of blocks before you have to upgrade.
+
+When you reach the limit, you can still read, edit, and organize existing content blocks as usual, but you won’t be able to add new content blocks.
+
+Do you offer student discounts?
+
+The Plus Plan (with a 1-member limit) is free for students and educators. Compared to the Free Plan, you’ll be able to add more guests, have access to more version history, and upload larger files.
+
+Just sign up with your school email address and you’ll immediately gain access to these features. Thousands of school email domains are eligible, not just .edu!
+
+For more info & FAQs, [visit the Notion for Education page](https://www.notion.so/help/notion-for-education).
+
+What do the different analytics tiers mean?
+
+**Basic page analytics (Free and Plus Plans):** Includes a list of page viewers as well as a chart displaying views over time.
+
+**Advanced page analytics** **(Business Plan):** Includes everything above as well as a list of page editors.
+
+**Workspace analytics (Enterprise Plan):** Includes everything above as well as user level analytics, analytics on all pages in your workspace, and search analytics for content in your workspace.
+
+How is pricing calculated for the paid plans?
+
+If you upgrade your workspace to one of the paid plans, you will be charged a fee per member.
+
+Guests are free of charge – but they can only access individual pages they are invited to. In other words, guests won’t be able to see all the team pages under the `Teamspaces` section in the left sidebar.
+
+How do I get charged when I add members to my workspace?
+
+When you add a new member to your workspace, they will use an existing paid seat if you have any available in your workspace. If you do not have any existing available paid seats, your count of paid seats will increase by 1. Changes in membership that occur mid-month will create prorated charges based on the amount of time remaining in the billing cycle when the paid seat was added.
+
+For every member you delete from your workspace, you will open up 1 available paid seat. This means you have the option to exchange members in your workspace without paying any additional costs, as long as your total billable seat count remains the same.
+
+You’ll receive an invoice for any charges accrued by changes in membership on your selected payment method, on the day of the month you initially signed up for your subscription.
+
+Each time your billing period starts (monthly or annual), your count of paid seats will be synchronized so it exactly matches the amount of members present in your workspace.
+
+How does adding and removing members work?
+
+Whether you're on a monthly or yearly billing schedule, your account may be charged on a monthly basis if you make changes in membership. If you added members, your account will be charged a prorated amount based on the percentage of the billing cycle left when a user was added. If you removed members, you will not receive credit but instead will still have use of that seat for a different user for the remainder of the billing period.
+
+How are paid seats counted?
+
+A paid seat can be thought of as a license for one member to use your Notion workspace. Workspace owners can view the total paid seat count for their workspace by going to `Settings & members` \> `Billing`. Once you have added a paid seat, you will keep it for the duration of your billing period.
+
+When your billing cycle renews, either monthly or annually, you will be charged for your plan amount multiplied by the number of members in your workspace, plus any prorated charges for new paid seats added in the past month. Your number of paid seats will be recalculated at each renewal to match the number of members present in the workspace.
+
+What happens when I change plans?
+
+- **Upgrading your plan:** Your account will be upgraded and charged immediately. The amount due will be reduced based on the percentage of the billing cycle left at the time the plan was changed.
+
+- **Downgrading your plan:** Your account will be downgraded at the end of your billing cycle. Learn about how your features may be impacted after a downgrade [here →](https://notion.com/help/plan-downgrade)
+
+
+How do I cancel my paid plan?
+
+Your Notion subscription, annual or monthly, will automatically renew until you cancel it. You can cancel your subscription by going to `Settings` in the left-hand sidebar on a desktop computer, then selecting `Billing`, then `Change plan`. After you cancel, you’ll still have access to all the paid features until the end of your billing cycle.
+
+Learn more about billing in [this article](https://www.notion.com/help/billing).
+
+What happens if my payment fails? Like if my credit card expires?
+
+Your account email will be notified after each failed payment. Payments may be retried up to 8 times within the next month.
+
+After this, if the payment did not succeed, your workspace will get restricted to limited-access for a period of time before being downgraded to the Free plan.
+
+Can I change my payment method?
+
+You can change your payment method at any time in your billing settings.
+
+How do refunds work?
+
+Our refund policy is simple. If you believe you've made a mistake signing up for a paid Notion subscription online or in-app, please contact us inside the app or email [[邮箱]](mailto:[邮箱]). We'll be happy to refund you the full amount (not pro-rated) if you downgrade your subscription within three days of signing up for monthly billing, or within 30 days of signing up for annual billing.
+
+If you have accidentally added members to your workspace, you can remove those members at any time. If you’ve been charged for members who were accidentally added, we're happy to provide a refund of the prorated charges if you reach out within three days of the invoice date (please make sure the additional members have been removed from your workspace when writing in).
+
+And if for any reason you're unhappy with Notion, please let us know at [[邮箱]](mailto:[邮箱]) — we'd love to hear your feedback, and will be happy to work with you to create the best experience possible.
+
+What if I live in a region with a mandatory refund policy?
+
+If you live in the European Union, United Kingdom, or another region with a mandatory refund policy, you may be eligible for a monthly subscription refund past 72 hours. For example, customers in the European Union can receive a full refund for a monthly subscription within 14 days of purchase, rather than 72 hours.
+
+To request a refund, please contact us inside the app or email [[邮箱]](mailto:[邮箱]). If you live in a region with a mandatory refund policy, please let us know and we'll be happy to assist you.

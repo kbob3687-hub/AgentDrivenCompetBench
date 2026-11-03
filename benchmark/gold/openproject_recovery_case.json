@@ -1,0 +1,10 @@
+[
+  {
+    "id": "openproject-features-gold-001",
+    "competitors": ["OpenProject"],
+    "required_dimensions": ["features", "pricing", "persona", "swot"],
+    "target_urls": {
+      "OpenProject": ["https://openproject.org/features"]
+    }
+  }
+]

@@ -67,6 +67,7 @@ class TestFanOutSubAgent:
         """Default fetch path must not spend Jina/Firecrawl credits."""
         monkeypatch.delenv("ENABLE_JINA", raising=False)
         monkeypatch.delenv("ENABLE_FIRECRAWL", raising=False)
+        monkeypatch.delenv("FIRECRAWL_API_KEY", raising=False)
 
         async def fake_allowed(url: str):
             return True, "allowed"
@@ -214,3 +215,86 @@ class TestFanOutSubAgent:
         await asyncio.gather(*tasks)
 
         assert max_concurrent <= 4
+
+
+class TestCollectorRunConcurrency:
+    """CollectorAgent.run must bound in-flight fetches and keep claims in URL order."""
+
+    @pytest.fixture
+    def collector(self):
+        with (
+            patch("agents.base.Langfuse"),
+            patch("agents.base.anthropic.AsyncAnthropic"),
+            patch("agents.base.AsyncOpenAI"),
+        ):
+            from agents.collector.agent import CollectorAgent
+
+            return CollectorAgent()
+
+    @staticmethod
+    def _message(urls: list[str]):
+        from schemas.message import AgentMessage, MessageType
+
+        return AgentMessage(
+            message_id="test",
+            trace_id="test",
+            message_type=MessageType.TASK_ASSIGN,
+            from_agent="orchestrator",
+            to_agent="collector",
+            function_name="collect_competitor_data",
+            arguments={
+                "target": "Fixture",
+                "collect_type": "web_scrape",
+                "scope": ["pricing"],
+                "target_urls": urls,
+                "max_sources": len(urls),
+            },
+        )
+
+    @pytest.mark.asyncio
+    async def test_fetch_concurrency_is_capped_and_order_preserved(self, collector, monkeypatch):
+        monkeypatch.setenv("COLLECT_FETCH_CONCURRENCY", "2")
+        in_flight = 0
+        peak = 0
+
+        async def fetch(self, url):
+            nonlocal in_flight, peak
+            in_flight += 1
+            peak = max(peak, in_flight)
+            # Later URLs finish first, so completion order is the reverse of the plan.
+            await asyncio.sleep(0.05 if url.endswith("/0") else 0.01)
+            in_flight -= 1
+            return FetchResult(url=url, success=True, title="Page", content="Text")
+
+        async def extract(self, **kwargs):
+            return [{"claim": kwargs["url"]}]
+
+        monkeypatch.setattr(type(collector), "_fetch_url", fetch)
+        monkeypatch.setattr(type(collector), "_extract_info", extract)
+
+        urls = [f"https://example.com/{i}" for i in range(4)]
+        result = await collector.run(self._message(urls))
+        claims = [item["claim"] for item in result.arguments["claims"]]
+        assert peak <= 2
+        assert in_flight == 0
+        assert claims == urls
+        assert result.arguments["sources_fetched"] == 4
+
+    @pytest.mark.asyncio
+    async def test_failed_fetch_does_not_stop_others(self, collector, monkeypatch):
+        async def fetch(self, url):
+            if url.endswith("/1"):
+                return FetchResult(url=url, success=False, error="boom")
+            return FetchResult(url=url, success=True, title="Page", content="Text")
+
+        async def extract(self, **kwargs):
+            return [{"claim": kwargs["url"]}]
+
+        monkeypatch.setattr(type(collector), "_fetch_url", fetch)
+        monkeypatch.setattr(type(collector), "_extract_info", extract)
+
+        urls = ["https://example.com/0", "https://example.com/1", "https://example.com/2"]
+        result = await collector.run(self._message(urls))
+        assert [item["claim"] for item in result.arguments["claims"]] == [urls[0], urls[2]]
+        assert result.arguments["sources_failed"] == 1
+        assert result.arguments["errors"] == [f"{urls[1]}: boom"]

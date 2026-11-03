@@ -1,0 +1,51 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T14:12:08.750980+00:00",
+  "source_run": "capture-20261102T140832Z-fa359a9b",
+  "source_tasks": [
+    "monday-normal-001-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://monday.com/case-studies",
+      "title": "monday.com Reviews | Read what users really think about monday.com",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:34.205150+00:00",
+      "content_sha256": "835766179bb0515e1fcbe3f73bf5a1a1be50e530d63ecf793efeda5b063d5d96",
+      "content_path": "835766179bb0515e1fcbe3f73bf5a1a1be50e530d63ecf793efeda5b063d5d96.txt"
+    },
+    {
+      "url": "https://monday.com/features",
+      "title": "The AI Workspace for People & Agents | monday.com",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:34.203141+00:00",
+      "content_sha256": "306e5f08a8ac8764d5eda6b68f30a59a7ce23dd9611561a2a14dba4d3c9a824a",
+      "content_path": "306e5f08a8ac8764d5eda6b68f30a59a7ce23dd9611561a2a14dba4d3c9a824a.txt"
+    },
+    {
+      "url": "https://monday.com/pricing",
+      "title": "monday.com pricing and plans",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:34.202138+00:00",
+      "content_sha256": "eca84ab28adcd0d7a87e0bafd468dc6ff477026c86adefedf437270c2f961996",
+      "content_path": "eca84ab28adcd0d7a87e0bafd468dc6ff477026c86adefedf437270c2f961996.txt"
+    },
+    {
+      "url": "https://www.g2.com/products/monday-com/reviews",
+      "title": "monday AI Work Platform Reviews 2026: Details, Pricing, & Features | G2",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:12:08.254680+00:00",
+      "content_sha256": "ab83bacce77fb82d34371a231811440dcbedef8d3fea571c324d1733a2d819e5",
+      "content_path": "ab83bacce77fb82d34371a231811440dcbedef8d3fea571c324d1733a2d819e5.txt"
+    }
+  ]
+}

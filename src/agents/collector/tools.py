@@ -7,7 +7,6 @@ Reddit 走专用 JSON API，不经过降级链。
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
 import re
 from datetime import datetime
@@ -435,7 +434,9 @@ async def reddit_fetch(url: str, timeout: float = 20.0) -> FetchResult:
             fetch_method="reddit",
         )
     except Exception as e:
-        return FetchResult(url=url, success=False, error=f"{type(e).__name__}: {e}", fetch_method="reddit")
+        return FetchResult(
+            url=url, success=False, error=f"{type(e).__name__}: {e}", fetch_method="reddit"
+        )
 
 
 def _extract_title(markdown_content: str) -> str:

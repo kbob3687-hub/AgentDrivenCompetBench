@@ -103,7 +103,9 @@ class FeedbackRecord(BaseModel):
 
     # ---- 问题描述 ----
     issue_type: str = Field(
-        description="问题类型: missing_source/low_confidence/schema_violation/factual_error/inconsistency"
+        description=(
+            "问题类型: missing_source/low_confidence/schema_violation/factual_error/inconsistency"
+        )
     )
     issue_description: str = Field(description="问题详细描述")
     severity: str = Field(default="major", description="严重程度: critical/major/minor")

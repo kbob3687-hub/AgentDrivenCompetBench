@@ -23,7 +23,11 @@ from agents.qa.agent import QAAgent
 from agents.writer.agent import WriterAgent
 from api.events import EventType, SSEEvent, event_bus
 from orchestrator.edges import qa_routing
-from orchestrator.routing import classify_no_profile_failure
+from orchestrator.routing import (
+    classify_no_profile_failure,
+    derive_repair_action,
+    repair_context,
+)
 from orchestrator.scoring import iteration_improvement_bonus
 from orchestrator.state import FeedbackRecord, GraphState
 from schemas.message import AgentMessage, MessageContext, MessageType
@@ -97,12 +101,19 @@ def _profile_to_preview_markdown(profile: dict[str, Any]) -> str:
     swot = profile.get("swot") or []
     if swot:
         lines.append("## SWOT 分析")
-        category_map = {"strength": "优势", "weakness": "劣势", "opportunity": "机会", "threat": "威胁"}
+        category_map = {
+            "strength": "优势",
+            "weakness": "劣势",
+            "opportunity": "机会",
+            "threat": "威胁",
+        }
         for item in swot:
             cat = category_map.get(item.get("category", ""), item.get("category", ""))
             lines.append(f"### {cat}")
             for claim_obj in (item.get("items") or [])[:4]:
-                claim_text = claim_obj.get("claim", "") if isinstance(claim_obj, dict) else str(claim_obj)
+                claim_text = (
+                    claim_obj.get("claim", "") if isinstance(claim_obj, dict) else str(claim_obj)
+                )
                 lines.append(f"- {claim_text[:100]}")
         lines.append("")
 
@@ -222,6 +233,7 @@ def _apply_manual_url_resume(
     update["discovered_urls"] = urls
     update["collect_errors"] = []
     update["qa_target_agent"] = "collector"
+    update["repair_action"] = "fetch_more"
     update["suggested_strategy"] = ""
     update["final_status"] = "running"
 
@@ -944,13 +956,15 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
         added += 1
 
     if iteration > 1:
+        drawn = len(new_claims_this_iter)
+        deduped = drawn - added
         await _publish(
             task_id,
             EventType.LOG,
             {
                 "message": (
                     f"增量累积: 旧证据 {len(prev_claims)} 条保留 + 本轮新增 {added} 条 "
-                    f"(本轮抽到 {len(new_claims_this_iter)} 条，去重 {len(new_claims_this_iter) - added} 条)"
+                    f"(本轮抽到 {drawn} 条，去重 {deduped} 条)"
                 ),
                 "agent": "collector",
             },
@@ -1039,6 +1053,7 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             "dimensions_requested": state.get("collect_scope", ["pricing", "features"]),
             "industry_fields": state.get("industry_fields", []),
             "industry": state.get("industry", ""),
+            **repair_context(state, "analyst"),
         },
         state=state,
     )
@@ -1083,7 +1098,9 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             input_tokens=agent.token_usage["input"],
             output_tokens=agent.token_usage["output"],
             prompt_preview=f"分析 {len(claims)} 条claims，维度: {state.get('collect_scope', [])}",
-            output_preview=f"生成 CompetitorProfile，完整度 {args.get('completeness_score', 0):.0%}",
+            output_preview=(
+                f"生成 CompetitorProfile，完整度 {args.get('completeness_score', 0):.0%}"
+            ),
         )
     )
 
@@ -1130,6 +1147,7 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
         arguments={
             "competitor_name": state["competitor_name"],
             "profile": profile,
+            **repair_context(state, "writer"),
         },
         state=state,
     )
@@ -1162,7 +1180,10 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
             input_tokens=agent.token_usage["input"],
             output_tokens=agent.token_usage["output"],
             prompt_preview=f"将 {state['competitor_name']} 的 profile 转为 Markdown 报告",
-            output_preview=f"生成报告 {args.get('report_length', 0)} 字，{args.get('footnote_count', 0)} 个脚注",
+            output_preview=(
+                f"生成报告 {args.get('report_length', 0)} 字，"
+                f"{args.get('footnote_count', 0)} 个脚注"
+            ),
         )
     )
 
@@ -1238,6 +1259,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             "feedback_history": history,
             "iteration": iteration + 1,
             "qa_target_agent": target_agent,
+            "repair_action": derive_repair_action("reject", target_agent),
             "missing_dimensions": missing_dimensions,
             "suggested_strategy": suggested_strategy,
         }
@@ -1532,7 +1554,10 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
                 task_id,
                 EventType.LOG,
                 {
-                    "message": f"Collector 质量不达标: 缺少/不足 {', '.join(missing_labels)} 的可验证证据",
+                    "message": (
+                        "Collector 质量不达标: 缺少/不足 "
+                        f"{', '.join(missing_labels)} 的可验证证据"
+                    ),
                     "agent": "qa",
                 },
             )
@@ -1593,6 +1618,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         "iteration": iteration + 1,
         "missing_dimensions": missing_dims,
         "qa_target_agent": target_agent,
+        "repair_action": derive_repair_action(verdict, target_agent),
     }
 
     # 自适应策略降级：QA 建议下一轮换数据源
@@ -1604,7 +1630,10 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             task_id,
             EventType.LOG,
             {
-                "message": f"QA 触发策略降级建议: {current_strategy} → {suggested_strategy}（下一轮 Collector 重新发现数据源）",
+                "message": (
+                    f"QA 触发策略降级建议: {current_strategy} → {suggested_strategy}"
+                    "（下一轮 Collector 重新发现数据源）"
+                ),
                 "agent": "qa",
             },
         )
@@ -1617,8 +1646,14 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             model=agent.config.model,
             input_tokens=agent.token_usage["input"],
             output_tokens=agent.token_usage["output"],
-            prompt_preview=f"质检 {state['competitor_name']} profile + 报告，期望维度: {state.get('expected_dimensions', [])}",
-            output_preview=f"verdict={verdict}, score={score:.2f}, issues={issues_count}, missing={missing_dims}",
+            prompt_preview=(
+                f"质检 {state['competitor_name']} profile + 报告，"
+                f"期望维度: {state.get('expected_dimensions', [])}"
+            ),
+            output_preview=(
+                f"verdict={verdict}, score={score:.2f}, "
+                f"issues={issues_count}, missing={missing_dims}"
+            ),
         )
     )
 
@@ -1788,6 +1823,14 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     return update
 
 
+def _route_after_qa(state: GraphState) -> str:
+    if state.get("error"):
+        return "end"
+    if state.get("repair_action") == "drop_or_disclose":
+        return "analyst"
+    return qa_routing(state)
+
+
 def build_sse_graph() -> Any:
     """Build the LangGraph StateGraph with SSE-enabled nodes."""
     graph = StateGraph(GraphState)
@@ -1805,7 +1848,7 @@ def build_sse_graph() -> Any:
 
     graph.add_conditional_edges(
         "qa",
-        qa_routing,
+        _route_after_qa,
         {
             "end": END,
             "collector": "collector",
@@ -1858,7 +1901,10 @@ async def run_analysis(
             task_id,
             EventType.LOG,
             {
-                "message": f"已加载行业模板: {template.display_name} ({len(template.fields)}个扩展字段, 策略: {discovery_strategy})",
+                "message": (
+                    f"已加载行业模板: {template.display_name} "
+                    f"({len(template.fields)}个扩展字段, 策略: {discovery_strategy})"
+                ),
                 "agent": "collector",
             },
         )
@@ -1883,6 +1929,7 @@ async def run_analysis(
             "max_iterations": max_iterations,
             "feedback_history": [],
             "missing_dimensions": [],
+            "repair_action": "",
             "trace_id": task_id,
             "started_at": datetime.now().isoformat(),
             "final_status": "running",

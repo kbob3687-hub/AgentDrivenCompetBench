@@ -1,0 +1,17 @@
+[
+  {
+    "id": "notion-core-001",
+    "competitors": ["Notion"],
+    "required_dimensions": ["features", "pricing", "persona", "swot"]
+  },
+  {
+    "id": "clickup-core-001",
+    "competitors": ["ClickUp"],
+    "required_dimensions": ["features", "pricing", "persona", "swot"]
+  },
+  {
+    "id": "notion-vs-clickup-001",
+    "competitors": ["Notion", "ClickUp"],
+    "required_dimensions": ["features", "pricing", "persona", "swot"]
+  }
+]

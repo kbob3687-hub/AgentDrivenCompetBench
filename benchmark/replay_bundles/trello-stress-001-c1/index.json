@@ -1,0 +1,31 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T14:08:34.155530+00:00",
+  "source_run": "capture-20261102T140832Z-fa359a9b",
+  "source_tasks": [
+    "trello-stress-001-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://trello.com/pricing",
+      "title": "Which Trello Plan Is Best for You? Our Pricing Guide Can Help",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:34.099480+00:00",
+      "content_sha256": "5df3bdd6dfbec91f138538b0cb617c5708ca57b6301be679edcfde521135bd4e",
+      "content_path": "5df3bdd6dfbec91f138538b0cb617c5708ca57b6301be679edcfde521135bd4e.txt"
+    },
+    {
+      "url": "https://www.g2.com/products/trello/reviews",
+      "title": "Trello Reviews 2026: Details, Pricing, & Features | G2",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:34.101465+00:00",
+      "content_sha256": "8e45dd4b20de71ac9204c28bbee385f2f0771ace40c56a55ce8aaa9de0a09bca",
+      "content_path": "8e45dd4b20de71ac9204c28bbee385f2f0771ace40c56a55ce8aaa9de0a09bca.txt"
+    }
+  ]
+}

@@ -1,0 +1,226 @@
+[
+  {
+    "id": "notion-normal-001",
+    "competitors": [
+      "Notion"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "Notion": [
+        "https://www.notion.so/pricing",
+        "https://www.notion.so/product",
+        "https://www.notion.so/customers",
+        "https://www.g2.com/products/notion/reviews"
+      ]
+    }
+  },
+  {
+    "id": "notion-stress-001",
+    "competitors": [
+      "Notion"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "Notion": [
+        "https://www.notion.so/pricing"
+      ]
+    }
+  },
+  {
+    "id": "clickup-normal-001",
+    "competitors": [
+      "ClickUp"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "ClickUp": [
+        "https://clickup.com/pricing",
+        "https://clickup.com/features",
+        "https://clickup.com/customers",
+        "https://www.g2.com/products/clickup/reviews"
+      ]
+    }
+  },
+  {
+    "id": "clickup-stress-001",
+    "competitors": [
+      "ClickUp"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "ClickUp": [
+        "https://clickup.com/pricing",
+        "https://clickup.com/customers"
+      ]
+    }
+  },
+  {
+    "id": "openproject-normal-001",
+    "competitors": [
+      "OpenProject"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "OpenProject": [
+        "https://www.openproject.org/pricing",
+        "https://www.openproject.org/features",
+        "https://www.openproject.org/docs/"
+      ]
+    }
+  },
+  {
+    "id": "openproject-stress-001",
+    "competitors": [
+      "OpenProject"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "OpenProject": [
+        "https://www.openproject.org/pricing"
+      ]
+    }
+  },
+  {
+    "id": "asana-normal-001",
+    "competitors": [
+      "Asana"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "Asana": [
+        "https://asana.com/pricing",
+        "https://asana.com/product",
+        "https://asana.com/customers",
+        "https://www.g2.com/products/asana/reviews"
+      ]
+    }
+  },
+  {
+    "id": "asana-stress-001",
+    "competitors": [
+      "Asana"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "Asana": [
+        "https://asana.com/pricing",
+        "https://www.g2.com/products/asana/reviews"
+      ]
+    }
+  },
+  {
+    "id": "trello-normal-001",
+    "competitors": [
+      "Trello"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "Trello": [
+        "https://trello.com/pricing",
+        "https://trello.com/tour",
+        "https://www.g2.com/products/trello/reviews"
+      ]
+    }
+  },
+  {
+    "id": "trello-stress-001",
+    "competitors": [
+      "Trello"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "Trello": [
+        "https://trello.com/pricing",
+        "https://www.g2.com/products/trello/reviews"
+      ]
+    }
+  },
+  {
+    "id": "monday-normal-001",
+    "competitors": [
+      "Monday.com"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "Monday.com": [
+        "https://monday.com/pricing",
+        "https://monday.com/features",
+        "https://monday.com/case-studies",
+        "https://www.g2.com/products/monday-com/reviews"
+      ]
+    }
+  },
+  {
+    "id": "monday-stress-001",
+    "competitors": [
+      "Monday.com"
+    ],
+    "required_dimensions": [
+      "features",
+      "pricing",
+      "persona",
+      "swot"
+    ],
+    "target_urls": {
+      "Monday.com": [
+        "https://monday.com/pricing",
+        "https://www.g2.com/products/monday-com/reviews"
+      ]
+    }
+  }
+]

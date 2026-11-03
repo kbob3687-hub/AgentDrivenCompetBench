@@ -7,6 +7,32 @@ from typing import Any
 from orchestrator.state import GraphState
 
 
+def derive_repair_action(verdict: str, target_agent: str) -> str:
+    if verdict not in ("revise", "reject"):
+        return ""
+    if target_agent in ("analyst", "writer"):
+        return "repair_content"
+    return "fetch_more"
+
+
+def repair_context(state: GraphState, agent: str) -> dict[str, Any]:
+    action = state.get("repair_action", "")
+    target = state.get("qa_target_agent", "")
+    is_recipient = target == agent or (action == "drop_or_disclose" and agent == "analyst")
+    if action not in ("repair_content", "drop_or_disclose") or not is_recipient:
+        action = ""
+        issues: list[dict[str, Any]] = []
+    else:
+        issues = state.get("qa_issues", [])
+
+    context: dict[str, Any] = {"qa_issues": issues, "repair_action": action}
+    if agent == "analyst":
+        context["previous_profile"] = state.get("profile", {}) if action else {}
+    elif agent == "writer":
+        context["previous_report"] = state.get("report_markdown", "") if action else ""
+    return context
+
+
 def _shorten(value: str, limit: int = 260) -> str:
     value = " ".join(str(value).split())
     if len(value) <= limit:

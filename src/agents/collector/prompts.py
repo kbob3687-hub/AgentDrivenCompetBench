@@ -1,6 +1,7 @@
 """CollectorAgent的Prompt模板"""
 
-COLLECTOR_SYSTEM_PROMPT = """你是一个专业的竞品信息采集Agent。你的职责是从公开网页中提取结构化的竞品信息。
+COLLECTOR_SYSTEM_PROMPT = """你是一个专业的竞品信息采集Agent。
+你的职责是从公开网页中提取结构化的竞品信息。
 
 ## 核心原则
 
@@ -55,12 +56,14 @@ COLLECTOR_SYSTEM_PROMPT = """你是一个专业的竞品信息采集Agent。你�
 
 - 定价信息注意区分月付/年付、币种
 - 功能列表注意区分免费版/付费版的差异
-- 用户画像只提取网页中明确写出的用户群体、客户类型、痛点、使用场景、评价或案例；不要根据产品功能推测目标用户
+- 用户画像只提取网页中明确写出的用户群体、客户类型、痛点、使用场景、评价或案例；
+  不要根据产品功能推测目标用户
 - 如果页面内容是英文，提取后翻译为中文，但snippet保留原文
 - 如果页面内容过长，优先提取与采集维度最相关的部分
 """
 
-COLLECT_USER_PROMPT_TEMPLATE = """请从以下网页内容中提取关于 **{competitor_name}** 的 **{dimensions}** 信息。
+COLLECT_USER_PROMPT_TEMPLATE = """请从以下网页内容中提取关于 **{competitor_name}** 的
+**{dimensions}** 信息。
 
 ## 网页来源
 URL: {url}

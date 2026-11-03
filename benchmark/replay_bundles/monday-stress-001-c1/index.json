@@ -1,0 +1,31 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T14:12:08.901781+00:00",
+  "source_run": "capture-20261102T140832Z-fa359a9b",
+  "source_tasks": [
+    "monday-stress-001-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://monday.com/pricing",
+      "title": "monday.com pricing and plans",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:34.361630+00:00",
+      "content_sha256": "eca84ab28adcd0d7a87e0bafd468dc6ff477026c86adefedf437270c2f961996",
+      "content_path": "eca84ab28adcd0d7a87e0bafd468dc6ff477026c86adefedf437270c2f961996.txt"
+    },
+    {
+      "url": "https://www.g2.com/products/monday-com/reviews",
+      "title": "monday AI Work Platform Reviews 2026: Details, Pricing, & Features | G2",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:12:08.258682+00:00",
+      "content_sha256": "ab83bacce77fb82d34371a231811440dcbedef8d3fea571c324d1733a2d819e5",
+      "content_path": "ab83bacce77fb82d34371a231811440dcbedef8d3fea571c324d1733a2d819e5.txt"
+    }
+  ]
+}

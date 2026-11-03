@@ -6,10 +6,12 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
+from contextvars import ContextVar
 from datetime import datetime
-from typing import Any
+from typing import Any, Callable
 
 from agents.base import AgentConfig, BaseAgent
 from agents.collector.compliance import is_allowed_by_robots, redact_pii
@@ -32,6 +34,31 @@ def _env_flag(name: str, default: bool = False) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def fetch_concurrency() -> int:
+    value = os.getenv("COLLECT_FETCH_CONCURRENCY", "4")
+    try:
+        limit = int(value)
+    except ValueError as exc:
+        raise ValueError(f"COLLECT_FETCH_CONCURRENCY must be an integer, got {value!r}") from exc
+    if limit < 1:
+        raise ValueError("COLLECT_FETCH_CONCURRENCY must be >= 1")
+    return limit
+
+
+# Optional observer used by Benchmark to preserve the exact redacted text seen
+# by Collector. Normal API/standalone execution leaves it unset.
+source_fetch_observer: ContextVar[Callable[[FetchResult], None] | None] = ContextVar(
+    "source_fetch_observer", default=None
+)
+
+# Optional replay provider used by Benchmark to serve frozen snapshot text.
+# When set, _fetch_url never touches the network; a URL outside the bundle
+# raises instead of silently falling back to a live fetch.
+snapshot_replay_provider: ContextVar[Callable[[str], FetchResult] | None] = ContextVar(
+    "snapshot_replay_provider", default=None
+)
+
+
 class CollectorAgent(BaseAgent):
     """信息采集Agent
 
@@ -49,7 +76,7 @@ class CollectorAgent(BaseAgent):
         return AgentConfig(
             provider="openai_compat",
             model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
-            max_tokens=4096,
+            max_tokens=16384,
             temperature=0.0,
         )
 
@@ -69,34 +96,53 @@ class CollectorAgent(BaseAgent):
         urls = request.target_urls
         if not urls:
             urls = self._get_default_urls(request.target, request.scope)
+        # A URL can appear in several discovered dimensions. Fetch it once per
+        # collection attempt, before applying the source limit.
+        urls = list(dict.fromkeys(urls))[: request.max_sources]
 
-        # 采集所有URL
+        # 采集所有URL：URL 级并发（信号量限流），结果按 urls 顺序聚合，
+        # 与串行版本产出相同的 claims 顺序，便于 A/B 对比。
         all_claims: list[dict[str, Any]] = []
         fetch_errors: list[str] = []
+        semaphore = asyncio.Semaphore(min(fetch_concurrency(), max(len(urls), 1)))
 
-        for url in urls[: request.max_sources]:
-            print(f"  [Collector] 正在抓取: {url[:60]}...")
-            fetch_result = await self._fetch_url(url)
+        async def process_url(url: str) -> tuple[list[dict[str, Any]], str | None]:
+            async with semaphore:
+                print(f"  [Collector] 正在抓取: {url[:60]}...")
+                fetch_result = await self._fetch_url(url)
+                observer = source_fetch_observer.get()
+                if observer is not None:
+                    observer(fetch_result.model_copy(deep=True))
 
-            if not fetch_result.success:
-                print(f"  [Collector] 失败: {fetch_result.error}")
-                fetch_errors.append(f"{url}: {fetch_result.error}")
+                if not fetch_result.success:
+                    print(f"  [Collector] 失败: {fetch_result.error}")
+                    return [], f"{url}: {fetch_result.error}"
+
+                print(f"  [Collector] 成功: {len(fetch_result.content)} 字符")
+
+                # 内容过长时截断，避免超出上下文窗口
+                content = self._truncate_content(fetch_result.content, max_chars=12000)
+
+                # 调用LLM提取结构化信息
+                extracted = await self._extract_info(
+                    competitor_name=request.target,
+                    dimensions=request.scope,
+                    url=url,
+                    title=fetch_result.title,
+                    content=content,
+                    snapshot_hash=fetch_result.snapshot_hash,
+                )
+                return extracted, None
+
+        results = await asyncio.gather(*(process_url(url) for url in urls), return_exceptions=True)
+        for url, result in zip(urls, results, strict=True):
+            if isinstance(result, BaseException):
+                print(f"  [Collector] 异常: {url[:60]}: {type(result).__name__}: {result}")
+                fetch_errors.append(f"{url}: {type(result).__name__}: {result}")
                 continue
-
-            print(f"  [Collector] 成功: {len(fetch_result.content)} 字符")
-
-            # 内容过长时截断，避免超出上下文窗口
-            content = self._truncate_content(fetch_result.content, max_chars=12000)
-
-            # 调用LLM提取结构化信息
-            extracted = await self._extract_info(
-                competitor_name=request.target,
-                dimensions=request.scope,
-                url=url,
-                title=fetch_result.title,
-                content=content,
-                snapshot_hash=fetch_result.snapshot_hash,
-            )
+            extracted, error = result
+            if error:
+                fetch_errors.append(error)
             all_claims.extend(extracted)
 
         # 构造响应
@@ -108,6 +154,7 @@ class CollectorAgent(BaseAgent):
                 "claims": all_claims,
                 "sources_fetched": len(urls) - len(fetch_errors),
                 "sources_failed": len(fetch_errors),
+                "source_urls_attempted": urls,
                 "errors": fetch_errors,
                 "dimensions_requested": request.scope,
             },
@@ -120,8 +167,12 @@ class CollectorAgent(BaseAgent):
     async def _fetch_url(self, url: str) -> FetchResult:
         """获取URL内容。
 
+        Replay 模式优先：命中冻结快照提供者时绝不联网。
         Firecrawl（有key时）→ 直接HTTP → Playwright。
         """
+        provider = snapshot_replay_provider.get()
+        if provider is not None:
+            return provider(url)
 
         allowed, reason = await is_allowed_by_robots(url)
         if not allowed:

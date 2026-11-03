@@ -1,0 +1,51 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T14:08:33.046845+00:00",
+  "source_run": "capture-20261102T140832Z-fa359a9b",
+  "source_tasks": [
+    "notion-normal-001-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://www.g2.com/products/notion/reviews",
+      "title": "Notion Reviews 2026: Details, Pricing, & Features | G2",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:32.945575+00:00",
+      "content_sha256": "6b1fa023637293ecc3da85b63313e65cccdde44d1aa1603230326b53c7d54ea5",
+      "content_path": "6b1fa023637293ecc3da85b63313e65cccdde44d1aa1603230326b53c7d54ea5.txt"
+    },
+    {
+      "url": "https://www.notion.so/customers",
+      "title": "Notion Customer Stories",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:32.944572+00:00",
+      "content_sha256": "b70468b11ba0274d2593f3482796a2e2af6983d4c8ad8c6834a08d823b270557",
+      "content_path": "b70468b11ba0274d2593f3482796a2e2af6983d4c8ad8c6834a08d823b270557.txt"
+    },
+    {
+      "url": "https://www.notion.so/pricing",
+      "title": "Notion Pricing Plans: Free, Plus, Business, & Enterprise.",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:32.941584+00:00",
+      "content_sha256": "14f94952760d709418f3bf31e3082a4a32fe44b57bec61d6e1329cbde3843d91",
+      "content_path": "14f94952760d709418f3bf31e3082a4a32fe44b57bec61d6e1329cbde3843d91.txt"
+    },
+    {
+      "url": "https://www.notion.so/product",
+      "title": "The AI workspace that works for you. | Notion",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:32.943575+00:00",
+      "content_sha256": "f6d3fc6f7453b3d2f8625cadcbcb7059bd261fc3d640b45654f39573e6be13ee",
+      "content_path": "f6d3fc6f7453b3d2f8625cadcbcb7059bd261fc3d640b45654f39573e6be13ee.txt"
+    }
+  ]
+}

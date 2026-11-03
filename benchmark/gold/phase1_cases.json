@@ -1,0 +1,35 @@
+[
+  {
+    "id": "notion-gold-001",
+    "competitors": ["Notion"],
+    "required_dimensions": ["features", "pricing", "persona", "swot"],
+    "target_urls": {
+      "Notion": [
+        "https://www.notion.com/pricing",
+        "https://www.notion.com/product"
+      ]
+    }
+  },
+  {
+    "id": "clickup-gold-001",
+    "competitors": ["ClickUp"],
+    "required_dimensions": ["features", "pricing", "persona", "swot"],
+    "target_urls": {
+      "ClickUp": [
+        "https://clickup.com/pricing",
+        "https://clickup.com/features"
+      ]
+    }
+  },
+  {
+    "id": "openproject-gold-001",
+    "competitors": ["OpenProject"],
+    "required_dimensions": ["features", "pricing", "persona", "swot"],
+    "target_urls": {
+      "OpenProject": [
+        "https://openproject.org/pricing",
+        "https://openproject.org/features"
+      ]
+    }
+  }
+]

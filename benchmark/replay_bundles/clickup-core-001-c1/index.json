@@ -1,0 +1,61 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T13:09:39.736494+00:00",
+  "source_run": "20261101T121038Z-ca0c76a4",
+  "source_tasks": [
+    "clickup-core-001-r1-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://clickup.com/customers",
+      "title": "ClickUp™ Customer Stories",
+      "success": true,
+      "error": null,
+      "fetch_method": "direct_http",
+      "observed_at": "2026-11-01T12:14:43.276702+00:00",
+      "content_sha256": "ed302d5d34861db0a812a5e74e756c984efc9519ce58010d7aae38701ffdfed4",
+      "content_path": "ed302d5d34861db0a812a5e74e756c984efc9519ce58010d7aae38701ffdfed4.txt"
+    },
+    {
+      "url": "https://clickup.com/features",
+      "title": "ClickUp Features: All the features, without all the mess | ClickUp",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-01T12:14:04.179948+00:00",
+      "content_sha256": "fa3216835650dad460072b98c2e6160dec5e1b31ec79e38dd252d4f13578cf27",
+      "content_path": "fa3216835650dad460072b98c2e6160dec5e1b31ec79e38dd252d4f13578cf27.txt"
+    },
+    {
+      "url": "https://clickup.com/pricing",
+      "title": "ClickUp Pricing and Plans",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-01T12:14:03.276471+00:00",
+      "content_sha256": "49ccccc8fc2f9d6f25f91ff56ddc8f0543bb4f72f25cce70db3f80ab822c6931",
+      "content_path": "49ccccc8fc2f9d6f25f91ff56ddc8f0543bb4f72f25cce70db3f80ab822c6931.txt"
+    },
+    {
+      "url": "https://www.capterra.com/p/1/clickup/",
+      "title": "The page you were looking for doesn't exist (404)",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-01T12:15:01.492749+00:00",
+      "content_sha256": "002d1171d717eb284c31c2228befb06230e4a779cdbf5f8306b92050f15c8abc",
+      "content_path": "002d1171d717eb284c31c2228befb06230e4a779cdbf5f8306b92050f15c8abc.txt"
+    },
+    {
+      "url": "https://www.g2.com/products/clickup/reviews",
+      "title": "ClickUp Reviews 2026: Details, Pricing, & Features | G2",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-01T12:14:45.808245+00:00",
+      "content_sha256": "7ec5e342d168d409f9845cb1cf7472f2b3416403406d75b1a9433129eb32bd13",
+      "content_path": "7ec5e342d168d409f9845cb1cf7472f2b3416403406d75b1a9433129eb32bd13.txt"
+    }
+  ]
+}

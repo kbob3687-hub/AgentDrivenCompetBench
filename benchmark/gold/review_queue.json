@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "checks": [
+    {"id": "N1", "task": "notion-qa-pass", "criterion": "pricing_basis", "locator": "report_markdown:## 2. 定价分析", "focus": "Free、Plus、Business、Enterprise 的公开价格与定价依据", "source_urls": ["https://www.notion.so/pricing"]},
+    {"id": "N2", "task": "notion-qa-pass", "criterion": "snippet_support", "locator": "profile.feature_tree[0].sub_features[0].description", "focus": "Free 计划提供生成文档和数据库自动填充的 AI 试用", "source_urls": ["https://www.notion.so/pricing"]},
+    {"id": "N3", "task": "notion-qa-pass", "criterion": "missing_disclosure", "locator": "report_markdown:## 5. 用户真实反馈", "focus": "缺少可溯源第三方用户吐槽时，是否清楚说明数据缺口并避免无依据的总体口碑结论", "source_urls": []},
+    {"id": "C1", "task": "clickup-qa-pass", "criterion": "pricing_basis", "locator": "report_markdown:## 2. 定价分析", "focus": "Free、Unlimited、Business、Enterprise 的价格与账期", "source_urls": ["https://clickup.com/pricing"]},
+    {"id": "C2", "task": "clickup-qa-pass", "criterion": "snippet_support", "locator": "profile.feature_tree[0].sub_features[0].description", "focus": "任务创建、分配、截止日期、优先级、拖拽和待办事项是否均被引用片段支撑", "source_urls": ["https://clickup.com/pricing", "https://clickup.com/features", "https://www.g2.com/products/clickup/reviews"]},
+    {"id": "C3", "task": "clickup-qa-pass", "criterion": "missing_disclosure", "locator": "report_markdown:## 5. 用户真实反馈", "focus": "未采到第三方评价时，是否如实说明且未编造用户反馈", "source_urls": []},
+    {"id": "O1", "task": "openproject-qa-pass", "criterion": "pricing_basis", "locator": "report_markdown:## 2. 定价分析", "focus": "Community/Basic/Professional/Premium/Corporate 价格及最低用户数；留意来源捕获晚于工作流且网页币种可能变化", "source_urls": ["https://openproject.org/pricing"]},
+    {"id": "O2", "task": "openproject-qa-pass", "criterion": "snippet_support", "locator": "profile.feature_tree[0].sub_features[0].description", "focus": "可总览经典、敏捷和混合项目组合", "source_urls": ["https://openproject.org/features"]},
+    {"id": "O3", "task": "openproject-qa-pass", "criterion": "snippet_support", "locator": "report_markdown:## 5. 用户真实反馈", "focus": "报告将 3.8/5（25 条评价）归为 G2，检查引用页面该分数实际属于哪个平台", "source_urls": ["https://openproject.org/reviews"]},
+    {"id": "O4", "task": "openproject-qa-pass", "criterion": "missing_disclosure", "locator": "report_markdown:## 5. 用户真实反馈", "focus": "第三方评论与厂商自有 reviews 聚合页的来源性质是否如实表述", "source_urls": ["https://openproject.org/reviews"]},
+    {"id": "S1", "task": "notion-source-limited", "criterion": "pricing_basis", "locator": "report_markdown:## 2. 定价分析", "focus": "仅依据 customers 页面将公开价格写为不存在、将 Contact Sales 写成唯一层级，是否有依据", "source_urls": ["https://www.notion.so/customers", "https://www.notion.so/pricing"]},
+    {"id": "S2", "task": "notion-source-limited", "criterion": "snippet_support", "locator": "profile.feature_tree[0].sub_features[0].description", "focus": "Pennylane 构建 600 多个 Custom Agents", "source_urls": ["https://www.notion.so/customers"]},
+    {"id": "S3", "task": "notion-source-limited", "criterion": "missing_disclosure", "locator": "report_markdown:## 2. 定价分析", "focus": "采集被限制在 customers 页面时，报告是否把‘本次无法核实’与‘产品没有公开定价’明确区分", "source_urls": ["https://www.notion.so/customers", "https://www.notion.so/pricing"]}
+  ]
+}

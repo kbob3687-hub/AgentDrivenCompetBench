@@ -15,6 +15,9 @@ UNTRACEABLE_SOURCE_MARKERS = (
     "无单一原文对应",
 )
 
+# 每个期望维度至少需要的 claim 数，低于该值判深度不足
+MIN_CLAIMS_PER_DIM = 3
+
 
 def _as_text(value: Any) -> str:
     """Return a stripped string for loose LLM-produced fields."""
@@ -62,7 +65,6 @@ def check_dimension_coverage(
     """
     issues: list[QAIssue] = []
     missing: list[str] = []
-    MIN_CLAIMS_PER_DIM = 3
 
     if not expected_dimensions:
         return issues, missing
@@ -223,7 +225,10 @@ def check_user_persona_sourcing(
                     issue_type="weak_source",
                     severity="minor",
                     description=f"用户画像'{segment}'的来源未明确指向用户群体或使用场景",
-                    suggestion="优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+                    suggestion=(
+                        "优先使用客户案例、解决方案、use case、"
+                        "评论/评测或产品页中明确目标用户的来源"
+                    ),
                     evidence=f"segment={segment}, sources exist but persona relevance is weak",
                 )
             )
@@ -289,7 +294,10 @@ def check_source_coverage(profile: dict[str, Any]) -> list[QAIssue]:
                         severity="minor",
                         description=f"SWOT条目'{_as_text(item.get('claim'))[:50]}'缺少来源",
                         suggestion="补充支撑证据或降低该条目置信度",
-                        evidence=f"category={_as_text(swot_item.get('category'))}, sources={len(sources)}",
+                        evidence=(
+                            f"category={_as_text(swot_item.get('category'))}, "
+                            f"sources={len(sources)}"
+                        ),
                     )
                 )
 
@@ -574,7 +582,7 @@ def run_all_validators(
     expected_dimensions: list[str] | None = None,
     industry: str | None = None,
 ) -> tuple[list[QAIssue], float, int, int, list[str]]:
-    """运行所有验证器，返回(issues, avg_confidence, checked_count, verified_count, missing_dimensions)"""
+    """运行所有验证器，返回(issues, avg_confidence, checked_count, verified_count)与缺失维度"""
     all_issues: list[QAIssue] = []
     missing_dimensions: list[str] = []
 

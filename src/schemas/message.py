@@ -141,7 +141,10 @@ class WriteRequest(BaseModel):
     )
     sections: list[str] = Field(
         default_factory=list,
-        description="需要包含的章节，如['overview', 'feature_comparison', 'pricing', 'swot', 'recommendation']",
+        description=(
+            "需要包含的章节，如['overview', 'feature_comparison', "
+            "'pricing', 'swot', 'recommendation']"
+        ),
     )
     tone: str = Field(
         default="professional",
@@ -159,7 +162,10 @@ class QAIssue(BaseModel):
         description="问题字段的路径，如'feature_tree[0].description'或'pricing.tiers[1].price'"
     )
     issue_type: str = Field(
-        description="问题类型: missing_source/low_confidence/schema_violation/factual_error/inconsistency/outdated"
+        description=(
+            "问题类型: missing_source/low_confidence/schema_violation/"
+            "factual_error/inconsistency/outdated"
+        )
     )
     description: str = Field(description="问题描述")
     severity: str = Field(description="严重程度: critical/major/minor")

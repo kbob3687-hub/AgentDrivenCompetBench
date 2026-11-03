@@ -18,7 +18,11 @@ from agents.collector.agent import CollectorAgent
 from agents.discovery.agent import DiscoveryAgent
 from agents.qa.agent import QAAgent
 from agents.writer.agent import WriterAgent
-from orchestrator.routing import classify_no_profile_failure
+from orchestrator.routing import (
+    classify_no_profile_failure,
+    derive_repair_action,
+    repair_context,
+)
 from orchestrator.scoring import iteration_improvement_bonus
 from orchestrator.state import FeedbackRecord, GraphState
 from schemas.message import AgentMessage, MessageContext, MessageType
@@ -61,6 +65,62 @@ def _diff_fields(prev_history: list[Any], curr_feedback: Any) -> dict[str, list[
     }
 
 
+def _merge_claims(
+    previous: list[dict[str, Any]], new: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Keep prior evidence when a QA revision collects from additional URLs."""
+    merged: dict[tuple[str, str], dict[str, Any]] = {}
+    for claim in [*previous, *new]:
+        key = (str(claim.get("dimension", "")), str(claim.get("claim", "")).strip())
+        if key not in merged:
+            merged[key] = {**claim, "sources": list(claim.get("sources") or [])}
+            continue
+        existing_sources = merged[key]["sources"]
+        seen = {(source.get("url"), source.get("snippet")) for source in existing_sources}
+        for source in claim.get("sources") or []:
+            identity = (source.get("url"), source.get("snippet"))
+            if identity not in seen:
+                existing_sources.append(source)
+                seen.add(identity)
+    return list(merged.values())
+
+
+def _disclose_source_limit(report: str, missing_dimensions: list[str]) -> str:
+    if not report or "## 数据限制" in report:
+        return report
+    dimensions = "、".join(missing_dimensions) or "相关分析维度"
+    disclosure = (
+        "\n\n## 数据限制\n\n"
+        f"本轮未获得足够的可溯源证据覆盖：{dimensions}。"
+        "相应内容按未知处理，未作推测。\n"
+    )
+    return report.rstrip() + disclosure
+
+
+def _source_limited_update(
+    state: GraphState, reason: str, updates: dict[str, Any]
+) -> dict[str, Any]:
+    missing_dimensions = state.get("missing_dimensions", [])
+    if not missing_dimensions and state.get("qa_issues"):
+        return {
+            **updates,
+            "repair_action": "drop_or_disclose",
+            "rework_blocked_reason": reason,
+            "final_status": "running",
+        }
+
+    return {
+        **updates,
+        "repair_action": "",
+        "rework_blocked_reason": reason,
+        "report_markdown": _disclose_source_limit(
+            state.get("report_markdown", ""), missing_dimensions
+        ),
+        "final_status": "source_limited",
+        "completed_at": datetime.now().isoformat(),
+    }
+
+
 def _make_message(
     to_agent: str,
     function_name: str,
@@ -94,8 +154,15 @@ def _make_message(
 async def discovery_node(state: GraphState) -> dict[str, Any]:
     """Discovery节点 - URL发现与路由（Warm/Cold/Open Search Path）"""
     target = state["competitor_name"]
-    scope = state.get("collect_scope", ["pricing", "features"])
+    scope = list(
+        dict.fromkeys(
+            state.get("collect_scope", ["pricing", "features"])
+            + state.get("missing_dimensions", [])
+        )
+    )
     target_urls = state.get("target_urls", [])
+    attempted = set(state.get("attempted_urls", []))
+    rework = state.get("iteration", 1) > 1
     strategy = state.get("discovery_strategy", "official_only")
     trusted_domains = state.get("trusted_domains", [])
 
@@ -107,9 +174,18 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
 
     # 如果用户指定了URL，跳过discovery
     if target_urls:
+        urls = list(dict.fromkeys(target_urls))
+        if rework:
+            urls = [url for url in urls if url not in attempted]
+            if not urls:
+                return _source_limited_update(
+                    state,
+                    "no_new_urls_within_target_urls",
+                    {"discovered_urls": [], "suggested_strategy": ""},
+                )
         print(f"\n[Discovery] 用户指定了 {len(target_urls)} 个URL，跳过自动发现")
         return {
-            "discovered_urls": target_urls,
+            "discovered_urls": urls,
             "discovery_path": "user_specified",
             "discovery_domain": "",
             "discovery_queries": [],
@@ -122,7 +198,20 @@ async def discovery_node(state: GraphState) -> dict[str, Any]:
     result = await agent.discover(target, scope, strategy=strategy, trusted_domains=trusted_domains)
 
     path = result["path"]
-    urls = result["urls"]
+    urls = list(dict.fromkeys(result["urls"]))
+    if rework:
+        urls = [url for url in urls if url not in attempted]
+        if not urls:
+            return _source_limited_update(
+                state,
+                "discovery_found_no_new_urls",
+                {
+                    "discovered_urls": [],
+                    "discovery_path": result["path"],
+                    "discovery_strategy": strategy,
+                    "suggested_strategy": "",
+                },
+            )
     print(f"  [Discovery] {path} path → 发现 {len(urls)} 个URL (domain: {result['domain']})")
 
     return {
@@ -141,7 +230,6 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
     iteration = state.get("iteration", 1)
     scope = state.get("collect_scope", ["pricing"])
     missing = state.get("missing_dimensions", [])
-    suggested = state.get("suggested_strategy", "")
 
     if missing:
         expanded = list(set(scope + missing))
@@ -154,22 +242,6 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
 
     target_urls = state.get("discovered_urls", state.get("target_urls", []))
     new_strategy = state.get("discovery_strategy", "official_only")
-
-    # QA 自适应降级：上一轮建议切换策略，这里重新走一次 Discovery 拿新数据源
-    if suggested and suggested != new_strategy and not state.get("target_urls"):
-        print(f"  [Collector] 触发 Discovery 重发现 (策略: {new_strategy} → {suggested})")
-        from agents.discovery.agent import DiscoveryAgent
-
-        new_strategy = suggested
-        rediscover = DiscoveryAgent()
-        result = await rediscover.discover(
-            state["competitor_name"],
-            scope,
-            strategy=new_strategy,
-            trusted_domains=state.get("trusted_domains", []),
-        )
-        target_urls = result["urls"]
-        print(f"  [Collector] 新数据源: {result['path']} path, {len(target_urls)} 个URL")
 
     agent = CollectorAgent()
 
@@ -190,15 +262,34 @@ async def collector_node(state: GraphState) -> dict[str, Any]:
 
     result = await agent.execute(message)
     args = result.arguments
+    attempted_urls = list(
+        dict.fromkeys(
+            state.get("attempted_urls", []) + args.get("source_urls_attempted", target_urls)
+        )
+    )
 
     if args.get("error"):
-        return {"error": args["error"], "claims": []}
+        return {"error": args["error"], "claims": [], "attempted_urls": attempted_urls}
+
+    claims = _merge_claims(state.get("claims", []), args.get("claims", []))
+    if iteration > 1 and claims == state.get("claims", []):
+        return _source_limited_update(
+            state,
+            "new_urls_added_no_claims_or_sources",
+            {
+                "attempted_urls": attempted_urls,
+                "sources_fetched": args.get("sources_fetched", 0),
+                "sources_failed": args.get("sources_failed", 0),
+                "collect_errors": args.get("errors", []),
+            },
+        )
 
     return {
-        "claims": args.get("claims", []),
+        "claims": claims,
         "sources_fetched": args.get("sources_fetched", 0),
         "sources_failed": args.get("sources_failed", 0),
         "collect_errors": args.get("errors", []),
+        "attempted_urls": attempted_urls,
         "collect_scope": scope,
         "missing_dimensions": [],
         "discovered_urls": target_urls,
@@ -225,6 +316,7 @@ async def analyst_node(state: GraphState) -> dict[str, Any]:
             "claims": claims,
             "dimensions_requested": state.get("collect_scope", ["pricing", "features"]),
             "industry": state.get("industry", ""),
+            **repair_context(state, "analyst"),
         },
         state=state,
     )
@@ -257,6 +349,7 @@ async def writer_node(state: GraphState) -> dict[str, Any]:
         arguments={
             "competitor_name": state["competitor_name"],
             "profile": profile,
+            **repair_context(state, "writer"),
         },
         state=state,
     )
@@ -314,6 +407,7 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
             "feedback_history": history,
             "iteration": iteration + 1,
             "qa_target_agent": target_agent,
+            "repair_action": derive_repair_action("reject", target_agent),
             "missing_dimensions": failure["missing_dimensions"],
             **final,
         }
@@ -356,7 +450,8 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
     )
 
     print(
-        f"  [QA] verdict={verdict}, score={score:.2f}, issues={issues_count}, target={target_agent}, missing_dims={missing_dims}"
+        f"  [QA] verdict={verdict}, score={score:.2f}, issues={issues_count}, "
+        f"target={target_agent}, missing_dims={missing_dims}"
     )
 
     # 记录FeedbackRecord
@@ -421,7 +516,10 @@ async def qa_node(state: GraphState) -> dict[str, Any]:
         "iteration": iteration + 1,
         "missing_dimensions": missing_dims,
         "qa_target_agent": target_agent,
+        "repair_action": derive_repair_action(verdict, target_agent),
     }
+    if args.get("error"):
+        update["error"] = args["error"]
 
     # 自适应策略降级：QA 建议下一轮换数据源
     suggested_strategy = args.get("suggested_strategy", "")

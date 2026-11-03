@@ -1,0 +1,1299 @@
+{
+  "status": "awaiting_human_review",
+  "reviewed_by": null,
+  "reviewed_at": null,
+  "case_count": 3,
+  "selection_rule": "One pricing, first feature/persona/SWOT claim, and missing-data disclosure per case",
+  "tasks": [
+    {
+      "task_id": "notion-gold-001-r1-c1",
+      "case_id": "notion-gold-001",
+      "competitor": "Notion",
+      "raw_path": "raw/notion-gold-001-r1-c1.json",
+      "raw_sha256": "6bf9e866c7c285eea4850798625401d9e9a3f3205223a8116b22ae9e6d5a4d47",
+      "report_path": "raw/notion-gold-001-r1-c1.md",
+      "snapshot_index_path": "source_snapshots/notion-gold-001-r1-c1/index.json",
+      "sources_attempted": 2,
+      "sources_captured": 2,
+      "workflow_final_status": "completed",
+      "qa_verdict": "pass",
+      "run": "benchmark/results/20260924T025206Z-9838847b"
+    },
+    {
+      "task_id": "clickup-gold-001-r1-c1",
+      "case_id": "clickup-gold-001",
+      "competitor": "ClickUp",
+      "raw_path": "raw/clickup-gold-001-r1-c1.json",
+      "raw_sha256": "c1f47e33b1fb3e5345402f911d4e9684e94db3f982592554156aa045e5f63d3a",
+      "report_path": "raw/clickup-gold-001-r1-c1.md",
+      "snapshot_index_path": "source_snapshots/clickup-gold-001-r1-c1/index.json",
+      "sources_attempted": 3,
+      "sources_captured": 3,
+      "workflow_final_status": "completed",
+      "qa_verdict": "pass",
+      "run": "benchmark/results/20260924T025206Z-9838847b"
+    },
+    {
+      "task_id": "openproject-features-gold-001-r1-c1",
+      "case_id": "openproject-features-gold-001",
+      "competitor": "OpenProject",
+      "raw_path": "raw/openproject-features-gold-001-r1-c1.json",
+      "raw_sha256": "625282615b4edc504ff602b25ffd7431824c2e3570d13d543ce6d3856d92c75a",
+      "report_path": "raw/openproject-features-gold-001-r1-c1.md",
+      "snapshot_index_path": "source_snapshots/openproject-features-gold-001-r1-c1/index.json",
+      "sources_attempted": 3,
+      "sources_captured": 3,
+      "workflow_final_status": "source_limited",
+      "qa_verdict": "revise",
+      "run": "benchmark/results/20260924T030259Z-53a6a170"
+    }
+  ],
+  "checks": [
+    {
+      "id": "notion-gold-001-r1-c1:pricing_basis",
+      "task_id": "notion-gold-001-r1-c1",
+      "criterion": "pricing_basis",
+      "focus": "定价层级及价格是否有充分的实际来源依据；逐项核对币种、账期与限制",
+      "locator": "profile.pricing",
+      "claim": "Free 计划：$0/成员/月，面向个人用户组织个人项目和生活；Plus 计划：$10/成员/月，面向小团队和专业人士协作；Business 计划：$20/成员/月，面向成长型企业简化团队协作；Enterprise 计划：定制价格，面向需要可扩展性、控制和安全性的组织；年付可节省最高20%费用；Notion Workers（自定义Agent）定价：免费试用，之后 $10 每 1,000 月度 Notion credits；退款政策：月付订阅在注册后3天内降级可全额退款；年付订阅在注册后30天内降级可全额退款；欧盟、英国等有强制退款政策地区的用户，月付订阅可在购买后14天内获得全额退款（而非72小时）；付费席位按成员计费，月中变更成员会产生按比例计算的费用；删除成员可释放1个付费席位供替换使用；升级计划立即生效并立即收费（按剩余计费周期比例扣减）；降级计划在当前计费周期结束时生效；付款失败后最多可在一个月内重试8次，之后工作区将被限制访问并最终降级至Free计划；Free 计划功能：试用 Notion AI（生成文档、自动填充数据库）、基础表单、基础站点发布、Notion Calendar 多日历连接、数据库（含子任务、依赖、自定义属性）；Plus 计划在 Free 基础上增加：自定义表单（去除 Notion 品牌）、自定义站点（自定义页头、明暗主题、favicon、Google Analytics 集成）、无限图表、无限协作块、无限文件上传、基础连接（Slack、Google Drive）；Business 计划在 Plus 基础上增加：Notion Agent（多步骤复杂任务自动化）、AI Meeting Notes、Enterprise Search（Beta，跨 Slack/GitHub 等搜索）、SAML SSO、细粒度数据库权限、页面验证徽章、私有 teamspaces、域名验证、高级连接（GitHub、Asana 等）；Enterprise 计划在 Business 基础上增加：LLM 提供商零数据保留、SCIM 用户配置、高级安全与控制、审计日志、客户成功经理、安全与合规连接（DLP、SIEM）、域名管理、高级连接、自定义 Agent（Workers Beta）；Free 计划文件上传限制为每个文件最大 5MB；付费计划无限上传，单文件最大约 5GB；Free 计划页面历史记录保留 7 天；Free 计划对个人用户提供无限页面和块，但对 2 人及以上团队有限制；访客（Guests）免费，但只能访问被邀请的单个页面，无法查看 Teamspaces 下的所有团队页面；提供免费版（Get Notion free），用户可免费开始使用。；页面设有 Pricing（定价）入口，但未在本页展示具体价格信息。；提供 Request a demo（申请演示）入口，通常对应企业级销售流程。",
+      "sources": [
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, &amp; Enterprise.",
+          "snippet": "Free $0 per member / month For individuals to organize personal projects and life.",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:52:27.291423+00:00",
+              "snapshot_path": "source_snapshots/notion-gold-001-r1-c1/74fa0356a68cdc680d1dab2c35a23d1ff179a5c8a2e29630130ee16244933190.txt",
+              "snapshot_sha256": "74fa0356a68cdc680d1dab2c35a23d1ff179a5c8a2e29630130ee16244933190",
+              "collector_snapshot_hash": "74fa0356a68cdc68"
+            }
+          ]
+        },
+        {
+          "url": "https://www.notion.com/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Get Notion free",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:52:42.754931+00:00",
+              "snapshot_path": "source_snapshots/notion-gold-001-r1-c1/24c224fd6bdfdd3eaa1e2eb26c982b0afae52d48dc2d27762fb29ebdee99baa3.txt",
+              "snapshot_sha256": "24c224fd6bdfdd3eaa1e2eb26c982b0afae52d48dc2d27762fb29ebdee99baa3",
+              "collector_snapshot_hash": "24c224fd6bdfdd3e"
+            }
+          ]
+        }
+      ],
+      "context": {
+        "tiers": [
+          {
+            "name": "Free",
+            "price": "$0/member/month",
+            "billing_cycle": "monthly",
+            "features": [
+              "面向个人用户组织个人项目和生活",
+              "试用 Notion AI（生成文档、自动填充数据库）",
+              "基础表单",
+              "基础站点发布",
+              "Notion Calendar 多日历连接",
+              "数据库（含子任务、依赖、自定义属性）",
+              "个人用户无限页面和块"
+            ],
+            "limitations": [
+              "文件上传每个最大 5MB",
+              "页面历史记录保留 7 天",
+              "2 人及以上团队页面和块数量受限",
+              "访客只能访问被邀请的单个页面，无法查看 Teamspaces 下所有团队页面"
+            ]
+          },
+          {
+            "name": "Plus",
+            "price": "$10/member/month",
+            "billing_cycle": "monthly",
+            "features": [
+              "包含 Free 全部功能",
+              "面向小团队和专业人士协作",
+              "自定义表单（去除 Notion 品牌）",
+              "自定义站点（自定义页头、明暗主题、favicon、Google Analytics 集成）",
+              "无限图表",
+              "无限协作块",
+              "无限文件上传（单文件最大约 5GB）",
+              "基础连接（Slack、Google Drive）"
+            ],
+            "limitations": []
+          },
+          {
+            "name": "Business",
+            "price": "$20/member/month",
+            "billing_cycle": "monthly",
+            "features": [
+              "包含 Plus 全部功能",
+              "面向成长型企业简化团队协作",
+              "Notion Agent（多步骤复杂任务自动化）",
+              "AI Meeting Notes",
+              "Enterprise Search（Beta，跨 Slack/GitHub 等搜索）",
+              "SAML SSO",
+              "细粒度数据库权限",
+              "页面验证徽章",
+              "私有 teamspaces",
+              "域名验证",
+              "高级连接（GitHub、Asana 等）"
+            ],
+            "limitations": []
+          },
+          {
+            "name": "Enterprise",
+            "price": "Custom pricing",
+            "billing_cycle": "custom",
+            "features": [
+              "包含 Business 全部功能",
+              "面向需要可扩展性、控制和安全性的组织",
+              "LLM 提供商零数据保留",
+              "SCIM 用户配置",
+              "高级安全与控制",
+              "审计日志",
+              "客户成功经理",
+              "安全与合规连接（DLP、SIEM）",
+              "域名管理",
+              "高级连接",
+              "自定义 Agent（Workers Beta）"
+            ],
+            "limitations": []
+          }
+        ],
+        "model_type": "freemium",
+        "report_excerpt": "## 2. 定价分析\n\n| 层级 | 价格 | 核心亮点 | 主要限制 |\n|---|---|---|---|\n| Free | $0/成员/月[2] | 个人无限页面、AI试用、数据库、日历[2] | 单文件5MB、历史7天、团队受限[2] |\n| Plus | $10/成员/月[2] | 无限上传、自定义站点、基础连接[2] | 无[2] |\n| Business | $20/成员/月[2] | Notion Agent、AI纪要、SSO、企业搜索[2] | 无[2] |\n| Enterprise | 定制价格[2] | 零数据保留、SCIM、审计日志、DLP/SIEM[2] | 无[2] |\n\n年付可节省最高20%费用[2]。Notion Workers（自定义Agent）免费试用后按 $10 每 1,000 月度 Notion credits 计费[2]。整体采取免费引流、按席位分层升级、AI能力按用量额外计费的策略[2]。\n"
+      },
+      "verdict": "partial",
+      "reviewer_evidence": "用户核对定价页：年付时 Free、Plus $10、Business $20、Enterprise 定制价格正确；按月付时 Plus $12、Business $24，Free 与 Enterprise 不变。保存的页面正文显示年付/月付切换，但纯文本未保留选中状态；原始 profile 将 Plus $10 与 Business $20 的 billing_cycle 标为 monthly。",
+      "reviewer_reason": "付费层级的数字只在按年付折算时成立。报告未注明这个前提，结构化结果还把它们标作按月付；因此价格有依据，但账期表述有误。",
+      "run": "benchmark/results/20260924T025206Z-9838847b",
+      "reviewer_observations": [
+        {
+          "reviewer_statement": "按年付时 Free、Plus $10、Business $20、Enterprise 定制价格正确；按月付时 Plus 应为 $12、Business 应为 $24，Free 和 Enterprise 不变。",
+          "corroboration": "保存的定价页正文显示 Pay monthly / Pay yearly 选项和 $10 / $20，但纯文本快照没有保留当时选中的按钮状态；原始 profile 把 Plus $10 和 Business $20 的 billing_cycle 均写为 monthly，报告也未注明按年付折算。",
+          "review_scope": "账期与四档价格；该检查点的其他定价说法尚未审完。"
+        }
+      ]
+    },
+    {
+      "id": "notion-gold-001-r1-c1:feature_snippet_support",
+      "task_id": "notion-gold-001-r1-c1",
+      "criterion": "feature_snippet_support",
+      "focus": "完整结论是否得到它实际引用的 snippet 支持；多个子事实需逐一核对",
+      "locator": "profile.feature_tree[0].description",
+      "claim": "Notion Workers（自定义Agent）定价：免费试用，之后 $10 每 1,000 月度 Notion credits；Free 计划功能：试用 Notion AI（生成文档、自动填充数据库）、基础表单、基础站点发布、Notion Calendar 多日历连接、数据库（含子任务、依赖、自定义属性）；Business 计划在 Plus 基础上增加：Notion Agent（多步骤复杂任务自动化）、AI Meeting Notes、Enterprise Search（Beta，跨 Slack/GitHub 等搜索）、SAML SSO、细粒度数据库权限、页面验证徽章、私有 teamspaces、域名验证、高级连接（GitHub、Asana 等）；Enterprise 计划在 Business 基础上增加：LLM 提供商零数据保留、SCIM 用户配置、高级安全与控制、审计日志、客户成功经理、安全与合规连接（DLP、SIEM）、域名管理、高级连接、自定义 Agent（Workers Beta）；Notion 定位为 AI 工作空间（AI workspace），核心能力围绕 AI 展开，帮助团队与 AI 智能体协同工作。；提供 Notion AI 功能，包括面向工作的 AI 工具（AI tools for work）。；提供 Agents（智能体）功能，可自动化繁琐工作（Automate busywork）。；提供 AI Meeting Notes（AI 会议纪要）功能，由 AI 自动撰写。；AI 能力包括：捕获知识（Capture knowledge）、即时查找答案（Find answers）、自动化繁琐工作（Automate busywork）。；客户案例：Ben Levick（运营与内部 AI 负责人）表示 Notion 自定义智能体帮助团队从用 AI 做事进阶到构建替团队做事的 AI 工具。",
+      "sources": [
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, &amp; Enterprise.",
+          "snippet": "Custom Agents AI agents handle repetitive tasks autonomously, so your team doesn’t have to. Free to try, then $10 per 1,000 monthly Notion credits. Workers Beta",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:52:27.291423+00:00",
+              "snapshot_path": "source_snapshots/notion-gold-001-r1-c1/74fa0356a68cdc680d1dab2c35a23d1ff179a5c8a2e29630130ee16244933190.txt",
+              "snapshot_sha256": "74fa0356a68cdc680d1dab2c35a23d1ff179a5c8a2e29630130ee16244933190",
+              "collector_snapshot_hash": "74fa0356a68cdc68"
+            }
+          ]
+        },
+        {
+          "url": "https://www.notion.com/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "The AI workspace that works for you. | Notion ... Where teams and agents Think together.",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:52:42.754931+00:00",
+              "snapshot_path": "source_snapshots/notion-gold-001-r1-c1/24c224fd6bdfdd3eaa1e2eb26c982b0afae52d48dc2d27762fb29ebdee99baa3.txt",
+              "snapshot_sha256": "24c224fd6bdfdd3eaa1e2eb26c982b0afae52d48dc2d27762fb29ebdee99baa3",
+              "collector_snapshot_hash": "24c224fd6bdfdd3e"
+            }
+          ]
+        }
+      ],
+      "context": null,
+      "verdict": "supported",
+      "reviewer_evidence": "评审者在 74fa0356...txt（notion.com/pricing 运行当时正文）中确认：'Free to try, then $10 per 1,000 credits'、Free/Business/Enterprise 功能与 SAML、teamspaces、zero data retention、SCIM、audit 等表述；在 24c224fd...txt（notion.com/product 运行当时正文）中确认 AI workspace、AI tools for work、busywork、Meeting Notes、Capture knowledge、Find answers 与 Ben Levick 客户案例。",
+      "reviewer_reason": "claim 拆出的 10 个子事实均能在运行当时保存的来源正文中定位，因此完整结论获得引用来源支持。",
+      "run": "benchmark/results/20260924T025206Z-9838847b",
+      "reviewer_observations": [
+        {
+          "reviewer_statement": "用户在当次保存的产品页正文中找到了 AI Meeting Notes。",
+          "corroboration": "产品页快照包含‘AI Meeting Notes Perfectly written by AI’，支持报告关于 AI 会议纪要由 AI 撰写的说法；但这条 claim 实际附带的 product snippet 仅为‘The AI workspace that works for you. | Notion ... Where teams and agents Think together.’，没有摘录 AI Meeting Notes。",
+          "review_scope": "仅核对 AI Meeting Notes 子事实；整个功能 claim 尚未完成评审。"
+        }
+      ]
+    },
+    {
+      "id": "notion-gold-001-r1-c1:persona_snippet_support",
+      "task_id": "notion-gold-001-r1-c1",
+      "criterion": "persona_snippet_support",
+      "focus": "完整结论是否得到它实际引用的 snippet 支持；多个子事实需逐一核对",
+      "locator": "profile.user_personas[0].pain_points[0]",
+      "claim": "需要组织个人项目和生活",
+      "sources": [
+        {
+          "url": "https://www.notion.com/pricing",
+          "title": "Notion Pricing Plans: Free, Plus, Business, &amp; Enterprise.",
+          "snippet": "Free $0 per member / month For individuals to organize personal projects and life.",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:52:27.291423+00:00",
+              "snapshot_path": "source_snapshots/notion-gold-001-r1-c1/74fa0356a68cdc680d1dab2c35a23d1ff179a5c8a2e29630130ee16244933190.txt",
+              "snapshot_sha256": "74fa0356a68cdc680d1dab2c35a23d1ff179a5c8a2e29630130ee16244933190",
+              "collector_snapshot_hash": "74fa0356a68cdc68"
+            }
+          ]
+        },
+        {
+          "url": "https://www.notion.com/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "Explore use cases For work For life",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:52:42.754931+00:00",
+              "snapshot_path": "source_snapshots/notion-gold-001-r1-c1/24c224fd6bdfdd3eaa1e2eb26c982b0afae52d48dc2d27762fb29ebdee99baa3.txt",
+              "snapshot_sha256": "24c224fd6bdfdd3eaa1e2eb26c982b0afae52d48dc2d27762fb29ebdee99baa3",
+              "collector_snapshot_hash": "24c224fd6bdfdd3e"
+            }
+          ]
+        }
+      ],
+      "context": null,
+      "verdict": "supported",
+      "reviewer_evidence": "用户核对后认为结论“需要组织个人项目和生活”与保存网页中的“For individuals to organize personal projects and life.”意思一致。",
+      "reviewer_reason": "这条结论直接复述了来源中面向个人用户整理项目和生活的描述。",
+      "run": "benchmark/results/20260924T025206Z-9838847b"
+    },
+    {
+      "id": "notion-gold-001-r1-c1:swot_snippet_support",
+      "task_id": "notion-gold-001-r1-c1",
+      "criterion": "swot_snippet_support",
+      "focus": "完整结论是否得到它实际引用的 snippet 支持；多个子事实需逐一核对",
+      "locator": "profile.swot[0].items[0]",
+      "claim": "Notion 定位为 AI 工作空间（AI workspace），核心能力围绕 AI 展开，帮助团队与 AI 智能体协同工作。；提供 Notion AI 功能，包括面向工作的 AI 工具（AI tools for work）。；提供 Agents（智能体）功能，可自动化繁琐工作（Automate busywork）。；提供 AI Meeting Notes（AI 会议纪要）功能，由 AI 自动撰写。；提供 Enterprise Search（企业搜索）功能，可即时找到答案。；AI 能力包括：捕获知识（Capture knowledge）、即时查找答案（Find answers）、自动化繁琐工作（Automate busywork）。；客户案例：Ben Levick（运营与内部 AI 负责人）表示 Notion 自定义智能体帮助团队从用 AI 做事进阶到构建替团队做事的 AI 工具。",
+      "sources": [
+        {
+          "url": "https://www.notion.com/product",
+          "title": "The AI workspace that works for you. | Notion",
+          "snippet": "The AI workspace that works for you. | Notion ... Where teams and agents Think together.",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:52:42.754931+00:00",
+              "snapshot_path": "source_snapshots/notion-gold-001-r1-c1/24c224fd6bdfdd3eaa1e2eb26c982b0afae52d48dc2d27762fb29ebdee99baa3.txt",
+              "snapshot_sha256": "24c224fd6bdfdd3eaa1e2eb26c982b0afae52d48dc2d27762fb29ebdee99baa3",
+              "collector_snapshot_hash": "24c224fd6bdfdd3e"
+            }
+          ]
+        }
+      ],
+      "context": null,
+      "verdict": "supported",
+      "reviewer_evidence": "与 notion-gold-001-r1-c1:feature_snippet_support 同一次人工核对：评审者已在 24c224fd...txt（notion.com/product 运行当时正文）中确认 AI workspace、AI tools for work、Automate busywork、AI Meeting Notes、Enterprise Search、Capture knowledge/Find answers 与 Ben Levick 客户案例。",
+      "reviewer_reason": "本检查点的子事实与已人工确认的产品页事实完全重合，无需重复核对；完整结论获得引用来源支持。",
+      "run": "benchmark/results/20260924T025206Z-9838847b"
+    },
+    {
+      "id": "notion-gold-001-r1-c1:missing_disclosure",
+      "task_id": "notion-gold-001-r1-c1",
+      "criterion": "missing_disclosure",
+      "focus": "缺失或抓取失败的信息是否明确标为本轮未知，避免把未知说成产品没有",
+      "locator": "report_markdown",
+      "claim": null,
+      "sources": [],
+      "context": {
+        "missing_dimensions": [],
+        "collect_errors": [],
+        "qa_issues": [
+          {
+            "field_path": "swot",
+            "issue_type": "inconsistency",
+            "description": "'AI'同时出现在优势和劣势中，需确认是否为不同角度的合理分析",
+            "severity": "minor",
+            "suggestion": "检查关于'AI'的优势和劣势描述是否从不同角度阐述，如是则保留并补充说明",
+            "evidence": "keyword 'AI' appears in both strengths and weaknesses"
+          },
+          {
+            "field_path": "pricing.tiers[0].price / pricing.tiers[1].price / pricing.tiers[2].price",
+            "issue_type": "missing_source",
+            "description": "报告给出 Free $0、Plus $10、Business $20 的具体价格，但所有引用均指向 [2] 定价页，而提供的 snippet 中只包含 Custom Agents 的 '$10 per 1,000 monthly Notion credits'，没有任何一处 snippet 直接支撑 Plus $10/成员/月、Business $20/成员/月、Free $0 的席位定价。价格数字属于高敏感事实，必须逐条有原文支撑。",
+            "severity": "critical",
+            "suggestion": "为每个定价层级补充能直接显示该价格的 snippet（例如定价页中 'Plus $10 per member / month'、'Business $20 per member / month' 的原文），或标注该价格来自页面表格/截图并降低 confidence。若无法取得原文，应将价格字段标记为 unverified 并下调 confidence 至 0.6 以下。",
+            "evidence": "snippet 仅含 'Free to try, then $10 per 1,000 monthly Notion credits'，与席位定价 $10/$20 无关；报告却以 [2] 作为全部价格来源。"
+          },
+          {
+            "field_path": "pricing.tiers[0].limitations / pricing.tiers[1].limitations / pricing.tiers[2].limitations",
+            "issue_type": "factual_error",
+            "description": "Plus、Business、Enterprise 三个层级的『主要限制』均填『无』，与报告自身在劣势中列出的限制（Free 5MB、历史 7 天、自定义 Agent 额外计费）以及分层逻辑矛盾。任何付费层级都存在限制（如 Plus 无 SSO/审计日志、Business 无 SCIM/零数据保留），填『无』属于事实性错误且削弱分析价值。",
+            "severity": "major",
+            "suggestion": "按各层级实际缺失能力填写限制，例如 Plus：无 SSO、无审计日志、无 Enterprise Search；Business：无 SCIM、无零数据保留、无 DLP/SIEM；Enterprise：定制报价、需销售对接。",
+            "evidence": "报告第 2 节表格与第 6 节劣势描述自相矛盾。"
+          },
+          {
+            "field_path": "feature_tree[0].description.claim",
+            "issue_type": "schema_violation",
+            "description": "『AI 与智能体能力』节点的 claim 字段把定价、Free/Business/Enterprise 计划功能清单、产品定位、客户案例等大量异构信息塞进一个 claim，远超单一可验证断言的范围，导致无法逐条溯源，且与子特征内容高度重复。",
+            "severity": "major",
+            "suggestion": "将 claim 拆分为原子化断言（如『Notion Workers 免费试用后 $10/1,000 credits』『Business 含 Notion Agent』『Enterprise 含 SCIM』），每条独立挂载来源与 confidence；计划功能清单应归入 pricing 结构而非 feature claim。",
+            "evidence": "claim 文本包含至少 8 个独立事实点，却共用同一组 sources。"
+          },
+          {
+            "field_path": "feature_tree[*].sub_features[*].description.sources",
+            "issue_type": "missing_source",
+            "description": "Notion AI、Agents、AI Meeting Notes、Custom Agents、AI 知识捕获与检索等子特征全部复用同两条 snippet，而这两条 snippet 只提到 Custom Agents 与 'AI workspace'，并未支撑『AI Meeting Notes 自动撰写纪要』『生成文档、自动填充数据库』『带引用的即时查找答案』等具体功能描述。属于来源与 claim 不匹配。",
+            "severity": "major",
+            "suggestion": "为每个子特征补充能直接证明该功能的原文 snippet（如定价页中 'AI Meeting Notes' 行、产品页中 'Find answers with citations' 文案），无法取得则下调 confidence 并标注未验证。",
+            "evidence": "snippet 文本与子特征 claim 内容不对应。"
+          },
+          {
+            "field_path": "swot.strengths[3]",
+            "issue_type": "missing_source",
+            "description": "『被 98% Forbes Cloud 100 企业信任』给出精确数字 98%，但报告附录仅有产品页与定价页两个来源，且提供的 snippet 中无任何该数据。高精度数字缺乏来源支撑，confidence 却标 0.94，明显偏高。",
+            "severity": "major",
+            "suggestion": "补充包含 '98% of Forbes Cloud 100' 原文的 snippet 及来源 URL；若无法取得，删除该数字或改为定性表述并下调 confidence。",
+            "evidence": "snippet 中无 98% 相关文本。"
+          },
+          {
+            "field_path": "swot.weaknesses[*] / swot.opportunities[*] / swot.threats[*]",
+            "issue_type": "low_confidence",
+            "description": "劣势、机会、威胁条目 confidence 普遍为 0.5–0.55，低于 0.75 阈值，且机会/威胁多为推断性结论（如『AI 原生工具竞争加剧』『免费版限制或推动用户流向竞品』），无第三方数据或来源支撑，仅挂 [1]/[2] 官方页面。",
+            "severity": "major",
+            "suggestion": "为机会/威胁补充行业报告、竞品动态等外部来源；无法支撑的推断应明确标注为『分析推断』而非事实 claim，并保持低 confidence 或移出结论区。",
+            "evidence": "SWOT 中 O/T 全部条目 confidence ≤0.55。"
+          },
+          {
+            "field_path": "user_feedback",
+            "issue_type": "schema_violation",
+            "description": "第 5 节『用户真实反馈』为空，仅说明未采集到第三方评价。用户反馈是竞品分析的关键维度，缺失将导致用户画像与 SWOT 缺乏实证基础。",
+            "severity": "major",
+            "suggestion": "补充 G2/Capterra/Reddit/App Store 等第三方评价来源，至少覆盖评分、典型好评与差评；若确实无法采集，应在报告中显式标注为数据缺口并说明对结论可信度的影响。",
+            "evidence": "报告第 5 节内容为空。"
+          },
+          {
+            "field_path": "company_profile.founded_year / headquarters / funding_stage / employee_count_range",
+            "issue_type": "schema_violation",
+            "description": "公司基础字段（成立年份、总部、融资阶段、员工规模）全部为 null，产品概览表也未体现，影响公司层面画像完整性。",
+            "severity": "minor",
+            "suggestion": "补充 Notion 成立年份（2016）、总部（旧金山）、融资阶段与员工规模等公开信息并附来源。",
+            "evidence": "CompetitorProfile 中对应字段均为 null。"
+          },
+          {
+            "field_path": "pricing.tiers[1].highlights",
+            "issue_type": "inconsistency",
+            "description": "Plus 亮点写『基础连接』，而第 3 节『搜索与连接』将 Connections 描述为『基础连接 Slack、Google Drive』，但未说明该能力属于哪个层级；同时 Business 亮点又列『企业搜索』，层级归属表述不统一，易造成读者混淆。",
+            "severity": "minor",
+            "suggestion": "统一各功能所属层级的表述，在功能清单中标注层级标签（Free/Plus/Business/Enterprise）。",
+            "evidence": "第 2 节与第 3 节对连接能力的层级归属描述不一致。"
+          },
+          {
+            "field_path": "pricing.tiers[0].highlights",
+            "issue_type": "factual_error",
+            "description": "Free 亮点称『个人无限页面』，但 snippet 未提供该表述；且 Free 计划通常对协作人数/区块有限制，『无限页面』需来源确认。",
+            "severity": "minor",
+            "suggestion": "补充支撑『无限页面』的原文 snippet，或改为来源可证实的表述。",
+            "evidence": "现有 snippet 无 'unlimited pages' 相关内容。"
+          }
+        ],
+        "pricing_excerpt": "## 2. 定价分析\n\n| 层级 | 价格 | 核心亮点 | 主要限制 |\n|---|---|---|---|\n| Free | $0/成员/月[2] | 个人无限页面、AI试用、数据库、日历[2] | 单文件5MB、历史7天、团队受限[2] |\n| Plus | $10/成员/月[2] | 无限上传、自定义站点、基础连接[2] | 无[2] |\n| Business | $20/成员/月[2] | Notion Agent、AI纪要、SSO、企业搜索[2] | 无[2] |\n| Enterprise | 定制价格[2] | 零数据保留、SCIM、审计日志、DLP/SIEM[2] | 无[2] |\n\n年付可节省最高20%费用[2]。Notion Workers（自定义Agent）免费试用后按 $10 每 1,000 月度 Notion credits 计费[2]。整体采取免费引流、按席位分层升级、AI能力按用量额外计费的策略[2]。\n",
+        "user_feedback_excerpt": "## 5. 用户真实反馈\n\n本轮未采集到第三方用户评价。\n"
+      },
+      "verdict": "honest",
+      "reviewer_evidence": "用户确认：截图中的 Braintrust 负责人评价属于客户证言；本次 Agent 保存的 Notion 定价页和产品页正文均未包含这段证言。报告写的是‘本轮未采集到第三方用户评价’。",
+      "reviewer_reason": "用户判断这句话‘如实’：截图展示的证言不在本轮采集来源中，不能据此认定本轮已经采集到第三方用户评价。",
+      "run": "benchmark/results/20260924T025206Z-9838847b"
+    },
+    {
+      "id": "clickup-gold-001-r1-c1:pricing_basis",
+      "task_id": "clickup-gold-001-r1-c1",
+      "criterion": "pricing_basis",
+      "focus": "定价层级及价格是否有充分的实际来源依据；逐项核对币种、账期与限制",
+      "locator": "profile.pricing",
+      "claim": "Free Forever 计划永久免费，按年付和按月付均为 $0/用户/月；Unlimited 计划年付 $7/用户/月，月付 $10/用户/月；Business 计划年付 $12/用户/月，月付 $19/用户/月；Enterprise 计划为定制价格，需联系销售获取报价；年付可节省最高 30% 费用；提供 100% 退款保证，30 天内不满意可全额退款；AI Super Credits 定价为 $10 每 10,000 credits（$0.001/credit），每个 AI 计划包含每月共享额度；支持主要信用卡支付，Enterprise 订单达到最低金额后可接受银行转账；为非营利组织、学生、教育工作者和初创企业提供折扣；按 Workspace 计费，每个 Workspace 需单独升级；添加付费用户时按剩余计费周期按比例收费；ClickUp 提供免费版本，且承诺永久免费、无需信用卡；ClickUp 设有企业版（Enterprise）方案，需联系获取演示；ClickUp 通过整合项目管理、文档、目标、聊天和时间追踪等多个工具，替代多个订阅，从而降低技术栈成本",
+      "sources": [
+        {
+          "url": "https://clickup.com/pricing",
+          "title": "ClickUp Pricing and Plans",
+          "snippet": "free forever free forever yearly price: Free Per user/month, billed yearly free forever monthly price: Free Per user/month, billed monthly",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:53:42.048552+00:00",
+              "snapshot_path": "source_snapshots/clickup-gold-001-r1-c1/5eecc73a44268818a16af0bbdee0fab38bc86b62e84f2eca1f3d2bb96f53dbba.txt",
+              "snapshot_sha256": "5eecc73a44268818a16af0bbdee0fab38bc86b62e84f2eca1f3d2bb96f53dbba",
+              "collector_snapshot_hash": "5eecc73a44268818"
+            },
+            {
+              "observed_at": "2026-09-24T02:54:01.846434+00:00",
+              "snapshot_path": "source_snapshots/clickup-gold-001-r1-c1/5eecc73a44268818a16af0bbdee0fab38bc86b62e84f2eca1f3d2bb96f53dbba.txt",
+              "snapshot_sha256": "5eecc73a44268818a16af0bbdee0fab38bc86b62e84f2eca1f3d2bb96f53dbba",
+              "collector_snapshot_hash": "5eecc73a44268818"
+            }
+          ]
+        },
+        {
+          "url": "https://clickup.com/features",
+          "title": "ClickUp™ Product Features",
+          "snippet": "Get started. It's FREE ... Free forever. No credit card. Free forever. No credit card.",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:54:21.048230+00:00",
+              "snapshot_path": "source_snapshots/clickup-gold-001-r1-c1/de3e178e3be9ba0e2d973eec160f7c8387f70ab99d84241a7ff2f53eedf245cc.txt",
+              "snapshot_sha256": "de3e178e3be9ba0e2d973eec160f7c8387f70ab99d84241a7ff2f53eedf245cc",
+              "collector_snapshot_hash": "de3e178e3be9ba0e"
+            }
+          ]
+        }
+      ],
+      "context": {
+        "tiers": [
+          {
+            "name": "Free Forever",
+            "price": "$0/user/month",
+            "billing_cycle": "monthly/annually",
+            "features": [
+              "60MB 存储",
+              "无限任务",
+              "无限免费计划成员",
+              "双因素认证",
+              "协作文档",
+              "看板",
+              "Sprint 管理",
+              "日历视图",
+              "基础自定义字段管理器",
+              "应用内视频录制",
+              "24/7 支持",
+              "1 个表单",
+              "5 个空间",
+              "40 列表/空间",
+              "100 文件夹/空间",
+              "5 个活跃自动化规则、100 次自动化执行",
+              "100/分钟 API 调用",
+              "2 个团队",
+              "30 天消息历史",
+              "3 个白板"
+            ],
+            "limitations": [
+              "60MB 文件存储",
+              "5 个空间",
+              "40 列表/空间",
+              "100 文件夹/空间",
+              "5 个活跃自动化规则、100 次自动化执行",
+              "100/分钟 API 调用",
+              "2 个团队",
+              "30 天消息历史",
+              "3 个白板"
+            ]
+          },
+          {
+            "name": "Unlimited",
+            "price": "$7/user/month (年付), $10/user/month (月付)",
+            "billing_cycle": "monthly/annually",
+            "features": [
+              "包含 Free Forever 全部功能",
+              "无限空间、文件夹和表单",
+              "无限甘特图",
+              "无限集成",
+              "无限存储",
+              "无限自定义字段",
+              "原生时间追踪",
+              "目标与组合管理",
+              "访客权限控制",
+              "资源管理",
+              "ClickUp Chat",
+              "邮件集成",
+              "200 列表/空间",
+              "200 文件夹/空间",
+              "500 个活跃自动化规则、1,000 次自动化执行",
+              "100/分钟 API 调用",
+              "3 个团队",
+              "无限消息历史",
+              "10 个白板"
+            ],
+            "limitations": [
+              "200 列表/空间",
+              "200 文件夹/空间",
+              "500 个活跃自动化规则、1,000 次自动化执行",
+              "100/分钟 API 调用",
+              "3 个团队"
+            ]
+          },
+          {
+            "name": "Business",
+            "price": "$12/user/month (年付), $19/user/month (月付)",
+            "billing_cycle": "monthly/annually",
+            "features": [
+              "包含 Unlimited 全部功能",
+              "无限仪表盘（高级卡片）",
+              "无限消息历史",
+              "无限活动视图",
+              "无限时间线视图",
+              "Webhooks 与自动化集成",
+              "每月 5K 自动化（价值 $100）",
+              "思维导图",
+              "私有白板",
+              "自定义导出",
+              "Sprint 点数与报告",
+              "组合工作量管理",
+              "Google SSO",
+              "短信双因素认证",
+              "无限校对",
+              "400 列表/空间",
+              "400 文件夹/空间",
+              "无限活跃自动化规则、5,000 次自动化执行",
+              "100/分钟 API 调用",
+              "10 个团队"
+            ],
+            "limitations": [
+              "400 列表/空间",
+              "400 文件夹/空间",
+              "5,000 次自动化执行",
+              "100/分钟 API 调用",
+              "10 个团队"
+            ]
+          },
+          {
+            "name": "Enterprise",
+            "price": "定制价格（需联系销售）",
+            "billing_cycle": "custom",
+            "features": [
+              "包含 Business 全部功能",
+              "企业权限与治理",
+              "无限自定义角色",
+              "SAML SSO 与 SCIM 配置",
+              "审计日志",
+              "会话管理",
+              "企业 API",
+              "每月 250K 自动化（价值 $750）",
+              "自定义品牌",
+              "默认个人视图",
+              "MSA 与 HIPAA",
+              "数据驻留",
+              "企业级自动化与集成",
+              "企业级 API 使用",
+              "实时入职培训",
+              "客户成功经理",
+              "托管服务",
+              "1000 列表/空间",
+              "无限文件夹/空间",
+              "无限活跃自动化规则、250,000 次自动化执行",
+              "10,000/分钟 API 调用"
+            ],
+            "limitations": [
+              "需联系销售获取报价"
+            ]
+          }
+        ],
+        "model_type": "freemium",
+        "report_excerpt": "## 2. 定价分析\n\n| 层级 | 价格 | 核心亮点 | 主要限制 |\n|---|---|---|---|\n| Free Forever | $0/用户/月[2] | 无限任务、协作文档、看板、Sprint[2] | 60MB存储、5空间、2团队[2] |\n| Unlimited | $7/用户/月(年付)；$10/用户/月(月付)[2] | 无限存储、甘特图、时间追踪、目标[2] | 200列表/空间、3团队、100API调用/分[2] |\n| Business | $12/用户/月(年付)；$19/用户/月(月付)[2] | 无限仪表盘、思维导图、Google SSO[2] | 400列表/空间、10团队、5K自动化[2] |\n| Enterprise | 定制价格，需联系销售[2] | SAML SSO、审计日志、HIPAA、250K自动化[2] | 需联系销售获取报价[2] |\n\n年付可节省最高 30% 费用，提供 30 天内 100% 退款保证[2]。按 Workspace 计费，每个 Workspace 需单独升级[2]。为非营利组织、学生、教育工作者和初创企业提供折扣[2]。\n"
+      },
+      "verdict": "supported",
+      "reviewer_evidence": "评审者确认 5eecc73a...txt（clickup.com/pricing 运行当时正文）中有：free forever yearly/monthly price Free；unlimited yearly $7 / monthly $10；business yearly $12 / monthly $19；Enterprise Get a custom demo / Contact sales；Save up to 30% with yearly；30 days full refund；$10 per 10,000 credits；nonprofits/students/educators/startups 折扣；prorated price；Enterprise bank transfers。de3e178e...txt 中有 Free forever. No credit card。",
+      "reviewer_reason": "定价层级、币种、年付/月付、退款、AI credits、折扣与计费规则均能在运行当时保存的来源正文中定位，完整定价结论获得支持。",
+      "run": "benchmark/results/20260924T025206Z-9838847b"
+    },
+    {
+      "id": "clickup-gold-001-r1-c1:feature_snippet_support",
+      "task_id": "clickup-gold-001-r1-c1",
+      "criterion": "feature_snippet_support",
+      "focus": "完整结论是否得到它实际引用的 snippet 支持；多个子事实需逐一核对",
+      "locator": "profile.feature_tree[0].description",
+      "claim": "提供任务与项目管理功能，包括 Tasks、Sprints、Goals、Milestones、任务关系、多负责人、自定义任务状态和类型、优先级、模板、检查清单、标签、子任务（最多7层嵌套）、Sprint 点数、Epics 等；提供层级结构（Hierarchy），可将任务、项目、团队和公司目标组织在单一层级中，支持从第一个任务扩展到整个公司",
+      "sources": [
+        {
+          "url": "https://clickup.com/features",
+          "title": "ClickUp™ Product Features",
+          "snippet": "Tasks Track work with actionable items, assignees, and due dates in one place. Sprints Manage agile workflows ... Goals Set high-level objectives ... Nested Subtasks Add up to 7 levels of hierarchy to your subtasks.",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:54:21.048230+00:00",
+              "snapshot_path": "source_snapshots/clickup-gold-001-r1-c1/de3e178e3be9ba0e2d973eec160f7c8387f70ab99d84241a7ff2f53eedf245cc.txt",
+              "snapshot_sha256": "de3e178e3be9ba0e2d973eec160f7c8387f70ab99d84241a7ff2f53eedf245cc",
+              "collector_snapshot_hash": "de3e178e3be9ba0e"
+            }
+          ]
+        }
+      ],
+      "context": null,
+      "verdict": "supported",
+      "reviewer_evidence": "评审者确认 de3e178e...txt（clickup.com/features 运行当时正文）中有 Tasks、Sprints、Goals、Milestones、Task Relationships、Multiple assignees、Custom task statuses、Custom task types、Task priorities、templates、Task checklists、Task tags、Nested Subtasks Add up to 7 levels、Sprint points、Epics 与 Hierarchy that scales。",
+      "reviewer_reason": "功能结论的每个关键子事实均能在运行当时保存的功能页正文中定位，完整结论获得引用来源支持。",
+      "run": "benchmark/results/20260924T025206Z-9838847b"
+    },
+    {
+      "id": "clickup-gold-001-r1-c1:persona_snippet_support",
+      "task_id": "clickup-gold-001-r1-c1",
+      "criterion": "persona_snippet_support",
+      "focus": "完整结论是否得到它实际引用的 snippet 支持；多个子事实需逐一核对",
+      "locator": "profile.user_personas[0].pain_points[0]",
+      "claim": "预算有限，需要低成本或免费的工作管理工具",
+      "sources": [
+        {
+          "url": "https://clickup.com/pricing",
+          "title": "ClickUp Pricing and Plans",
+          "snippet": "Do you offer discounts for nonprofits, students, educators, or startups? Yes to all of the above!",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:53:42.048552+00:00",
+              "snapshot_path": "source_snapshots/clickup-gold-001-r1-c1/5eecc73a44268818a16af0bbdee0fab38bc86b62e84f2eca1f3d2bb96f53dbba.txt",
+              "snapshot_sha256": "5eecc73a44268818a16af0bbdee0fab38bc86b62e84f2eca1f3d2bb96f53dbba",
+              "collector_snapshot_hash": "5eecc73a44268818"
+            },
+            {
+              "observed_at": "2026-09-24T02:54:01.846434+00:00",
+              "snapshot_path": "source_snapshots/clickup-gold-001-r1-c1/5eecc73a44268818a16af0bbdee0fab38bc86b62e84f2eca1f3d2bb96f53dbba.txt",
+              "snapshot_sha256": "5eecc73a44268818a16af0bbdee0fab38bc86b62e84f2eca1f3d2bb96f53dbba",
+              "collector_snapshot_hash": "5eecc73a44268818"
+            }
+          ]
+        }
+      ],
+      "context": null,
+      "verdict": "supported",
+      "reviewer_evidence": "评审者确认 clickup.com/pricing 运行当时正文中有 free forever yearly/monthly price Free、Save up to 30% with yearly，以及 discounts for nonprofits, students, educators, or startups? Yes to all of the above。",
+      "reviewer_reason": "报告的用户画像“预算有限，需要低成本或免费的工作管理工具”由免费计划、年付省钱和预算敏感群体折扣共同支持。",
+      "run": "benchmark/results/20260924T025206Z-9838847b"
+    },
+    {
+      "id": "clickup-gold-001-r1-c1:swot_snippet_support",
+      "task_id": "clickup-gold-001-r1-c1",
+      "criterion": "swot_snippet_support",
+      "focus": "完整结论是否得到它实际引用的 snippet 支持；多个子事实需逐一核对",
+      "locator": "profile.swot[0].items[0]",
+      "claim": "ClickUp 定位为一体化工作管理平台，功能数量超过其他同类平台，被称为'The Everything App for work'；ClickUp 通过整合项目管理、文档、目标、聊天和时间追踪等多个工具，替代多个订阅，从而降低技术栈成本",
+      "sources": [
+        {
+          "url": "https://clickup.com/features",
+          "title": "ClickUp™ Product Features",
+          "snippet": "ClickUp packs more features than any other work management platform - Experience the power of The Everything App for work",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T02:54:21.048230+00:00",
+              "snapshot_path": "source_snapshots/clickup-gold-001-r1-c1/de3e178e3be9ba0e2d973eec160f7c8387f70ab99d84241a7ff2f53eedf245cc.txt",
+              "snapshot_sha256": "de3e178e3be9ba0e2d973eec160f7c8387f70ab99d84241a7ff2f53eedf245cc",
+              "collector_snapshot_hash": "de3e178e3be9ba0e"
+            }
+          ]
+        }
+      ],
+      "context": null,
+      "verdict": "supported",
+      "reviewer_evidence": "评审者确认 clickup.com/features 运行当时快照正文中有 packs more features than any other work management platform、The Everything App for work，以及 FAQ：Can ClickUp replace multiple tools to reduce our tech stack costs? -> ClickUp replaces your separate project management, docs, goals, chat, and time tracking tools with one unified platform, eliminating the need for multiple subscriptions. This consolidation reduces costs。",
+      "reviewer_reason": "SWOT 优势结论的四个子事实（功能最多、Everything App 定位、整合项目管理/文档/目标/聊天/时间追踪、替代多个订阅降低技术栈成本）在快照中均有原文直接支持。",
+      "run": "benchmark/results/20260924T025206Z-9838847b"
+    },
+    {
+      "id": "clickup-gold-001-r1-c1:missing_disclosure",
+      "task_id": "clickup-gold-001-r1-c1",
+      "criterion": "missing_disclosure",
+      "focus": "缺失或抓取失败的信息是否明确标为本轮未知，避免把未知说成产品没有",
+      "locator": "report_markdown",
+      "claim": null,
+      "sources": [],
+      "context": {
+        "missing_dimensions": [],
+        "collect_errors": [],
+        "qa_issues": [
+          {
+            "field_path": "swot",
+            "issue_type": "inconsistency",
+            "description": "'免费'同时出现在优势和劣势中，需确认是否为不同角度的合理分析",
+            "severity": "minor",
+            "suggestion": "检查关于'免费'的优势和劣势描述是否从不同角度阐述，如是则保留并补充说明",
+            "evidence": "keyword '免费' appears in both strengths and weaknesses"
+          },
+          {
+            "field_path": "feature_tree[0].description.sources",
+            "issue_type": "missing_source",
+            "description": "任务与项目管理模块下 8 个子功能（Tasks、Sprints、Goals、Milestones、Nested Subtasks、Sprint Points & Reporting、Epics、Hierarchy）全部引用同一条 snippet，且该 snippet 仅覆盖 Tasks/Sprints/Goals/Nested Subtasks 四项，Milestones、Sprint Points & Reporting、Epics、Hierarchy 在 snippet 中无任何文字支撑，属于单来源且证据不匹配。",
+            "severity": "major",
+            "suggestion": "为 Milestones、Sprint Points & Reporting、Epics、Hierarchy 分别补充独立来源（如 clickup.com/features 对应锚点、帮助中心文档或产品更新日志），并将 confidence 从 1.0 下调至与证据匹配的水平（建议 0.6-0.75）。",
+            "evidence": "snippet 原文仅含 'Tasks ... Sprints ... Goals ... Nested Subtasks Add up to 7 levels of hierarchy to your subtasks.'，未出现 Milestones、Epics、Sprint Points、Hierarchy 等词。"
+          },
+          {
+            "field_path": "feature_tree[*].description.confidence",
+            "issue_type": "low_confidence",
+            "description": "全量功能节点 confidence 一律为 1.0，但绝大多数仅由单一来源（clickup.com/features 同一页面）支撑，不满足'每条 claim >=2 个独立来源'的溯源要求。1.0 的置信度与单来源证据不匹配，属于系统性高估。",
+            "severity": "major",
+            "suggestion": "对单来源 claim 统一降级至 <=0.8；对 snippet 未直接覆盖的 claim 降至 <=0.7；仅当有 >=2 个独立来源且 snippet 直接支撑时才可给 0.9+。",
+            "evidence": "所有 sources 数组长度均为 1，且 url 全部为 https://clickup.com/features。"
+          },
+          {
+            "field_path": "pricing.tiers",
+            "issue_type": "missing_source",
+            "description": "定价表全部数据（Free $0、Unlimited $7/$10、Business $12/$19、Enterprise 定制、60MB 存储、5 空间、2 团队、200 列表/空间、100 API 调用/分、400 列表/空间、10 团队、5K 自动化、250K 自动化、年付省 30%、30 天退款）均只标注 [2] 单一来源，未提供第二个独立来源交叉验证，且报告正文未展示 [2] 对应的 snippet 原文，无法核验数字准确性。",
+            "severity": "critical",
+            "suggestion": "补充 clickup.com/pricing 页面 snippet 原文，并增加第二来源（如第三方评测、G2/Capterra 定价页）交叉验证；对无法双源验证的价格数字将 confidence 降至 <=0.75。",
+            "evidence": "报告定价表每行均仅引用 [2]，无 [1] 或其他来源；CompetitorProfile 中 pricing 字段未在给定片段中展示。"
+          },
+          {
+            "field_path": "pricing.tiers[1].price",
+            "issue_type": "factual_error",
+            "description": "Unlimited 年付 $7/用户/月、Business 年付 $12/用户/月为历史价格，ClickUp 近年已多次调价（Unlimited 年付现为 $10、Business 年付现为 $19 量级），报告未标注价格采集时间，存在过期风险。",
+            "severity": "major",
+            "suggestion": "核对 clickup.com/pricing 当前价格并标注 accessed_at 时间戳；若价格已变更，更新数字并在报告中注明'价格截至 YYYY-MM'。",
+            "evidence": "报告未提供定价来源 snippet 与采集时间，无法确认 $7/$12 是否为当前有效价格。"
+          },
+          {
+            "field_path": "pricing.tiers[0].limitations",
+            "issue_type": "inconsistency",
+            "description": "Free 计划限制写为'60MB存储、5空间、2团队'，但 ClickUp 官方 Free Forever 通常为'100MB 存储'，且'空间(Space)'与'团队(Team)'数量限制表述在不同版本间存在差异，需与来源核对。",
+            "severity": "minor",
+            "suggestion": "以 clickup.com/pricing 原文 snippet 为准修正存储容量与空间/团队数量，并附来源。",
+            "evidence": "报告未展示 [2] 的 snippet 原文，无法验证 60MB 与 5 空间/2 团队是否准确。"
+          },
+          {
+            "field_path": "swot.opportunities",
+            "issue_type": "low_confidence",
+            "description": "机会项 confidence 普遍偏低（0.5-0.55），且'Chat 可替代 Slack''一键迁移利于抢占竞品用户''非营利/学生/初创折扣可拓展长尾市场'均为推断性结论，缺乏直接证据支撑，属于推测而非事实。",
+            "severity": "major",
+            "suggestion": "将机会项明确标注为'推断/假设'，或补充支撑证据（如 ClickUp 官方对 Chat 的定位声明、迁移工具的用户增长数据）；无法佐证的建议删除或降权。",
+            "evidence": "O 部分四条 confidence 分别为 0.55/0.5/0.5/0.5，均低于 0.75 阈值。"
+          },
+          {
+            "field_path": "swot.threats",
+            "issue_type": "low_confidence",
+            "description": "威胁项 confidence 同样偏低（0.5-0.55），'一键迁移工具同样便于用户迁出''一体化定位面临同类平台功能追赶'等为逻辑推演，无外部证据。",
+            "severity": "major",
+            "suggestion": "补充竞品（Asana/Monday/Notion）功能追赶的具体证据或用户流失数据；否则标注为推断并降低权重。",
+            "evidence": "T 部分四条 confidence 分别为 0.5/0.55/0.5/0.55。"
+          },
+          {
+            "field_path": "swot.strengths[0]",
+            "issue_type": "missing_source",
+            "description": "'一体化平台，功能数量超同类产品'为比较性结论，仅引用 [1]（ClickUp 自家 features 页），缺少第三方对比来源，存在自证偏差。",
+            "severity": "minor",
+            "suggestion": "补充第三方对比评测（如 G2 功能对比、Capterra）作为第二来源，或将表述改为'官方宣称功能覆盖广'。",
+            "evidence": "该条仅标注 [1]，且 [1] 为 clickup.com 官方页面。"
+          },
+          {
+            "field_path": "swot.strengths[6]",
+            "issue_type": "missing_source",
+            "description": "'25,000+ 条评价，用户喜爱 Brain 与多视图'引用 [1]（官方 features 页），但评价数量与用户偏好通常来自 G2/Capterra 等第三方平台，官方页面作为来源可信度不足。",
+            "severity": "minor",
+            "suggestion": "改用 G2/Capterra/TrustRadius 的评价数据作为来源，并注明评分与评价数采集时间。",
+            "evidence": "该条仅标注 [1]，来源为 clickup.com 官方页面。"
+          },
+          {
+            "field_path": "user_feedback",
+            "issue_type": "schema_violation",
+            "description": "第 5 节'用户真实反馈'为空（'本轮未采集到第三方用户评价'），但第 4 节用户画像与第 6 节 SWOT 中却大量引用'用户喜爱''非技术团队可能感到复杂'等用户侧结论，二者矛盾——无用户反馈却得出用户偏好结论。",
+            "severity": "major",
+            "suggestion": "要么补充第三方用户评价采集（G2/Capterra/Reddit），要么删除/降权所有基于用户反馈的结论，并在报告中明确标注证据缺口。",
+            "evidence": "第 5 节声明未采集到第三方评价，但第 4、6 节存在用户偏好类结论。"
+          },
+          {
+            "field_path": "user_personas",
+            "issue_type": "missing_source",
+            "description": "用户画像共 9 类，其中'非营利组织/学生/教育工作者/初创企业''大型企业/组织''外部协作者/访客'仅引用 [2]（定价页），'非技术团队''敏捷开发团队''需要管理客户账单和工时记录的团队''现场团队和活动管理团队'仅引用 [1]（features 页），均为从产品功能反推的画像，非真实用户调研，且多为单来源。",
+            "severity": "major",
+            "suggestion": "明确标注画像为'基于功能与定价的推断'，或补充真实用户调研/第三方报告来源；单来源画像 confidence 应 <=0.7。",
+            "evidence": "各画像来源标注均为单一 [1] 或 [2]，无交叉验证。"
+          },
+          {
+            "field_path": "strategic_analysis.next_steps",
+            "issue_type": "outdated",
+            "description": "战略解读称'AI 功能处于 growing 成熟度'并预测'未来 6-12 个月继续加码 AI 代理生态'，但未给出预测依据来源与时间基准，且'$10/10,000 credits'的 AI 积分定价未在定价章节出现，数据孤岛。",
+            "severity": "minor",
+            "suggestion": "补充 AI 积分定价来源，统一在定价章节列出；预测部分标注为'推断'并给出依据。",
+            "evidence": "AI 积分 $10/10,000 credits 仅出现在第 7 节，第 2 节定价表未包含。"
+          },
+          {
+            "field_path": "feature_tree[1].description.claim",
+            "issue_type": "factual_error",
+            "description": "多视图 claim 称'15+ 种可定制视图'并列举 List/Board/Gantt/Kanban/Calendar/Table/Whiteboards/Mind Maps/Canvas/Map view/Portfolios/Workload view，但 snippet 中未出现 Calendar、Table、Canvas，存在 snippet 未覆盖的列举项。",
+            "severity": "minor",
+            "suggestion": "删除 snippet 未覆盖的视图项，或补充对应来源；'15+'数字需与官方原文一致。",
+            "evidence": "snippet 原文为 'Views ... 15+ customizable layouts like List, Board, or Gantt. Kanban board ... Gantt chart view ... Whiteboards ... Mind Maps ... Map view ... Portfolios ... Workload view'，无 Calendar/Table/Canvas。"
+          },
+          {
+            "field_path": "feature_tree[*].sub_features[*].maturity",
+            "issue_type": "schema_violation",
+            "description": "所有子功能的 maturity 与 category 字段均为 null，未填充，导致功能成熟度无法评估，与第 7 节'AI 功能处于 growing 成熟度'的结论缺乏数据支撑。",
+            "severity": "minor",
+            "suggestion": "为各子功能补充 maturity（emerging/growing/mature）与 category 字段，至少对核心功能填充。",
+            "evidence": "CompetitorProfile 中所有 sub_features 的 maturity/category 均为 null。"
+          },
+          {
+            "field_path": "company_profile",
+            "issue_type": "schema_violation",
+            "description": "founded_year、headquarters、funding_stage、employee_count_range 四个基础字段均为 null，公司背景信息缺失，影响竞品分析的完整性。",
+            "severity": "minor",
+            "suggestion": "补充成立年份（2017）、总部（美国圣地亚哥）、融资阶段（Series C，估值约 $4B）、员工规模等基础信息并附来源。",
+            "evidence": "CompetitorProfile 中上述四字段均为 null。"
+          }
+        ],
+        "pricing_excerpt": "## 2. 定价分析\n\n| 层级 | 价格 | 核心亮点 | 主要限制 |\n|---|---|---|---|\n| Free Forever | $0/用户/月[2] | 无限任务、协作文档、看板、Sprint[2] | 60MB存储、5空间、2团队[2] |\n| Unlimited | $7/用户/月(年付)；$10/用户/月(月付)[2] | 无限存储、甘特图、时间追踪、目标[2] | 200列表/空间、3团队、100API调用/分[2] |\n| Business | $12/用户/月(年付)；$19/用户/月(月付)[2] | 无限仪表盘、思维导图、Google SSO[2] | 400列表/空间、10团队、5K自动化[2] |\n| Enterprise | 定制价格，需联系销售[2] | SAML SSO、审计日志、HIPAA、250K自动化[2] | 需联系销售获取报价[2] |\n\n年付可节省最高 30% 费用，提供 30 天内 100% 退款保证[2]。按 Workspace 计费，每个 Workspace 需单独升级[2]。为非营利组织、学生、教育工作者和初创企业提供折扣[2]。\n",
+        "user_feedback_excerpt": "## 5. 用户真实反馈\n\n本轮未采集到第三方用户评价。\n"
+      },
+      "verdict": "honest",
+      "reviewer_evidence": "评审者确认报告第 5 节原文为「本轮未采集到第三方用户评价。」；本次运行 missing_dimensions=[] 且 collect_errors=[]，唯一缺失维度是第三方用户评价。",
+      "reviewer_reason": "报告把未采集到的第三方评价明确标为本轮未知，没有把未知说成产品没有，属于诚实披露。SWOT 引用官方页面「25,000+ 条评价」与第 5 节的张力属来源支撑问题，不在本项判据内。",
+      "run": "benchmark/results/20260924T025206Z-9838847b"
+    },
+    {
+      "id": "openproject-features-gold-001-r1-c1:pricing_basis",
+      "task_id": "openproject-features-gold-001-r1-c1",
+      "criterion": "pricing_basis",
+      "focus": "定价层级及价格是否有充分的实际来源依据；逐项核对币种、账期与限制",
+      "locator": "profile.pricing",
+      "claim": "OpenProject 提供免费试用（Start free trial），并有 Community edition（社区版）和 Enterprise edition（企业版）两种版本。；OpenProject 的 Enterprise 附加功能包含在付费的 Enterprise on-premises（本地部署）和 cloud（云端）计划中，付费版本分为 Basic、Professional、Premium、Corporate 四个等级。；升级到付费版本将支持开源项目的开发和维护。",
+      "sources": [
+        {
+          "url": "https://openproject.org/features",
+          "title": "Project Collaboration Software Features - OpenProject",
+          "snippet": "Editions Community edition Enterprise edition ... Start free trial",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T03:03:29.156791+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            },
+            {
+              "observed_at": "2026-09-24T03:03:54.002311+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            },
+            {
+              "observed_at": "2026-09-24T03:04:19.260008+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            }
+          ]
+        }
+      ],
+      "context": {
+        "tiers": [
+          {
+            "name": "Community edition",
+            "price": "免费",
+            "billing_cycle": "N/A",
+            "features": [
+              "开源社区版功能",
+              "支持开源项目开发和维护"
+            ],
+            "limitations": [
+              "不含 Enterprise 附加功能"
+            ]
+          },
+          {
+            "name": "Basic",
+            "price": "未在claims中明确",
+            "billing_cycle": "未在claims中明确",
+            "features": [
+              "包含 Enterprise 附加功能"
+            ],
+            "limitations": [
+              "具体价格与限制未在claims中说明"
+            ]
+          },
+          {
+            "name": "Professional",
+            "price": "未在claims中明确",
+            "billing_cycle": "未在claims中明确",
+            "features": [
+              "包含 Enterprise 附加功能"
+            ],
+            "limitations": [
+              "具体价格与限制未在claims中说明"
+            ]
+          },
+          {
+            "name": "Premium",
+            "price": "未在claims中明确",
+            "billing_cycle": "未在claims中明确",
+            "features": [
+              "包含 Enterprise 附加功能"
+            ],
+            "limitations": [
+              "具体价格与限制未在claims中说明"
+            ]
+          },
+          {
+            "name": "Corporate",
+            "price": "未在claims中明确",
+            "billing_cycle": "未在claims中明确",
+            "features": [
+              "包含 Enterprise 附加功能"
+            ],
+            "limitations": [
+              "具体价格与限制未在claims中说明"
+            ]
+          }
+        ],
+        "model_type": "freemium",
+        "report_excerpt": "## 2. 定价分析\n\n| 层级 | 价格 | 核心亮点 | 主要限制 |\n|---|---|---|---|\n| Community edition | 免费[1] | 开源社区版功能、支持开源项目[1] | 不含 Enterprise 附加功能[1] |\n| Basic | 未在claims中明确 | 含 Enterprise 附加功能[1] | 价格与限制未说明[1] |\n| Professional | 未在claims中明确 | 含 Enterprise 附加功能[1] | 价格与限制未说明[1] |\n| Premium | 未在claims中明确 | 含 Enterprise 附加功能[1] | 价格与限制未说明[1] |\n| Corporate | 未在claims中明确 | 含 Enterprise 附加功能[1] | 价格与限制未说明[1] |\n\nOpenProject 采用 freemium 模式，以免费社区版获客，通过 Enterprise 附加功能驱动付费转化[1]。付费版本分为 Basic、Professional、Premium、Corporate 四个等级，覆盖本地部署与云端两种形态[1]。\n"
+      },
+      "verdict": "partial",
+      "reviewer_evidence": "评审者核对 openproject.org/features 运行当时快照：Start free trial、Editions Community edition / Enterprise edition、The OpenProject Enterprise add-ons are part of our Enterprise on-premises and cloud plans、Enterprise add-on in plan Basic/Professional/Premium/Corporate、With the upgrade to a paid version, you will support the development and maintenance of the open source project 均命中；但快照全文（及复核当日线上页）均未出现 Community edition 免费或任何价格数字，仅有 free trial、GPLv3 开源许可和升级到付费版两处隐含表述。",
+      "reviewer_reason": "版本结构与付费档位的描述有原文支撑，且报告把 Basic~Corporate 的价格诚实标为未在claims中明确、未编造数字；但 Community edition 的价格写成免费属于推断，所引用来源中没有该表述，因此定价依据不完整，判为 partial。",
+      "run": "benchmark/results/20260924T030259Z-53a6a170"
+    },
+    {
+      "id": "openproject-features-gold-001-r1-c1:feature_snippet_support",
+      "task_id": "openproject-features-gold-001-r1-c1",
+      "criterion": "feature_snippet_support",
+      "focus": "完整结论是否得到它实际引用的 snippet 支持；多个子事实需逐一核对",
+      "locator": "profile.feature_tree[0].description",
+      "claim": "项目管理功能覆盖项目全生命周期，包括项目组合管理、项目规划、任务管理、敏捷/Kanban/Scrum、时间跟踪、团队协作、产品路线图、工作流和安全等。；项目组合管理支持项目层级结构、收藏项目、项目列表、自定义项目仪表盘、项目模板、个人仪表盘、项目活动跟踪和多项目视图。；项目规划与调度支持甘特图、工作包、关系与层级、自动或手动调度、工作周定义、资源管理、基线比较、日历和日期提醒。",
+      "sources": [
+        {
+          "url": "https://openproject.org/features",
+          "title": "Project Collaboration Software Features - OpenProject",
+          "snippet": "Project management features support project teams throughout the entire project life cycle. Project Portfolio Project Planning Task management Agile, Kanban & Scrum Time tracking Team collaboration Product roadmap Workflows More benefits Security",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T03:03:29.156791+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            },
+            {
+              "observed_at": "2026-09-24T03:03:54.002311+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            },
+            {
+              "observed_at": "2026-09-24T03:04:19.260008+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            }
+          ]
+        }
+      ],
+      "context": null,
+      "verdict": "supported",
+      "reviewer_evidence": "评审者逐一核对 openproject.org/features 运行当时快照：总纲句 Project management features support project teams throughout the entire project life cycle 与 snippet 一致；项目组合管理 8 项分别命中 project structure with hierarchies、marking projects as favorites、Project lists/personalized project lists、custom project dashboard、Project templates、individual project dashboard、project activity tracking、Multi-project views；项目规划 9 项分别命中 Gantt charts、work packages、Relations and hierarchies、automatic or manual scheduling mode、Work week、Resource management、Baseline comparison、Calendar、Date alerts。复核当日以相同 direct_http 通道重爬同一 URL，正文长度 22108、SHA256 9c5dcd3a5f9e… 与存档完全一致，30 个关键词零漂移。",
+      "reviewer_reason": "功能树结论的 22 个子事实在引用来源中均有原文直接支持，无虚构项，且来源快照与官网当前文本一致。",
+      "run": "benchmark/results/20260924T030259Z-53a6a170"
+    },
+    {
+      "id": "openproject-features-gold-001-r1-c1:persona_snippet_support",
+      "task_id": "openproject-features-gold-001-r1-c1",
+      "criterion": "persona_snippet_support",
+      "focus": "完整结论是否得到它实际引用的 snippet 支持；多个子事实需逐一核对",
+      "locator": "profile.user_personas[0].pain_points[0]",
+      "claim": "需要 BIM 项目管理与 3D 模型协作能力",
+      "sources": [
+        {
+          "url": "https://openproject.org/features",
+          "title": "Project Collaboration Software Features - OpenProject",
+          "snippet": "Include BIM project management features, such as 3D model viewer (IFC), BCF management, or a Revit integration.",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T03:03:29.156791+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            },
+            {
+              "observed_at": "2026-09-24T03:03:54.002311+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            },
+            {
+              "observed_at": "2026-09-24T03:04:19.260008+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            }
+          ]
+        }
+      ],
+      "context": null,
+      "verdict": "supported",
+      "reviewer_evidence": "评审者核对 openproject.org/features 运行当时快照：原文 Add-ons for the construction industry / Include BIM project management features, such as 3D model viewer (IFC), BCF management, or a Revit integration 命中，导航另有 Industries: Construction | BIM。",
+      "reviewer_reason": "本判据只问画像痛点是否有来源支撑：建筑行业团队需要 BIM 项目管理与 3D 模型协作（IFC 查看器、BCF 管理）在来源中有直接表述，判 supported。来源同时标注其为 Add-ons（需额外付费），报告使用场景未保留该前提，属现有 15 项判据未覆盖的限定词丢失，需另立判据。",
+      "run": "benchmark/results/20260924T030259Z-53a6a170"
+    },
+    {
+      "id": "openproject-features-gold-001-r1-c1:swot_snippet_support",
+      "task_id": "openproject-features-gold-001-r1-c1",
+      "criterion": "swot_snippet_support",
+      "focus": "完整结论是否得到它实际引用的 snippet 支持；多个子事实需逐一核对",
+      "locator": "profile.swot[0].items[0]",
+      "claim": "项目管理功能覆盖项目全生命周期，包括项目组合管理、项目规划、任务管理、敏捷/Kanban/Scrum、时间跟踪、团队协作、产品路线图、工作流和安全等。；项目组合管理支持项目层级结构、收藏项目、项目列表、自定义项目仪表盘、项目模板、个人仪表盘、项目活动跟踪和多项目视图。；项目规划与调度支持甘特图、工作包、关系与层级、自动或手动调度、工作周定义、资源管理、基线比较、日历和日期提醒。",
+      "sources": [
+        {
+          "url": "https://openproject.org/features",
+          "title": "Project Collaboration Software Features - OpenProject",
+          "snippet": "Project management features support project teams throughout the entire project life cycle. Project Portfolio Project Planning Task management Agile, Kanban & Scrum Time tracking Team collaboration Product roadmap Workflows More benefits Security",
+          "capture_status": "captured",
+          "captures": [
+            {
+              "observed_at": "2026-09-24T03:03:29.156791+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            },
+            {
+              "observed_at": "2026-09-24T03:03:54.002311+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            },
+            {
+              "observed_at": "2026-09-24T03:04:19.260008+00:00",
+              "snapshot_path": "source_snapshots/openproject-features-gold-001-r1-c1/9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728.txt",
+              "snapshot_sha256": "9c5dcd3a5f9eb6871e01d6fdda512f46acebd12f6d587cc1458646f1094e6728",
+              "collector_snapshot_hash": "9c5dcd3a5f9eb687"
+            }
+          ]
+        }
+      ],
+      "context": null,
+      "verdict": "supported",
+      "reviewer_evidence": "复用第 12 条（feature_snippet_support）的人工核对结果：本条 claim 与功能树结论为同一段文字，22 个子事实在 openproject.org/features 运行当时快照中全部命中（快照 SHA256 9c5dcd3a5f9e…，复核当日同通道重爬字节一致）。",
+      "reviewer_reason": "SWOT 优势条直接引用功能树结论，评审者已在第 12 条逐子事实核对并批准，判定一致。",
+      "run": "benchmark/results/20260924T030259Z-53a6a170"
+    },
+    {
+      "id": "openproject-features-gold-001-r1-c1:missing_disclosure",
+      "task_id": "openproject-features-gold-001-r1-c1",
+      "criterion": "missing_disclosure",
+      "focus": "缺失或抓取失败的信息是否明确标为本轮未知，避免把未知说成产品没有",
+      "locator": "report_markdown",
+      "claim": null,
+      "sources": [],
+      "context": {
+        "missing_dimensions": [],
+        "collect_errors": [],
+        "qa_issues": [
+          {
+            "field_path": "user_personas[0].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'建筑行业（Construction | BIM）团队'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=建筑行业（Construction | BIM）团队, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[2].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'IT 与技术行业团队'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=IT 与技术行业团队, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[3].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'公共和政府组织'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=公共和政府组织, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[4].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'医疗保健行业'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=医疗保健行业, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[5].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'汽车行业'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=汽车行业, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[6].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'工程行业'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=工程行业, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[7].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'NGO 和基金会'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=NGO 和基金会, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[8].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'银行和保险行业'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=银行和保险行业, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[9].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'航空航天行业'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=航空航天行业, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[10].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'采用经典、敏捷或混合项目管理方式的团队'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=采用经典、敏捷或混合项目管理方式的团队, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[11].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'遵循 PMflex、PM²、OKR、PRINCE2、SAFe 等标准/框架的团队'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=遵循 PMflex、PM²、OKR、PRINCE2、SAFe 等标准/框架的团队, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "user_personas[12].pain_points",
+            "issue_type": "weak_source",
+            "description": "用户画像'从 Jira 迁移的用户'的来源未明确指向用户群体或使用场景",
+            "severity": "minor",
+            "suggestion": "优先使用客户案例、解决方案、use case、评论/评测或产品页中明确目标用户的来源",
+            "evidence": "segment=从 Jira 迁移的用户, sources exist but persona relevance is weak"
+          },
+          {
+            "field_path": "swot",
+            "issue_type": "inconsistency",
+            "description": "'免费'同时出现在优势和劣势中，需确认是否为不同角度的合理分析",
+            "severity": "minor",
+            "suggestion": "检查关于'免费'的优势和劣势描述是否从不同角度阐述，如是则保留并补充说明",
+            "evidence": "keyword '免费' appears in both strengths and weaknesses"
+          },
+          {
+            "field_path": "swot",
+            "issue_type": "inconsistency",
+            "description": "'集成'同时出现在优势和劣势中，需确认是否为不同角度的合理分析",
+            "severity": "minor",
+            "suggestion": "检查关于'集成'的优势和劣势描述是否从不同角度阐述，如是则保留并补充说明",
+            "evidence": "keyword '集成' appears in both strengths and weaknesses"
+          },
+          {
+            "field_path": "pricing.tiers[1..4]",
+            "issue_type": "missing_source",
+            "description": "Basic/Professional/Premium/Corporate 四个付费层级的价格全部为“未在claims中明确”，但报告仍将其列为定价层级并声称“付费版本分为 Basic、Professional、Premium、Corporate 四个等级，覆盖本地部署与云端两种形态”。该结论没有任何 snippet 支撑，属于无源推断。",
+            "severity": "critical",
+            "suggestion": "要么补充官方 pricing 页面的价格与层级来源（>=2 个独立来源），要么删除这四个层级的定价表行，并在正文中明确标注“付费层级名称与价格未获取到可靠来源，暂不纳入定价分析”。",
+            "evidence": "报告定价表中 Basic/Professional/Premium/Corporate 价格均为“未在claims中明确”，核心亮点/限制均标注[1]，但 [1] 为 features 页面，不含定价信息。"
+          },
+          {
+            "field_path": "pricing.tiers[0].price",
+            "issue_type": "missing_source",
+            "description": "Community edition 免费这一 claim 仅有一个来源 [1]（features 页面），且该 snippet 未出现“free/community edition”字样，无法直接支撑“免费”结论。",
+            "severity": "major",
+            "suggestion": "补充官方 pricing 页面或社区版说明页作为第二来源；若无法获取，将 confidence 降至 0.6 以下并在报告中标注为“待验证”。",
+            "evidence": "snippet 内容为功能列表，未包含定价或免费字样。"
+          },
+          {
+            "field_path": "feature_tree[0].description.sources",
+            "issue_type": "missing_source",
+            "description": "feature_tree 中所有节点（项目组合管理、项目规划与调度、任务管理、敏捷/Kanban/Scrum、时间跟踪、团队协作、产品路线图、工作流等）均复用同一条 snippet，该 snippet 仅列出功能大类名称，未包含“甘特图、工作包、关系与层级、自动或手动调度、工作周定义、资源管理、基线比较、日历、日期提醒”等具体子功能描述。claim 与 snippet 不匹配，属于过度推断。",
+            "severity": "critical",
+            "suggestion": "为每个子功能补充对应的官方文档/功能页 snippet；无法找到来源的子功能应从 claim 中删除或降级为“未验证”。",
+            "evidence": "snippet: 'Project management features support project teams throughout the entire project life cycle. Project Portfolio Project Planning Task management Agile, Kanban & Scrum Time tracking Team collaboration Product roadmap Workflows More benefits Security'，未出现甘特图、工作包、基线比较等具体术语。"
+          },
+          {
+            "field_path": "feature_tree[0].sub_features[*].description.confidence",
+            "issue_type": "low_confidence",
+            "description": "所有子功能 confidence 统一为 0.92，但来源仅为一条泛化 snippet，且部分子功能（如“任务管理功能”“时间跟踪功能”）claim 内容为空泛重复，未提供实质信息。confidence 明显虚高。",
+            "severity": "major",
+            "suggestion": "根据实际证据强度重新评估 confidence：有具体 snippet 支撑的 0.85-0.95，仅有大类名称的 0.6-0.7，无来源的 <=0.5。",
+            "evidence": "子功能 claim 如“任务管理功能。”“时间跟踪功能。”与 snippet 中的大类名称一一对应，无额外证据。"
+          },
+          {
+            "field_path": "feature_tree[1].description",
+            "issue_type": "missing_source",
+            "description": "集成与自动化 claim 包含 REST API、SCIM、MCP 服务器、Nextcloud/OneDrive/SharePoint、Excel 同步等具体功能，但 sources 被截断，无法确认是否有独立来源支撑。若同样复用 features 页面 snippet，则 MCP、SCIM 等具体术语需在 snippet 中出现。",
+            "severity": "major",
+            "suggestion": "确认并补充每个集成功能的原文 snippet；MCP 服务器、SCIM provisioning 等需有官方文档或发布说明作为来源。",
+            "evidence": "报告 3.2 节列出 MCP 服务器、SCIM 等，但来源标注均为 [1]，需核实 snippet 是否包含这些术语。"
+          },
+          {
+            "field_path": "swot.weaknesses[0]",
+            "issue_type": "inconsistency",
+            "description": "SWOT 劣势第一条“付费版本价格与限制未公开”标注 confidence 0.50，但该结论实际是数据缺失（missing data），而非竞品劣势。将“我们没查到”当作竞品劣势属于分析逻辑错误。",
+            "severity": "major",
+            "suggestion": "删除该条，或改为“定价透明度待验证”并移入“待补充信息”章节，不计入 SWOT。",
+            "evidence": "报告定价表已明确标注价格“未在claims中明确”，说明是采集缺失而非产品特性。"
+          },
+          {
+            "field_path": "swot.opportunities[*] / swot.threats[*]",
+            "issue_type": "low_confidence",
+            "description": "O 与 T 全部条目 confidence 均为 0.50，且来源均为 [1]（features 页面）。features 页面无法支撑“MCP 切入 AI 自动化工作流”“Jira Migrator 争夺用户”等推断性结论。",
+            "severity": "major",
+            "suggestion": "为每条 O/T 补充独立来源（如官方博客、路线图、第三方分析）；无法支撑的条目应删除或明确标注为“分析师推断”。",
+            "evidence": "O/T 条目均为推断性表述，但来源标注为功能列表页 [1]。"
+          },
+          {
+            "field_path": "user_personas[*]",
+            "issue_type": "missing_source",
+            "description": "用户画像列出 13 类行业用户，每条均标注 [1]，但 features 页面 snippet 未包含“建筑、医疗、汽车、航空航天、银行保险”等行业名称。行业用户结论缺乏来源支撑。",
+            "severity": "major",
+            "suggestion": "补充官方行业解决方案页面或客户案例作为来源；无法验证的行业应从画像中删除。",
+            "evidence": "snippet 仅含功能大类，未出现任何行业名称。"
+          },
+          {
+            "field_path": "user_feedback",
+            "issue_type": "schema_violation",
+            "description": "第 5 节“用户真实反馈”为空，仅说明“本轮未采集到第三方用户评价”。缺少用户反馈会削弱报告完整性，但不属于错误。",
+            "severity": "minor",
+            "suggestion": "补充 G2/Capterra/Reddit 等第三方评价来源；若确实无法采集，应在报告中标注为已知缺口并说明对结论的影响。",
+            "evidence": "报告第 5 节内容为空。"
+          },
+          {
+            "field_path": "company_profile.founded_year / headquarters / funding_stage / employee_count_range",
+            "issue_type": "schema_violation",
+            "description": "CompetitorProfile 中 founded_year、headquarters、funding_stage、employee_count_range 均为 null，报告概览表也未填充这些字段。",
+            "severity": "minor",
+            "suggestion": "补充公司基本信息（成立年份、总部、融资阶段、员工规模），或明确标注为“未获取”。",
+            "evidence": "CompetitorProfile 对应字段均为 null。"
+          },
+          {
+            "field_path": "strategic_interpretation",
+            "issue_type": "low_confidence",
+            "description": "战略解读中“最可能在未来 6-12 个月深化 AI 助手集成”“BIM 处于 growing 阶段”等预测性结论无来源支撑，且“growing 阶段”与 feature_tree 中 BIM 的 maturity 字段（未填充）不一致。",
+            "severity": "major",
+            "suggestion": "为预测性结论补充依据（如官方路线图、发布节奏）；BIM maturity 需在 feature_tree 中明确填充并与正文一致。",
+            "evidence": "正文称 BIM 处于 growing 阶段，但 feature_tree 中 BIM 相关节点 maturity 为 null。"
+          },
+          {
+            "field_path": "overall",
+            "issue_type": "missing_source",
+            "description": "全报告几乎所有 claim 均只引用单一来源 [1]（features 页面），不满足“每条 claim >=2 个独立来源”的溯源要求。且该来源为功能列表页，无法支撑定价、用户画像、SWOT、战略解读等多类结论。",
+            "severity": "critical",
+            "suggestion": "系统性补充来源：定价页、官方文档、发布说明、第三方评测、客户案例等，确保关键 claim 至少 2 个独立来源。",
+            "evidence": "报告附录仅列出 1 个来源 URL。"
+          }
+        ],
+        "pricing_excerpt": "## 2. 定价分析\n\n| 层级 | 价格 | 核心亮点 | 主要限制 |\n|---|---|---|---|\n| Community edition | 免费[1] | 开源社区版功能、支持开源项目[1] | 不含 Enterprise 附加功能[1] |\n| Basic | 未在claims中明确 | 含 Enterprise 附加功能[1] | 价格与限制未说明[1] |\n| Professional | 未在claims中明确 | 含 Enterprise 附加功能[1] | 价格与限制未说明[1] |\n| Premium | 未在claims中明确 | 含 Enterprise 附加功能[1] | 价格与限制未说明[1] |\n| Corporate | 未在claims中明确 | 含 Enterprise 附加功能[1] | 价格与限制未说明[1] |\n\nOpenProject 采用 freemium 模式，以免费社区版获客，通过 Enterprise 附加功能驱动付费转化[1]。付费版本分为 Basic、Professional、Premium、Corporate 四个等级，覆盖本地部署与云端两种形态[1]。\n",
+        "user_feedback_excerpt": "## 5. 用户真实反馈\n\n本轮未采集到第三方用户评价。\n"
+      },
+      "verdict": "honest",
+      "reviewer_evidence": "评审者确认本次运行 missing_dimensions=[] 且 collect_errors=[]；报告第 2 节将 Basic/Professional/Premium/Corporate 四档价格与账期逐格写为「未在claims中明确」，第 5 节写「本轮未采集到第三方用户评价。」，均为原文表述。",
+      "reviewer_reason": "来源页确实没有付费档位价格，报告未编造数字也未把未知说成产品没有，缺失维度明确标为本轮未知，判 honest。Community edition 写「免费」属推断一事已在 pricing_basis 判 partial 时计入，不在本项重复扣。",
+      "run": "benchmark/results/20260924T030259Z-53a6a170"
+    }
+  ]
+}

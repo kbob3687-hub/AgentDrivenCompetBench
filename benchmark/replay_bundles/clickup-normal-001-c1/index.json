@@ -1,0 +1,51 @@
+{
+  "snapshot_kind": "frozen_replay_bundle",
+  "frozen_at": "2026-11-02T14:12:08.577311+00:00",
+  "source_run": "capture-20261102T140832Z-fa359a9b",
+  "source_tasks": [
+    "clickup-normal-001-c1"
+  ],
+  "warning": "Replay serves frozen text only; freshness is bounded by observed_at.",
+  "entries": [
+    {
+      "url": "https://clickup.com/customers",
+      "title": "ClickUp™ Customer Stories",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.182276+00:00",
+      "content_sha256": "d7de0843093c882f03c967333abdd70a4379f52fe1207ac21e14f54d6c3010a9",
+      "content_path": "d7de0843093c882f03c967333abdd70a4379f52fe1207ac21e14f54d6c3010a9.txt"
+    },
+    {
+      "url": "https://clickup.com/features",
+      "title": "ClickUp Features: All the features, without all the mess | ClickUp",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.180271+00:00",
+      "content_sha256": "fa3216835650dad460072b98c2e6160dec5e1b31ec79e38dd252d4f13578cf27",
+      "content_path": "fa3216835650dad460072b98c2e6160dec5e1b31ec79e38dd252d4f13578cf27.txt"
+    },
+    {
+      "url": "https://clickup.com/pricing",
+      "title": "ClickUp Pricing and Plans",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:08:33.179271+00:00",
+      "content_sha256": "49ccccc8fc2f9d6f25f91ff56ddc8f0543bb4f72f25cce70db3f80ab822c6931",
+      "content_path": "49ccccc8fc2f9d6f25f91ff56ddc8f0543bb4f72f25cce70db3f80ab822c6931.txt"
+    },
+    {
+      "url": "https://www.g2.com/products/clickup/reviews",
+      "title": "ClickUp Reviews 2026: Details, Pricing, & Features | G2",
+      "success": true,
+      "error": null,
+      "fetch_method": "firecrawl",
+      "observed_at": "2026-11-02T14:10:32.803742+00:00",
+      "content_sha256": "3094fed9047932324711ea1e8a7072614bf724a77245c1fa341c7eb26974894c",
+      "content_path": "3094fed9047932324711ea1e8a7072614bf724a77245c1fa341c7eb26974894c.txt"
+    }
+  ]
+}

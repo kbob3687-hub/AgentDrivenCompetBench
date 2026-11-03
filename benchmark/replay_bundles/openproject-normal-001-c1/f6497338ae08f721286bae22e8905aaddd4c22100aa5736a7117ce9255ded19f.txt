@@ -1,0 +1,724 @@
+![](https://www.openproject.org/assets/images/product-tour/openproject-product-tour-hero-a3b46e94.png)
+
+# Powerful project collaboration features
+
+Project management features support project teams throughout the entire project life cycle.
+
+- [![](https://www.openproject.org/assets/images/product-tour/icons/project-portfolio-02a2b2cc.svg)\\
+Project Portfolio](https://www.openproject.org/collaboration-software-features/#project-portfolio)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/project-planning-8eb5bbb0.svg)\\
+Project Planning](https://www.openproject.org/collaboration-software-features/#project-planning)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/task-management-6751a0b5.svg)\\
+Task management](https://www.openproject.org/collaboration-software-features/#task-management)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/agile-and-scrum-8b176892.svg)\\
+Agile, Kanban & Scrum](https://www.openproject.org/collaboration-software-features/#agile-scrum)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/time-tracking-a689b228.svg)\\
+Time tracking](https://www.openproject.org/collaboration-software-features/#time-tracking)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/team-collaboration-9594b6aa.svg)\\
+Team collaboration](https://www.openproject.org/collaboration-software-features/#team-collaboration)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/roadmap-8459e070.svg)\\
+Product roadmap](https://www.openproject.org/collaboration-software-features/#roadmap)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/workflows-and-customization-882a3fc2.svg)\\
+Workflows](https://www.openproject.org/collaboration-software-features/#workflow)
+- [More benefits](https://www.openproject.org/collaboration-software-features/#benefits)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/security-73b519c6.svg)\\
+Security](https://www.openproject.org/collaboration-software-features/#security)
+
+- [![](https://www.openproject.org/assets/images/product-tour/icons/project-portfolio-02a2b2cc.svg)\\
+Project Portfolio](https://www.openproject.org/collaboration-software-features/#project-portfolio)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/project-planning-8eb5bbb0.svg)\\
+Project Planning](https://www.openproject.org/collaboration-software-features/#project-planning)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/task-management-6751a0b5.svg)\\
+Task management](https://www.openproject.org/collaboration-software-features/#task-management)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/agile-and-scrum-8b176892.svg)\\
+Agile, Kanban & Scrum](https://www.openproject.org/collaboration-software-features/#agile-scrum)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/time-tracking-a689b228.svg)\\
+Time tracking](https://www.openproject.org/collaboration-software-features/#time-tracking)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/team-collaboration-9594b6aa.svg)\\
+Team collaboration](https://www.openproject.org/collaboration-software-features/#team-collaboration)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/roadmap-8459e070.svg)\\
+Product roadmap](https://www.openproject.org/collaboration-software-features/#roadmap)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/workflows-and-customization-882a3fc2.svg)\\
+Workflows](https://www.openproject.org/collaboration-software-features/#workflow)
+- [More benefits](https://www.openproject.org/collaboration-software-features/#benefits)
+- [![](https://www.openproject.org/assets/images/product-tour/icons/security-73b519c6.svg)\\
+Security](https://www.openproject.org/collaboration-software-features/#security)
+
+![](https://www.openproject.org/assets/images/product-tour/icons/project-portfolio_border-03d8fd69.svg)
+
+## Project Portfolio Management
+
+### Stay on top of all your projects
+
+- Have an overview of your entire project portfolio - whether for classic, agile or hybrid project management.
+- Working on several projects, OpenProject allows you to create a project structure with hierarchies and marking projects as favorites.
+- Keep an eye on the status of your projects with the project list or your individual project dashboard.
+
+[Learn about project portfolio management software](https://www.openproject.org/collaboration-software-features/project-portfolio-management/)
+
+![](https://www.openproject.org/assets/images/product-tour/art/project-portfolio-01-gradients-915040ae.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-portfolio-02-icon-6df47fe3.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-portfolio-03-track-0ec94a62.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-portfolio-04-on-34941cbe.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-portfolio-05-lines-21595461.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-portfolio-06-backscreen-d6346673.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-portfolio-07-frontscreen-f9eb2cf2.svg)
+
+### Project lists
+
+Have your overview of your projects at any time with the personalized project lists, favorite projects or your custom project dashboard. Make project lists public or mark as favorites.
+
+[Learn more](https://www.openproject.org/docs/user-guide/projects/project-lists/)
+
+### Share project lists﻿
+
+Create a persisted overview of your projects by filtering your project lists, including by your own project attributes. Share your personal project lists with other users and groups.
+
+[Learn more](https://www.openproject.org/docs/user-guide/projects/project-lists/#share-project-lists-with-individual-users-and-groups-enterprise-add-on)
+
+### Manage Portfolios﻿
+
+Manage work from a strategic perspective. Create and structure portfolios, programs and projects. Align priorities, monitor progress, and enable confident decision-making.
+
+[Learn more](https://www.openproject.org/docs/user-guide/portfolios/)
+
+### Project overview page
+
+Customize this dashboard with project attributes, widgets, and graphs to suit your needs. Choose from a variety of OpenProject widgets to visualize your project's status and progress.
+
+[Learn more](https://www.openproject.org/docs/user-guide/projects/project-home/)
+
+### Project life cycle﻿
+
+Monitor project life cycle and track progress of your project portfolio. Coordinate your project portfolio with custom project phases and phase gates.
+
+[Learn more](https://www.openproject.org/docs/user-guide/projects/project-home/project-life-cycle/)
+
+### Project templates
+
+Create project templates in OpenProject to set up everything that you want to have available for future projects. It will save you time.
+
+[Learn more](https://www.openproject.org/docs/user-guide/projects/project-templates/#use-a-project-template)
+
+### Personal dashboard
+
+The My page is your personal dashboard that displays information about all your projects. Customize it to your needs.
+
+[Learn more](https://www.openproject.org/docs/getting-started/my-page/#my-page)
+
+### Project changes
+
+The project activity tracking displays changes in a project. From changes to a work package to project attributes, incl. project custom fields.
+
+[Learn more](https://www.openproject.org/docs/user-guide/activity/#activate-project-activity)
+
+### Multi-project views
+
+Create custom filters across all of your projects to never lose track of important tasks. Share task views to give the team the same view.
+
+[Learn more](https://www.openproject.org/docs/user-guide/projects/project-lists/#project-overarching-reports)
+
+![](https://www.openproject.org/assets/images/product-tour/icons/project-planning_border-92a6485d.svg)
+
+## Project Planning & Scheduling
+
+### Deliver your projects on time
+
+- Activate the experience of your entire team to collaboratively create and visualize your project plan.
+- Define your project objectives and break it down into smaller deliverables.
+- Analyze required activities and create a detailed plan that shows how and when the project will provide the deliverables defined in the project scope.
+- Plan your team member's priorities and workload in the team planner.
+
+[Learn about project planning and scheduling software](https://www.openproject.org/collaboration-software-features/project-planning-scheduling/)
+
+![](https://www.openproject.org/assets/images/product-tour/art/project-planing-01-gradients-2bee682b.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-planing-02-circle-80066e8d.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-planing-03-calendar-60bc2d7c.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-planing-04-lines-d046a748.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-planing-05-backscreen-7d3f0450.svg)![](https://www.openproject.org/assets/images/product-tour/art/project-planing-06-frontscreen-98712302.svg)
+
+### Gantt charts
+
+Create a project management plan that visualizes how and when the work packages and milestones will be delivered. Generate a timeline collaboratively with the team.
+
+[Learn more](https://www.openproject.org/docs/user-guide/gantt-chart/)
+
+### Work packages
+
+Work packages are project items with specific attributes and customizable identifiers (numeric or project-based). Assign them to project teams to easily plan, organize, and track work.
+
+[Learn more](https://www.openproject.org/docs/user-guide/work-packages/#work-packages)
+
+### Relations and hierarchies
+
+You can assign relations on functional or timely levels (e.g. successor or predecessor, blocked by, part of, etc.) as well as hierarchies (parent-child relationship).
+
+[Learn more](https://www.openproject.org/docs/user-guide/work-packages/work-package-relations-hierarchies/#work-package-relations)
+
+### Scheduling
+
+Choose between automatic or manual scheduling mode to schedule your work packages.
+
+[Learn more](https://www.openproject.org/docs/user-guide/gantt-chart/scheduling/)
+
+### Work week
+
+Define working days and non-working days to schedule start and finish date of work packages during working hours.
+
+[Learn more](https://www.openproject.org/docs/user-guide/work-packages/set-change-dates/#working-days)
+
+### Resource management﻿
+
+Plan and allocate resources across projects based on availability and capacity. Balance workloads and identify overallocations before they impact delivery.
+
+[Learn more](https://www.openproject.org/docs/user-guide/resource-management/)
+
+### Schedule and availability
+
+Set your working hours, holidays, and availability to improve scheduling accuracy and support realistic resource planning across projects.
+
+[Learn more](https://www.openproject.org/docs/user-guide/account-settings/schedule-and-availability/)
+
+### Baseline comparison﻿
+
+Display changes to work packages tables and get a quick overview of what has changed over time, making it easy to report on project progress and status.
+
+[Learn more](https://www.openproject.org/docs/user-guide/work-packages/baseline-comparison/)
+
+### Calendar
+
+The calendar displays work packages in calendar form. Keep an eye on all deadlines and subscribe via iCalendar format.
+
+[Learn more](https://www.openproject.org/docs/user-guide/calendar/#calendar)
+
+### Date alerts﻿
+
+Date alerts allow you to receive a notification when a start or finish date of a work package is approaching.
+
+[Learn more](https://www.openproject.org/docs/user-guide/notifications/notification-settings/#date-alerts)
+
+### Team planner﻿
+
+Get an overview of which team member is working on what and when tasks are due and schedule work accordingly.
+
+[Learn more](https://www.openproject.org/docs/user-guide/team-planner)
+
+### Organization
+
+Organize users into organizations to simplify administration, improve collaboration, and reflect your company's structure across projects.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/users-permissions/organization/)
+
+![](https://www.openproject.org/assets/images/product-tour/icons/task-management_border-28e2586c.svg)
+
+## Task management and issue tracking
+
+### Transparent responsibilities and tracking of progress
+
+- OpenProject is the easiest way for teams to track their work and achieve results.
+- Organize and prioritize your own tasks and assign tasks to team members.
+- Have all tasks and communication in one place. Everyone is up to date about the progress and next steps.
+
+[Learn about task management software](https://www.openproject.org/collaboration-software-features/task-management/)
+
+![](https://www.openproject.org/assets/images/product-tour/art/task-management-01-gradients-e169929a.svg)![](https://www.openproject.org/assets/images/product-tour/art/task-management-02-icon1-86e38ca2.svg)![](https://www.openproject.org/assets/images/product-tour/art/task-management-03-icon2-67d78da2.svg)![](https://www.openproject.org/assets/images/product-tour/art/task-management-04-lines-b021e5cf.svg)![](https://www.openproject.org/assets/images/product-tour/art/task-management-05-backscreen-0b4508ca.svg)![](https://www.openproject.org/assets/images/product-tour/art/task-management-06-frontscreen-5908373c.svg)
+
+### Task lists
+
+The dynamic task list provides an overview of all the work that has to be completed. Individual lists with filters help you to organize your tasks.
+
+[Learn more](https://www.openproject.org/docs/user-guide/work-packages/work-package-table-configuration/#work-package-table-configuration)
+
+### Assignee, accountable, watcher
+
+Assign specific team members, groups or placeholder users to work packages as assignee or accountable. Watchers receive notifications about any changes.
+
+[Learn more](https://www.openproject.org/docs/getting-started/work-packages-introduction/#create-a-new-work-package)
+
+### Work package subject generation﻿
+
+Automatically generate work package subjects using predefined patterns to ensure consistent and structured naming. Reduce manual input and streamline your project workflows with standardized titles.
+
+[Learn more](https://www.openproject.org/docs/user-guide/)
+
+### Notifications
+
+Get updates in real time on all activities you have subscribed to. Use the notifications settings to customize and manage your email notifications.
+
+[Learn more](https://www.openproject.org/docs/user-guide/account-settings/notification-and-email/#email-reminders)
+
+### Share work packages﻿
+
+Share individual work packages with users and groups outside of your project. Keep all stakeholders informed while keeping project information private if needed.
+
+[Learn more](https://www.openproject.org/docs/user-guide/work-packages/share-work-packages/)
+
+### File management
+
+Attach files directly to your work packages. Or use the Nextcloud, or OneDrive or SharePoint integrations (Enterprise add-on) to link files and folders with work packages and to set up project folders.
+
+[Learn more](https://www.openproject.org/docs/user-guide/file-management/)
+
+### Incoming emails
+
+Configure emails settings in OpenProject so that the incoming emails are transferred into a task automatically.
+
+[Learn more](https://www.openproject.org/docs/installation-and-operations/configuration/incoming-emails/)
+
+### Attribute highlighting
+
+Highlight the work package status, priority and finish date based on their values. See which tasks require your attention right away.
+
+[Learn more](https://www.openproject.org/docs/user-guide/work-packages/work-package-table-configuration/#attribute-highlighting)
+
+### Export of work plans
+
+Export work packages in various formats to create detailed up to date work plans for your project in a clean and practical format.
+
+[Learn more](https://www.openproject.org/docs/user-guide/work-packages/exporting/)
+
+![](https://www.openproject.org/assets/images/product-tour/icons/agile-and-scrum_border-3450232a.svg)
+
+## Agile, Kanban & Scrum
+
+### Achieve more with agile project management
+
+- Agile teams have short development cycles. They iterate fast to build, measure and learn with each version.
+- With fast user feedback they simply waste no time and can concentrate on building the right things. OpenProject is the perfect tool for agile teams that want to use agile methodologies such as Scrum.
+- Agile teams can create and estimate stories, prioritize a sprint backlog and track tasks. It is tightly integrated into other modules such as roadmap planning, bug tracking and task management.
+
+[Learn about agile project management software](https://www.openproject.org/collaboration-software-features/agile-project-management/)
+
+![](https://www.openproject.org/assets/images/product-tour/art/agile-kanban-scrum-01-gradiens-6352aa4d.svg)![](https://www.openproject.org/assets/images/product-tour/art/agile-kanban-scrum-02-icon1-36141e22.svg)![](https://www.openproject.org/assets/images/product-tour/art/agile-kanban-scrum-03-icon2-d0bfe6cf.svg)![](https://www.openproject.org/assets/images/product-tour/art/agile-kanban-scrum-04-lines-e4f3a96a.svg)![](https://www.openproject.org/assets/images/product-tour/art/agile-kanban-scrum-05-backscreen-07e27e2d.svg)![](https://www.openproject.org/assets/images/product-tour/art/agile-kanban-scrum-06-frontscreen-eea44f66.svg)
+
+### Kanban Boards
+
+A Kanban board for status updates. With a status board you can visualize and continuously improve the workflow.
+
+[Learn more](https://www.openproject.org/docs/user-guide/agile-boards/#action-boards)
+
+### Version Boards
+
+The Version Board facilitates the planning of a product development in several iterations. With each iteration you can add and improve features.
+
+[Learn more](https://www.openproject.org/docs/user-guide/agile-boards/#version-board)
+
+### Boards for subprojects
+
+The agile board for subprojects enables the distribution and visualization of workload across different (sub)projects and organizations.
+
+[Learn more](https://www.openproject.org/docs/user-guide/agile-boards/#subproject-board)
+
+### Work breakdown structure
+
+The board for parent-child elements allows you to create and visualize a work-breakdown structure for all of your projects.
+
+[Learn more](https://www.openproject.org/docs/user-guide/agile-boards/#parent-child-board)
+
+### Backlogs
+
+Specify, record and prioritize user stories in a product or sprint backlog with your scrum team to start work by priority.
+
+[Learn more](https://www.openproject.org/docs/user-guide/backlogs-scrum/)
+
+### Sprint boards
+
+To support daily scrum meetings, all of a team’s tasks and sprint impediments are recorded in a digital sprint board. The sprint board provides a clear overview of the current state of a sprint.
+
+[Learn more](https://www.openproject.org/docs/user-guide/backlogs-scrum/#sprint-boards)
+
+### Sprint sharing﻿
+
+Coordinate multiple teams with shared sprints across projects. Ideal for scaled agile approaches such as SAFe, enabling synchronized planning and delivery.
+
+[Learn more](https://www.openproject.org/docs/user-guide/projects/project-settings/backlogs-settings/)
+
+### Story Points
+
+Document the estimated effort directly as story points. The total effort for a sprint is calculated automatically.
+
+[Learn more](https://www.openproject.org/docs/user-guide/backlogs-scrum/#story-points)
+
+### Multiple active sprints﻿
+
+Enable teams to work in parallel, each managing their own sprint while maintaining a shared product backlog.
+
+[Learn more](https://www.openproject.org/docs/user-guide/backlogs-scrum/#multiple-active-sprints)
+
+![](https://www.openproject.org/assets/images/product-tour/icons/time-tracking_border-10a8a5b6.svg)
+
+## Time tracking, cost reporting, budgeting
+
+### Time tracking and cost reporting for efficiently managing projects
+
+- OpenProject makes time tracking easy. Stay on top of project budgets and time and costs spent.
+- Create custom reports for accurate, current insight into project performance and allocated resources.
+- Plan the cost for each project phase, and see how much of the allocated budget has been spent at a glance.
+
+[Learn about time tracking software](https://www.openproject.org/collaboration-software-features/time-tracking/)
+
+![](https://www.openproject.org/assets/images/product-tour/art/time-tracking-01-gradients-c83ed198.svg)![](https://www.openproject.org/assets/images/product-tour/art/time-tracking-02-clock-25589dda.svg)![](https://www.openproject.org/assets/images/product-tour/art/time-tracking-03-dollar-4070961b.svg)![](https://www.openproject.org/assets/images/product-tour/art/time-tracking-04-lines-50a4cf5e.svg)![](https://www.openproject.org/assets/images/product-tour/art/time-tracking-05-backscrenn-56620369.svg)![](https://www.openproject.org/assets/images/product-tour/art/time-tracking-06-frontscreen-9f9c8594.svg)
+
+### Track your time
+
+Track your time easily. Log hours on work packages daily or weekly, and review your history anytime. Review and adjust your logs on the "My time tracking" page.
+
+[Learn more](https://www.openproject.org/docs/user-guide/time-and-costs/time-tracking/)
+
+### Time reports
+
+OpenProject custom time reports let you keep track of the spent time, split down by projects or work packages, and generate PDF timesheet reports.
+
+[Learn more](https://www.openproject.org/docs/user-guide/time-and-costs/time-tracking/)
+
+### Labour costs
+
+Assign an hourly rate to team members and set hourly rates by project member, time frame and project.
+
+[Learn more](https://www.openproject.org/docs/user-guide/time-and-costs/reporting/#select-units-to-display)
+
+### Cost reporting
+
+With multiple filter options you can create your customized cost report and evaluate spent time and costs.
+
+[Learn more](https://www.openproject.org/docs/user-guide/time-and-costs/reporting/#time-and-cost-reporting)
+
+### Unit costs
+
+Have an eye on spent unit costs. Create flexible unit costs and book them to work packages.
+
+[Learn more](https://www.openproject.org/docs/user-guide/time-and-costs/cost-tracking/#log-costs-to-a-work-package)
+
+### Budgeting
+
+With the budget feature you can plan labour as well as unit costs and keep an eye on the status.
+
+[Learn more](https://www.openproject.org/docs/user-guide/budgets/)
+
+![](https://www.openproject.org/assets/images/product-tour/icons/team-collaboration_border-b03f204d.svg)
+
+## Team collaboration
+
+### Keep your team up to date on all project news and changes.
+
+- OpenProject as a web-based software allows all project team members to access all information at any time.
+- Collaborate and communicate in OpenProject to make sure all activities are recorded in the system.
+- Discover how easy sharing information in the team in OpenProject is.
+
+[Learn about team collaboration software](https://www.openproject.org/collaboration-software-features/team-collaboration/)
+
+![](https://www.openproject.org/assets/images/product-tour/art/team-collaboration-01-gradiens-b1b5cf16.svg)![](https://www.openproject.org/assets/images/product-tour/art/team-collaboration-02-icon-8237d542.svg)![](https://www.openproject.org/assets/images/product-tour/art/team-collaboration-03-lines-d147f488.svg)![](https://www.openproject.org/assets/images/product-tour/art/team-collaboration-04-backscreen-d658d28d.svg)![](https://www.openproject.org/assets/images/product-tour/art/team-collaboration-05-frontscreen1-9736809b.svg)![](https://www.openproject.org/assets/images/product-tour/art/team-collaboration-06-frontscreen2-4186e3d7.svg)
+
+### Activity
+
+Display the activities in a project to gain a quick overview over the current status and changes.
+
+[Learn more](https://www.openproject.org/docs/user-guide/activity/)
+
+### Documents
+
+Seamlessly collaborate on shared documents in real time across teams.
+
+[Learn more](https://www.openproject.org/docs/user-guide/documents/#collaborative-editing)
+
+### Meetings
+
+Manage your meetings including an agenda and minutes collaboratively in OpenProject.
+
+[Learn more](https://www.openproject.org/collaboration-software-features/meeting-management/)
+
+### News
+
+The news module which gives you an overview over the latest news and updates in the project.
+
+[Learn more](https://www.openproject.org/docs/user-guide/news/#project-news)
+
+### @notifications
+
+Notify a specific team member by mentioning them directly via @name in the comment.
+
+[Learn more](https://www.openproject.org/docs/user-guide/work-packages/edit-work-package/#-notification-mention)
+
+### Internal comments﻿
+
+Add internal comments visible only to selected team members to share context without notifying the entire project.
+
+[Learn more](https://www.openproject.org/docs/user-guide/activity/#internal-comments-enterprise-add-on)
+
+### Wiki
+
+Manage project documentation, references, guidelines, user manuals, and much more in one central place.
+
+[Learn more](https://www.openproject.org/docs/user-guide/wiki/)
+
+### Forums
+
+In the forums in OpenProject you can discuss and comment on topics in a project with the team.
+
+[Learn more](https://www.openproject.org/docs/user-guide/forums/)
+
+### XWiki integration﻿
+
+Create, link, and access wiki pages directly from work packages to keep documentation and project work connected.
+
+[Learn more](https://www.openproject.org/integrations/xwiki)
+
+![](https://www.openproject.org/assets/images/product-tour/icons/roadmap_border-8c620340.svg)
+
+## Product roadmap and release planning
+
+### Plan transparently by including all stakeholders
+
+- OpenProject is the easiest way to plan, visualize and communicate your product roadmap.
+- Share your product roadmap with your stakeholders, get feedback about your ideas and break it down into a detailed release plan.
+- Align your product roadmaps with your company’s product strategy and create buy-in and transparency across all teams.
+
+[Learn about product roadmap software](https://www.openproject.org/collaboration-software-features/product-development/)
+
+![](https://www.openproject.org/assets/images/product-tour/art/roadmap-01-gradients-9ecfab7d.svg)![](https://www.openproject.org/assets/images/product-tour/art/roadmap-02-lines-902d8da0.svg)![](https://www.openproject.org/assets/images/product-tour/art/roadmap-03-marker-13132bd9.svg)![](https://www.openproject.org/assets/images/product-tour/art/roadmap-04-stone1-d915229d.svg)![](https://www.openproject.org/assets/images/product-tour/art/roadmap-05-stone2-1fe34b3a.svg)![](https://www.openproject.org/assets/images/product-tour/art/roadmap-06-backscreen-39b36e65.svg)![](https://www.openproject.org/assets/images/product-tour/art/roadmap-07-frontscreen-f9d16481.svg)
+
+### Roadmap
+
+Get a direct overview of the progress of a version or multiple projects and analyze it based on multiple metrics.
+
+[Learn more](https://www.openproject.org/docs/user-guide/roadmap/#product-roadmap-release-planning)
+
+### Product timeline
+
+Display your project features, tasks and milestones in a timeline to schedule and plan project completion.
+
+[Learn more](https://www.openproject.org/docs/user-guide/gantt-chart/#gantt-charts)
+
+### Repository
+
+Integrate a SVN or GIT repository in a project in OpenProject and access it directly via the module Repositories.
+
+[Learn more](https://www.openproject.org/docs/user-guide/projects/project-settings/repository/#manage-a-repository)
+
+### GitHub integration
+
+With the GitHub integration, you can connect your project management directly with the development environment and have everything in view.
+
+[Learn more](https://www.openproject.org/integrations/github/)
+
+### GitLab integration
+
+OpenProject offers an integration with GitLab merge requests to link software development closely to planning and specification. Create merge requests in GitLab and link them to work packages in OpenProject.
+
+[Learn more](https://www.openproject.org/integrations/gitlab/)
+
+![](https://www.openproject.org/assets/images/product-tour/icons/workflows-and-customization_border-ac8018c2.svg)
+
+## Workflows and customization
+
+### Become more efficient with customization
+
+- Adapt OpenProject to your organization's needs.
+- Explore different forms of customization - from project creation process, work package forms to workflows, custom fields, themes and many more.
+- Reduce manual work and standardize to avoid errors and make your team faster.
+
+[Learn about workflows and customization](https://www.openproject.org/collaboration-software-features/workflows-customization/)
+
+![](https://www.openproject.org/assets/images/product-tour/art/workflow-01-gradiens-74c1d6a2.svg)![](https://www.openproject.org/assets/images/product-tour/art/workflow-02-icon1-b125befb.svg)![](https://www.openproject.org/assets/images/product-tour/art/workflow-03-icon2-ccee9d15.svg)![](https://www.openproject.org/assets/images/product-tour/art/workflow-04-lines-be56efe9.svg)![](https://www.openproject.org/assets/images/product-tour/art/workflow-05-backscreen-47790dee.svg)![](https://www.openproject.org/assets/images/product-tour/art/workflow-06-frontscreen-f282f6b3.svg)![](https://www.openproject.org/assets/images/product-tour/art/workflow-07-popup-95b7f9e7.svg)
+
+### Automated project initiation workflow﻿
+
+Guide your team through project creation with a standardized workflow adapted to your organization’s requirements.
+
+[Learn more](https://www.openproject.org/docs/user-guide/)
+
+### Work packages statuses workflows
+
+Define the workflow of statuses that your work package is going through until being finished and closed.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/manage-work-packages/work-package-types/workflows/)
+
+### Custom actions﻿
+
+Discover powerful custom actions to standardize your workflows, avoid errors and reduce manual work.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/manage-work-packages/custom-actions/#automated-workflows-with-custom-actions-enterprise-add-on)
+
+### Custom theme﻿
+
+Create your own theme to comply with your company’s corporate identity and guidelines.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/design/#set-custom-color-theme-and-logo-enterprise-add-on)
+
+### Form configuration﻿
+
+Configure work package forms to fit your needs. Add or change attribute groups and add custom fields.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/manage-work-packages/work-package-types/form-configuration/)
+
+### Attribute help text
+
+Attribute help texts provide additional information for attributes in work packages and projects.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/attribute-help-texts/)
+
+### Custom fields
+
+Create unlimited custom fields for work packages or project attributes. Allow multi-select custom fields and assign custom fields to multiple projects at once.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/custom-fields/#manage-custom-fields)
+
+### Roles, permissions and groups
+
+OpenProject offers a fine-granular roles and permissions management. Customize specific roles and create dedicated groups.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/users-permissions/)
+
+### Placeholder users﻿
+
+Create placeholder users without email address in the system and already assign tasks to these users in the project.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/users-permissions/placeholder-users/#placeholder-users-enterprise-add-on)
+
+## Additional benefits
+
+### Beyond OpenProject's feature set
+
+OpenProject offers you more than just features. Discover additional benefits that facilitate your project management.
+
+### Powerful REST API
+
+A powerful REST API lets you integrate with any system, automates actions or lets you integrate own plugins.
+
+[Learn more](https://www.openproject.org/docs/api/)
+
+### SCIM provisioning﻿
+
+Simplify and secure user management in OpenProject with SCIM API integration, enabling automated synchronization with your identity providers and systems.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/authentication/scim/)
+
+### Enterprise support
+
+Rely on the professional and fast support provided by the OpenProject experts through a multitude of channels.
+
+[Learn more](https://www.openproject.org/pricing/#support)
+
+### Model Context Protocol (MCP) server
+
+Connect AI assistants and tools to OpenProject using the Model Context Protocol (MCP), allowing them to securely access project data such as work packages and projects to support automation and intelligent workflows.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/integrations/mcp-server/)
+
+### More integrations
+
+OpenProject offers a Nextcloud, OneDrive/SharePoint integration (Enterprise add-on), synchronization with Excel, and more integrations to other tools.
+
+[Learn more](https://www.openproject.org/integrations/)
+
+### Accessibility
+
+Experience high contrast and dark modes, screen reader support, ARIA live regions, and an accessible design system as we strive to include all users.
+
+[Learn more](https://www.openproject.org/blog/accessibility-progress/)
+
+### Responsiveness for mobile devices
+
+OpenProject is fully responsive and can be used as-is on any screen. In addition, there is a dedicated mobile app for iOS and Android that is continuously being improved.
+
+[Learn more](https://www.openproject.org/docs/mobile-app-guide/)
+
+### OpenProject supports your native language
+
+Available in more than 30 languages translated by an international active Community. We welcome contributions.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/system-settings/languages/)
+
+### Add-ons for the construction industry
+
+Include BIM project management features, such as 3D model viewer (IFC), BCF management, or a Revit integration.
+
+[Learn more](https://www.openproject.org/bim-project-management)
+
+![](https://www.openproject.org/assets/images/product-tour/icons/security_border-c16084b8.svg)
+
+## Security
+
+### Best protection for your data
+
+- As a company based in the European Union we are highly committed to data security and privacy and take all required action to protect your data and keep your digital sovereignty.
+- We meet all data protection requirements in accordance with the General Data Protection Regulation (GDPR) and even beyond.
+- We are a firm believer in open-source and invested heavily in the freedom of users. This encompasses the software freedoms granted by the GPLv3.
+
+[Learn about secure project management software](https://www.openproject.org/security-and-privacy/)
+
+![](https://www.openproject.org/assets/images/product-tour/art/secure-data-dunkel-01-gradiens-88db6dfe.svg)![](https://www.openproject.org/assets/images/product-tour/art/secure-data-dunkel-02-shield-d2699c40.svg)![](https://www.openproject.org/assets/images/product-tour/art/secure-data-dunkel-03-lock-350983b4.svg)![](https://www.openproject.org/assets/images/product-tour/art/secure-data-dunkel-04-lines-3a09b7fc.svg)![](https://www.openproject.org/assets/images/product-tour/art/secure-data-dunkel-05-backscreen-8c1a7c01.svg)![](https://www.openproject.org/assets/images/product-tour/art/secure-data-dunkel-06-frontscreen-320d6420.svg)
+
+### Secure authentication
+
+Secure authentication mechanisms and password rules according to current industry standards. Passwords are securely stored using salted bcrypt.
+
+[Learn more](https://www.openproject.org/docs/security-and-privacy/statement-on-security/#authentication-and-password-security)
+
+### 2-Factor authentication
+
+Use your mobile phone, an app-based authenticator, or WebAuthn as second factor for authentication to prevent anyone from accessing your account.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/authentication/two-factor-authentication/)
+
+### Single sign-on (SSO)﻿
+
+With the single sign-on feature you can securely access OpenProject. Control and secure access to your projects with the main authentication providers.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/authentication/authentication-faq/#which-authentication-providers-are-supported-for-single-sign-on)
+
+### LDAP sync﻿
+
+Synchronize OpenProject users and groups with your company’s LDAP to update users and group memberships based on LDAP group members.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/authentication/ldap-connections/)
+
+### Data encryption
+
+Our cloud environment is continuously backing data, encrypted in transit (via TLS/https) and at rest (files, database (including backups) via AES-256).
+
+[Learn more](https://www.openproject.org/legal/data-processing-agreement/technical-and-organizational-data-security-measures/)
+
+### Antivirus scanning﻿
+
+Uploaded files will be scanned for viruses with ClamAV antivirus engine and quarantined or deleted if viruses are found (only for on-premises installations).
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/files/attachments/virus-scanning/)
+
+### Security badge
+
+See the status of your installation and learn whether new releases or security updates are available to administrators.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/information/#security-badge)
+
+### Capture external links﻿
+
+Display a warning message to inform users when they are leaving OpenProject via an external link.
+
+[Learn more](https://www.openproject.org/docs/system-admin-guide/system-settings/external-links/)
+
+## Get started now
+
+### Try OpenProject now with your team and get convinced!
+
+[Start free trial](https://start.openproject.com/)
+
+Enterprise add-on in plan Basic
+
+The OpenProject Enterprise add-ons are part of our Enterprise [on-premises](https://www.openproject.org/enterprise-edition/) and [cloud](https://start.openproject.com/) plans. With the upgrade to a paid version, you will support the development and maintenance of the open source project.
+
+Enterprise add-on in plan Professional
+
+The OpenProject Enterprise add-ons are part of our Enterprise [on-premises](https://www.openproject.org/enterprise-edition/) and [cloud](https://start.openproject.com/) plans. With the upgrade to a paid version, you will support the development and maintenance of the open source project.
+
+Enterprise add-on in plan Premium
+
+The OpenProject Enterprise add-ons are part of our Enterprise [on-premises](https://www.openproject.org/enterprise-edition/) and [cloud](https://start.openproject.com/) plans. With the upgrade to a paid version, you will support the development and maintenance of the open source project.
+
+Enterprise add-on in plan Corporate
+
+The OpenProject Enterprise add-ons are part of our Enterprise [on-premises](https://www.openproject.org/enterprise-edition/) and [cloud](https://start.openproject.com/) plans. With the upgrade to a paid version, you will support the development and maintenance of the open source project.
+
+ Open link in a new tab
+
+Search area:
+
+- All
+- User guides
+- Docs
+- Blog
+- Website
+- API
+- Release notes
+
+Enter your search term here …

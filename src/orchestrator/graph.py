@@ -26,10 +26,12 @@ from __future__ import annotations
 import hashlib
 import uuid
 from datetime import datetime
+from time import perf_counter
 from typing import Any
 
 from langgraph.graph import END, StateGraph
 
+from agents.base import execution_records
 from orchestrator.edges import qa_routing
 from orchestrator.nodes import analyst_node, collector_node, discovery_node, qa_node, writer_node
 from orchestrator.state import GraphState
@@ -41,7 +43,60 @@ def _make_trace_id(seed: str | None = None) -> str:
     return hashlib.md5(raw.encode()).hexdigest()
 
 
-def build_graph(checkpointer: Any = None) -> StateGraph:
+def _observed_node(name: str, node: Any) -> Any:
+    async def observed(state: GraphState) -> dict[str, Any]:
+        records = execution_records.get()
+        record = {
+            "kind": "node",
+            "agent": name,
+            "iteration": state.get("iteration", 1),
+            "status": "running",
+        }
+        if records is not None:
+            records.append(record)
+        started = perf_counter()
+        try:
+            update = await node(state)
+            record["status"] = "error" if update.get("error") else "completed"
+            # Preserve actual intermediate outputs, including partial results on failure.
+            record["state_update"] = update
+            return update
+        except Exception as exc:
+            record.update(status="error", error=f"{type(exc).__name__}: {exc}")
+            raise
+        finally:
+            record["latency_seconds"] = perf_counter() - started
+            if record["status"] == "running":
+                record["status"] = "cancelled"
+
+    return observed
+
+
+def _continue_unless_failed(state: GraphState) -> str:
+    return "end" if state.get("error") or state.get("final_status") == "source_limited" else "next"
+
+
+def _route_after_qa(state: GraphState) -> str:
+    if state.get("error"):
+        return "end"
+    route = qa_routing(state)
+    action = state.get("repair_action", "")
+    if action == "drop_or_disclose":
+        return "analyst"
+    if route == "collector":
+        return "discovery"
+    return route
+
+
+def _route_after_discovery(state: GraphState) -> str:
+    if state.get("error") or state.get("final_status") == "source_limited":
+        return "end"
+    if state.get("repair_action") == "drop_or_disclose":
+        return "analyst"
+    return "collector"
+
+
+def build_graph(checkpointer: Any = None, *, enable_qa: bool = True) -> StateGraph:
     """构建竞品分析StateGraph
 
     Args:
@@ -54,29 +109,43 @@ def build_graph(checkpointer: Any = None) -> StateGraph:
     graph = StateGraph(GraphState)
 
     # 添加节点
-    graph.add_node("discovery", discovery_node)
-    graph.add_node("collector", collector_node)
-    graph.add_node("analyst", analyst_node)
-    graph.add_node("writer", writer_node)
-    graph.add_node("qa", qa_node)
+    graph.add_node("discovery", _observed_node("discovery", discovery_node))
+    graph.add_node("collector", _observed_node("collector", collector_node))
+    graph.add_node("analyst", _observed_node("analyst", analyst_node))
+    graph.add_node("writer", _observed_node("writer", writer_node))
+    if enable_qa:
+        graph.add_node("qa", _observed_node("qa", qa_node))
 
-    # 线性边：discovery → collector → analyst → writer → qa
-    graph.add_edge("discovery", "collector")
-    graph.add_edge("collector", "analyst")
-    graph.add_edge("analyst", "writer")
-    graph.add_edge("writer", "qa")
+    # Stop at the first node error, preserving its original cause. A source
+    # limit is a normal end with the previous report and QA verdict intact.
+    graph.add_conditional_edges(
+        "discovery",
+        _route_after_discovery,
+        {"end": END, "collector": "collector", "analyst": "analyst"},
+    )
+    for name, next_name in (
+        ("collector", "analyst"),
+        ("analyst", "writer"),
+        ("writer", "qa" if enable_qa else END),
+    ):
+        graph.add_conditional_edges(
+            name,
+            _continue_unless_failed,
+            {"end": END, "next": next_name},
+        )
 
     # QA后的条件边：根据verdict和target_agent路由
-    graph.add_conditional_edges(
-        "qa",
-        qa_routing,
-        {
-            "end": END,
-            "collector": "collector",
-            "analyst": "analyst",
-            "writer": "writer",
-        },
-    )
+    if enable_qa:
+        graph.add_conditional_edges(
+            "qa",
+            _route_after_qa,
+            {
+                "end": END,
+                "discovery": "discovery",
+                "analyst": "analyst",
+                "writer": "writer",
+            },
+        )
 
     # 入口
     graph.set_entry_point("discovery")
@@ -126,6 +195,8 @@ async def run_pipeline(
     thread_id: str | None = None,
     discovery_strategy: str = "official_only",
     trusted_domains: list[str] | None = None,
+    enable_qa: bool = True,
+    execution_metadata: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """运行完整pipeline - 一站式入口
 
@@ -143,7 +214,9 @@ async def run_pipeline(
     Returns:
         最终GraphState（dict）
     """
-    app = build_graph(checkpointer=checkpointer)
+    if max_iterations < 1:
+        raise ValueError("max_iterations must be positive")
+    app = build_graph(checkpointer=checkpointer, enable_qa=enable_qa)
 
     initial_state: GraphState = {
         "competitor_name": competitor_name,
@@ -157,6 +230,8 @@ async def run_pipeline(
         "max_iterations": max_iterations,
         "feedback_history": [],
         "missing_dimensions": [],
+        "repair_action": "",
+        "attempted_urls": [],
         "trace_id": _make_trace_id(),
         "started_at": datetime.now().isoformat(),
         "final_status": "running",
@@ -167,11 +242,20 @@ async def run_pipeline(
         config["configurable"] = {"thread_id": thread_id or str(uuid.uuid4())}
     config["recursion_limit"] = max_iterations * 6  # 每轮5个节点 + 余量
 
-    final_state = await app.ainvoke(initial_state, config=config)
+    records = execution_metadata if execution_metadata is not None else []
+    token = execution_records.set(records)
+    try:
+        final_state = await app.ainvoke(initial_state, config=config)
+    finally:
+        execution_records.reset(token)
+    final_state["execution_metadata"] = records
+    final_state["enable_qa"] = enable_qa
 
     if "completed_at" not in final_state:
         final_state["completed_at"] = datetime.now().isoformat()
-    if final_state.get("final_status") == "running":
+    if final_state.get("error"):
+        final_state["final_status"] = "failed"
+    elif final_state.get("final_status") == "running":
         final_state["final_status"] = "ended"
 
     return final_state

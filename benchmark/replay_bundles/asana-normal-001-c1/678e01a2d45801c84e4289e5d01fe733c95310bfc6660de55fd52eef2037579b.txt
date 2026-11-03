@@ -1,0 +1,172 @@
+# The only work management platform built for scale
+
+With Asana, humans and agents run an organization’s critical workflows together, on the same plan, toward the same goals.
+
+Google
+
+Microsoft
+
+or
+
+Continue
+
+By signing up, I agree to Asana's [Terms of Service](https://asana.com/terms/terms-of-service) and acknowledge the [Privacy Statement](https://asana.com/terms/privacy-statement).
+
+![](<Base64-Image-Removed>)
+
+#### Helping 170,000+ organizations hit their goals\*
+
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+- ![](<Base64-Image-Removed>)
+
+Agentic Work ManagementAsana Service ManagementAsana Client ManagementCommand by AsanaStackAI by Asana
+
+![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%271761%27%20height=%271016%27/%3e)![Asana UI displaying a "Summer Campaign Launch Readiness" project list. Sections include milestones and launch monitoring. Tasks are assigned to a mix of human team members and AI agents, such as a "Launch Planner" and "Status Reporter".](https://assets.asana.biz/transform/9fa1bcdb-7e83-4934-af3e-4e9292a722ea/homepage_AWM_tabbedmedia?io=transform:fill,width:2560&format=webp)
+
+![Dark mode IT ticket UI. A chat shows Service AI fulfilling a user's Figma license request. The sidebar details the automated workflow steps executed by AI agents (Identity, Approval, Provisioning) to assign the license.](https://assets.asana.biz/transform/0c849b7d-48ba-43fa-80c9-7b6daa2b5a52/Homepage_Services_tab_static?io=transform:fill,width:778&format=webp)
+
+![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%271760%27%20height=%271016%27/%3e)![Asana UI for a "Bloom Health Brand Refresh" project. The feed shows a creative update with billboard mockups. A sidebar displays recent Zoom meetings, design resources, a team directory, and timezones.](https://assets.asana.biz/transform/e313a56c-9a1a-41bd-9c72-9be89e2d3659/homepage_AsanaClient_tabbedmedia?io=transform:fill,width:2560&format=webp)
+
+![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%271760%27%20height=%271016%27/%3e)![Dark mode issue tracker UI for a task to centralize payment methods. It displays the description, active Git PRs with pending reviewers, linked context docs, and an activity sidebar showing an AI Cursor integration pushing code.](https://assets.asana.biz/transform/53b74a46-5a62-468f-b8bf-47b55b978837/homepage_command_tabbedmedia?io=transform:fill,width:2560&format=webp)
+
+![](data:image/svg+xml,%3csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20version=%271.1%27%20width=%271760%27%20height=%271016%27/%3e)![[HP] StackAI](https://assets.asana.biz/transform/111083fb-bd8d-451a-b4cf-6b30ce245207/homepage_stackai_tabbedmedia?io=transform:fill,width:2560&format=webp)
+
+### Agentic Work Management
+
+Agentic Work Management brings together AI Teammates, AI Studio, Asana Dash, and MCP and AI Connectors — so your team and your agents run critical workflows together.
+
+[Learn more](https://asana.com/product/ai)
+
+### Asana Service Management
+
+One AI-native enterprise service management platform for IT, HR, facilities, and legal.
+
+[Learn more](https://asana.com/product/service-management)
+
+### Asana Client Management
+
+Build lasting client relationships on an AI-native platform built for agency work.
+
+[Learn more](https://asana.com/product/client-management)
+
+### Command by Asana
+
+Ship faster with humans and agents in sync.
+
+[Learn more](https://asana.com/product/command)
+
+### StackAI by Asana
+
+Drag and drop to create powerful Agentic Workflows connected to any app, with enterprise-level governance.
+
+[Learn more](https://www.stackai.com/)
+
+## Automate workflows across departments
+
+![](<Base64-Image-Removed>)
+
+##### Workflows and automations
+
+Create more efficient processes so you can seamlessly manage projects across departments and get more done in less time.
+
+[Learn more](https://asana.com/features/workflow-automation)
+
+![](<Base64-Image-Removed>)
+
+##### Project management
+
+Track work from start to finish, so every team stays in sync and on schedule to hit their goals.
+
+[Learn more](https://asana.com/features/project-management)
+
+## Why projects slip when work is scattered
+
+![time tracking icon](<Base64-Image-Removed>)
+
+#### Projects are spread across tools and inboxes
+
+Tasks sit in a spreadsheet, decisions in chat, files in email, and deadlines in someone's head. On a launch, marketing, design, and ops each track their piece differently. Without a shared project management tool, seeing the full plan means asking around.
+
+![dependencies icon](<Base64-Image-Removed>)
+
+#### No shared view of progress and deadlines
+
+Status that only exists in people's heads can't warn anyone. A contract stalls in legal review for a week, and three teams find out when the launch date is already at risk. Without a live view of the whole project, small delays turn into missed dates.
+
+![rules icon](<Base64-Image-Removed>)
+
+#### Status updates eat the week
+
+Every Friday, you chase updates and paste them into a deck. Then Monday's check-in runs on Friday's information, because that's the last time anyone pulled it all together. It's stale before anyone reads it. Across every project you run, manual reporting turns into a second job.
+
+This is exactly what we built Asana to fix.
+
+![](<Base64-Image-Removed>)
+
+##### Turn conversations into coordinated work
+
+Asana AI connectors are the bridge between your big ideas and the work that brings them to life. Kick off projects and organize next steps directly in your go-to AI apps.
+
+[Read more](https://asana.com/resources/ai-connectors)
+
+### Frequently asked questions about task management tools
+
+##### What is Asana?
+
+Asana is [a leader in collaborative project management software](https://asana.com/resources/forrester-wave-collaborative-work-management-2022) for teams, no matter their size or locational distribution. Asana helps you, your teams, and your stakeholders collaborate faster and smoother to achieve business objectives.
+
+##### Does Asana offer a free trial?
+
+Asana offers a free trial for its Starter and Advanced plans. Visit [asana.com/pricing](http://asana.com/pricing) for more information.
+
+##### What’s included in an Asana paid plan?
+
+Access in Asana may vary based on the plan you choose. For Enterprise plans, teams have access to all of Asana’s paid features. For Starter and Advanced plans, feature access may vary. Visit [asana.com/pricing](http://asana.com/pricing) for more information.
+
+##### Does Asana offer any discounts?
+
+Asana is happy to offer eligible nonprofits a discount on our Starter or Advanced annual plan. For Enterprise plans, Asana is happy to discuss options that meet the needs of your business. Click “get started” on this page to be put in touch with a representative that can help with pricing solutions for Enterprise plans.
+
+##### How secure is Asana?
+
+Protecting the data you trust to Asana is our first priority. Asana uses physical, procedural, and technical safeguards to preserve the integrity and security of your information. We regularly back up your data to prevent data loss and aid in recovery. Additionally, we host data in secure SSAE 16 / SOC2 certified data centers, implement firewalls and access restrictions on our servers to better protect your information, and work with third party security researchers to ensure our practices are secure. [Learn more](https://asana.com/trust).
+
+##### Do you have a mobile or desktop app?
+
+Asana is accessible via desktop app, web browser, and mobile app ( [available for both Android and iOS users](https://asana.com/download)).
+
+##### Can you use Asana for personal use?
+
+Yes, you can. Many customers enjoy using Asana to organize and streamline their personal tasks.
+
+##### Does Asana integrate with other apps?
+
+Asana integrates with over 200 tools and counting. Visit [asana.com/integrations](https://asana.com/integrations) for more information.
+
+## Transform the way you work with Asana
+
+[Get started](https://asana.com/create-account) [Contact sales](https://asana.com/sales)
+
+1. Accurate as of December 2023, includes free and paid users.
+
+* * *
+
+a5324015129067520.cdn.optimizely.com
+
+# a5324015129067520.cdn.optimizely.com is blocked
+
+This page has been blocked by an extension
+
+- Try disabling your extensions.
+
+ERR\_BLOCKED\_BY\_CLIENT
+
+Reload
+
+
+This page has been blocked by an extension
+
+![](<Base64-Image-Removed>)![](<Base64-Image-Removed>)
