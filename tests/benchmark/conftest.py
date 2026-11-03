@@ -3,6 +3,14 @@ import pytest
 from benchmark.models import TaskRecord
 
 
+@pytest.fixture(autouse=True)
+def fake_llm_credentials(monkeypatch):
+    # Agent 构造函数会实例化 AsyncOpenAI/Anthropic 客户端；CI 无真实凭证，
+    # 这里注入假 key，测试本身 mock 掉 call_llm，不会发起真实请求。
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+
+
 @pytest.fixture
 def evidence():
     return {
