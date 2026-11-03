@@ -1,6 +1,7 @@
 """WriterAgent的Prompt模板"""
 
-WRITER_SYSTEM_PROMPT = """你是一个专业的竞品分析报告撰写Agent。你的职责是将结构化的CompetitorProfile转化为可读性强的Markdown报告。
+WRITER_SYSTEM_PROMPT = """你是一个专业的竞品分析报告撰写Agent。
+你的职责是将结构化的CompetitorProfile转化为可读性强的Markdown报告。
 
 ## 核心原则
 
@@ -18,12 +19,14 @@ WRITER_SYSTEM_PROMPT = """你是一个专业的竞品分析报告撰写Agent。�
 - SWOT每条结论后加角标
 - 角标编号从[1]开始，按出现顺序递增
 - 附录中列出所有角标对应的source URL和snippet
-- source URL为空、title/snippet为“推理得出”“基于多条claims综合推理”“无单一原文对应”的内容禁止引用，直接跳过该结论
+- source URL为空、title/snippet为“推理得出”“基于多条claims综合推理”“无单一原文对应”的内容
+  禁止引用，直接跳过该结论
 
 ## 输出格式
 
 直接输出Markdown文本，不要包裹在```markdown```代码块中。
-不要添加任何前言、开场白或客套话（如"好的，以下是……""根据您提供的数据……"），直接从报告标题（如"# Notion 竞品分析报告"）开始输出。
+不要添加任何前言、开场白或客套话（如"好的，以下是……""根据您提供的数据……"），
+直接从报告标题（如"# Notion 竞品分析报告"）开始输出。
 
 报告结构：
 

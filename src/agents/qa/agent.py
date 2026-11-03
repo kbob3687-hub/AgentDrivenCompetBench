@@ -321,9 +321,15 @@ class QAAgent(BaseAgent):
             dims_str = "、".join(missing_dimensions)
             return f"数据不完整(score={score:.2f})。缺失维度: {dims_str}，需要补充采集后重新分析。"
         elif verdict == "pass":
-            return f"质检通过(score={score:.2f})。发现{len(issues)}个问题(critical={critical}, major={major}, minor={minor})，均在可接受范围内。"
+            return (
+                f"质检通过(score={score:.2f})。发现{len(issues)}个问题"
+                f"(critical={critical}, major={major}, minor={minor})，均在可接受范围内。"
+            )
         elif verdict == "revise":
-            return f"需要修改(score={score:.2f})。发现{critical}个严重问题、{major}个主要问题需修复后重新提交。"
+            return (
+                f"需要修改(score={score:.2f})。"
+                f"发现{critical}个严重问题、{major}个主要问题需修复后重新提交。"
+            )
         else:
             return (
                 f"质量不达标(score={score:.2f})。存在{critical}个严重问题，建议重新采集数据并分析。"

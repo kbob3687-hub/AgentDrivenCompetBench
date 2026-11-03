@@ -44,7 +44,8 @@ async def generate_survey(req: SurveyRequest) -> SurveyResponse:
     name = req.competitor_name
     industry = req.industry
 
-    questionnaire_prompt = f"""你是一名资深产品经理，需要设计一份针对竞品 **{name}**（{industry} 行业）的用户调研问卷{focus_hint}。
+    questionnaire_prompt = f"""你是一名资深产品经理，需要设计一份针对竞品 **{name}**
+（{industry} 行业）的用户调研问卷{focus_hint}。
 
 要求：
 - 15-20 道题，覆盖：使用频率、核心功能满意度、定价感知、痛点、与替代品对比
@@ -54,7 +55,8 @@ async def generate_survey(req: SurveyRequest) -> SurveyResponse:
 
 直接输出问卷内容，不要前言。"""
 
-    interview_prompt = f"""你是一名资深产品研究员，需要设计一份针对竞品 **{name}**（{industry} 行业）用户的访谈提纲{focus_hint}。
+    interview_prompt = f"""你是一名资深产品研究员，需要设计一份针对竞品 **{name}**
+（{industry} 行业）用户的访谈提纲{focus_hint}。
 
 要求：
 - 访谈时长约 45 分钟

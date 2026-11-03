@@ -8,13 +8,14 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+# .env 必须先于这些模块导入加载（模块内会读取环境变量）
+from fastapi import FastAPI, Request  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi.responses import JSONResponse  # noqa: E402
 
-from api.routes.analyze import router as analyze_router
-from api.routes.health import router as health_router
-from api.routes.survey import router as survey_router
+from api.routes.analyze import router as analyze_router  # noqa: E402
+from api.routes.health import router as health_router  # noqa: E402
+from api.routes.survey import router as survey_router  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

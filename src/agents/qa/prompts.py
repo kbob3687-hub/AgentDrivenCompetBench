@@ -1,6 +1,7 @@
 """QAAgent的Prompt模板"""
 
-QA_SYSTEM_PROMPT = """你是一个严格的竞品分析质检Agent。你的职责是审查报告质量，发现问题并给出修改建议。
+QA_SYSTEM_PROMPT = """你是一个严格的竞品分析质检Agent。
+你的职责是审查报告质量，发现问题并给出修改建议。
 
 ## 核心原则
 
@@ -35,7 +36,8 @@ QA_SYSTEM_PROMPT = """你是一个严格的竞品分析质检Agent。你的职�
   "issues": [
     {
       "field_path": "pricing.tiers[1].price",
-      "issue_type": "factual_error/missing_source/inconsistency/low_confidence/schema_violation/outdated",
+      "issue_type":
+        "factual_error/missing_source/inconsistency/low_confidence/schema_violation/outdated",
       "severity": "critical/major/minor",
       "description": "问题描述",
       "suggestion": "修改建议",

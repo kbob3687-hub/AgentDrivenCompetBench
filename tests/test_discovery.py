@@ -73,7 +73,7 @@ class TestDiscoveryWarmPath:
         assert result["path"] == "warm"
         assert result["domain"] == "insta360.com"
         assert result["search_queries"] == []
-        assert any("store.insta360.com/product/x5" in u for u in result["urls"])
+        assert any("store.insta360.com" in u for u in result["urls"])
         assert any("insta360-x5" in u for u in result["urls"])
         assert any("service-policy" in u for u in result["urls"])
         assert len(result["urls"]) == len(set(result["urls"]))

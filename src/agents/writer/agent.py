@@ -56,8 +56,9 @@ class WriterAgent(BaseAgent):
         repair_action = args.get("repair_action", "")
 
         if not profile or not profile.get("company_name"):
+            keys = list(profile.keys()) if profile else "None"
             print(
-                f"  [Writer] Profile is empty or missing company_name. Keys: {list(profile.keys()) if profile else 'None'}"
+                f"  [Writer] Profile is empty or missing company_name. Keys: {keys}"
             )
             return self.build_message(
                 to_agent="orchestrator",

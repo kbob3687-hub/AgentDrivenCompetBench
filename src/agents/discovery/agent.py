@@ -298,6 +298,8 @@ SEARCH_EXCLUDE_DOMAINS = {
     "github.com",
     "medium.com",
     "techcrunch.com",
+    "g2.com",
+    "capterra.com",
 }
 
 # 用户评价平台：warm-path URL 模板（按竞品名填充）
@@ -452,7 +454,6 @@ class DiscoveryAgent:
 
         # 注入用户评价平台 URL（Reddit JSON 直接可解析，G2/Capterra 走 Firecrawl）
         slugs = REVIEW_SLUGS.get(key, {})
-        name_encoded = key.replace(" ", "+")
         if slugs.get("g2"):
             urls.append(USER_REVIEW_PLATFORMS["g2"].format(slug=slugs["g2"]))
         if slugs.get("capterra"):
