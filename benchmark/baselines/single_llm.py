@@ -116,8 +116,30 @@ class SingleLLMBaselineAgent(BaseAgent):
             schema=schema,
             pages=message.arguments["pages_text"],
         )
-        response = await self.call_llm([{"role": "user", "content": prompt}])
-        profile, report, error = parse_profile_report(response.text)
+        # One retry: a single huge JSON reply fails intermittently (smoke 20261105
+        # died on a delimiter at char 3525), and the baseline has no other repair path.
+        attempts: list[Any] = []
+        profile: dict[str, Any] | None = None
+        report: str | None = None
+        error = "baseline made no LLM call"
+        for _ in range(2):
+            response = await self.call_llm([{"role": "user", "content": prompt}])
+            attempts.append(response)
+            profile, report, error = parse_profile_report(response.text)
+            if not error:
+                break
+        usage_known = all(a.usage_known for a in attempts)
+        usage = {
+            "input_tokens": (
+                sum(a.input_tokens for a in attempts if a.usage_known) if usage_known else None
+            ),
+            "output_tokens": (
+                sum(a.output_tokens for a in attempts if a.usage_known) if usage_known else None
+            ),
+            "usage_known": usage_known,
+            "model": attempts[-1].model,
+            "attempts": len(attempts),
+        }
         return self.build_message(
             to_agent="orchestrator",
             function_name="single_llm_result",
@@ -125,13 +147,8 @@ class SingleLLMBaselineAgent(BaseAgent):
                 "profile": profile,
                 "report_markdown": report,
                 "error": error,
-                "reply_head": response.text[:600] if error else None,
-                "usage": {
-                    "input_tokens": response.input_tokens if response.usage_known else None,
-                    "output_tokens": response.output_tokens if response.usage_known else None,
-                    "usage_known": response.usage_known,
-                    "model": response.model,
-                },
+                "reply_head": attempts[-1].text[:600] if error else None,
+                "usage": usage,
             },
             trace_id=message.trace_id,
             message_type=MessageType.TASK_RESULT,
@@ -190,6 +207,7 @@ async def run_case(
                 "status": "completed",
                 "input_tokens": (args.get("usage") or {}).get("input_tokens"),
                 "output_tokens": (args.get("usage") or {}).get("output_tokens"),
+                "attempts": (args.get("usage") or {}).get("attempts", 1),
             },
         ]
         if args.get("error"):
@@ -242,6 +260,9 @@ async def run_benchmark(
     manifest = manifest_for(cases, config, run_id)
     manifest["provenance"] = "replayed_single_llm_baseline"
     manifest["baseline"] = "single_llm_one_call"
+    manifest["replay_bundles"] = {
+        key: bundle.fingerprint() for key, bundle in sorted(bundles.items())
+    }
     write_json(directory / "manifest.json", manifest)
 
     records: list[TaskRecord] = []

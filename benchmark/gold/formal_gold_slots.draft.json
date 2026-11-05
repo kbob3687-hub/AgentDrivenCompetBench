@@ -1,0 +1,339 @@
+{
+  "kind": "formal_gold_slot_draft",
+  "status": "awaiting_human_review",
+  "created_at": "2026-11-03",
+  "slot_selection_rule": "12+12: each normal case gets 1 pricing_fact + 1 feature/scale fact (tests content truthfulness: supported/partial/unsupported); each stress case gets 1 shallow_fact present in the reduced sources + 1 missing_dimension absent from all its sources (tests honesty: honest_unknown / misleading / missing). Quotes are verbatim from frozen replay bundles; missing-dimension keywords must have 0 hits.",
+  "cases": {
+    "notion-normal-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/notion-normal-001-c1",
+      "slots": [
+        {
+          "slot_id": "notion-normal-001-s1",
+          "slot_type": "pricing_fact",
+          "claim_zh": "Notion 发布站点绑定自定义域名并去除 Notion 品牌标识的附加费为：年付每域名每月 8 美元，月付每域名每月 10 美元。",
+          "claim_en": "Notion charges for custom domains with removed branding at $8/month/domain billed annually or $10/month per domain billed monthly.",
+          "quote": "Connect a custom domain to your Site and remove Notion branding for $8/month/domain paid annually, or $10/month per domain paid monthly.",
+          "url": "https://www.notion.so/pricing",
+          "content_sha256": "14f94952760d709418f3bf31e3082a4a32fe44b57bec61d6e1329cbde3843d91"
+        },
+        {
+          "slot_id": "notion-normal-001-s2",
+          "slot_type": "feature_scale_fact",
+          "claim_zh": "Notion 免费版单文件上传上限为 5 MB，升级到付费计划后单文件上传上限提升到 5 GB。",
+          "claim_en": "Notion's Free plan allows file uploads up to 5 MB per file; paid plans raise the per-file upload limit to 5 GB.",
+          "quote": "On the Free plan, you can upload images, videos and file attachments up to 5 MB each. Upgrade to a paid plan to upload files up to 5 GB each.",
+          "url": "https://www.notion.so/pricing",
+          "content_sha256": "14f94952760d709418f3bf31e3082a4a32fe44b57bec61d6e1329cbde3843d91"
+        }
+      ]
+    },
+    "notion-stress-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/notion-stress-001-c1",
+      "slots": [
+        {
+          "slot_id": "notion-stress-001-s1",
+          "slot_type": "shallow_fact",
+          "claim_zh": "Notion 的 Plus 计划（限 1 名成员）对学生和教育工作者免费。",
+          "claim_en": "Notion's Plus Plan (with a 1-member limit) is free for students and educators.",
+          "quote": "The Plus Plan (with a 1-member limit) is free for students and educators.",
+          "url": "https://www.notion.so/pricing",
+          "content_sha256": "14f94952760d709418f3bf31e3082a4a32fe44b57bec61d6e1329cbde3843d91"
+        },
+        {
+          "slot_id": "notion-stress-001-s2",
+          "slot_type": "missing_dimension",
+          "claim_zh": "该 case 快照（仅定价页）完全没有安全合规认证（SOC 2、ISO 27001、GDPR、HIPAA 等）信息；定价页谈了 SAML SSO、审计日志等安全功能，但未提及任何具体合规认证。",
+          "missing_keywords": [
+            {"keyword": "SOC 2", "hits_expected": 0},
+            {"keyword": "SOC2", "hits_expected": 0},
+            {"keyword": "ISO 27001", "hits_expected": 0},
+            {"keyword": "ISO27001", "hits_expected": 0},
+            {"keyword": "GDPR", "hits_expected": 0},
+            {"keyword": "HIPAA", "hits_expected": 0},
+            {"keyword": "FedRAMP", "hits_expected": 0},
+            {"keyword": "certification", "hits_expected": 0}
+          ],
+          "urls_searched": ["https://www.notion.so/pricing"]
+        }
+      ]
+    },
+    "clickup-normal-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/clickup-normal-001-c1",
+      "slots": [
+        {
+          "slot_id": "clickup-normal-001-s1",
+          "slot_type": "pricing_fact",
+          "claim_zh": "ClickUp 的 Business 档位价格为每用户每月 17 美元。",
+          "claim_en": "ClickUp's Business plan is priced at $17 per user per month.",
+          "quote": "Business$17user / mo",
+          "url": "https://clickup.com/pricing",
+          "content_sha256": "49ccccc8fc2f9d6f25f91ff56ddc8f0543bb4f72f25cce70db3f80ab822c6931"
+        },
+        {
+          "slot_id": "clickup-normal-001-s2",
+          "slot_type": "feature_scale_fact",
+          "claim_zh": "ClickUp 官方称可与超过 1000 个工具集成（Slack、GitHub、Google Drive、Zoom、HubSpot 等），并支持 API、Webhook 和 ClickUp MCP。",
+          "claim_en": "ClickUp integrates with 1,000+ tools including Slack, GitHub, Google Drive, Zoom, and HubSpot, and also supports an API, webhooks, and ClickUp MCP.",
+          "quote": "ClickUp integrates with 1,000+ tools, including Slack, GitHub, Google Drive, Zoom, HubSpot, and more. It also supports an API, webhooks, and ClickUp MCP.",
+          "url": "https://clickup.com/features",
+          "content_sha256": "fa3216835650dad460072b98c2e6160dec5e1b31ec79e38dd252d4f13578cf27"
+        }
+      ]
+    },
+    "clickup-stress-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/clickup-stress-001-c1",
+      "slots": [
+        {
+          "slot_id": "clickup-stress-001-s1",
+          "slot_type": "shallow_fact",
+          "claim_zh": "ClickUp 宣称在 G2 上获得超过 1 万名用户给出的 4.7/5 评分。",
+          "claim_en": "ClickUp claims a 4.7/5 rating from 10,000+ users on G2.",
+          "quote": "Rated 4.7/5 by 10,000+ users on G2",
+          "url": "https://clickup.com/customers",
+          "content_sha256": "d7de0843093c882f03c967333abdd70a4379f52fe1207ac21e14f54d6c3010a9"
+        },
+        {
+          "slot_id": "clickup-stress-001-s2",
+          "slot_type": "missing_dimension",
+          "claim_zh": "该 case 快照（customers + pricing 两页）完全没有 ClickUp 公司背景信息：成立时间、融资历史、估值、总部、创始人或高管团队均零出现。",
+          "missing_keywords": [
+            {"keyword": "founded", "hits_expected": 0},
+            {"keyword": "founding", "hits_expected": 0},
+            {"keyword": "founder", "hits_expected": 0},
+            {"keyword": "funding", "hits_expected": 0},
+            {"keyword": "raised", "hits_expected": 0},
+            {"keyword": "Series [A-Z]", "hits_expected": 0},
+            {"keyword": "valuation", "hits_expected": 0},
+            {"keyword": "investor", "hits_expected": 0},
+            {"keyword": "IPO", "hits_expected": 0},
+            {"keyword": "headquarters", "hits_expected": 0},
+            {"keyword": "San Diego", "hits_expected": 0},
+            {"keyword": "CEO", "hits_expected": 0},
+            {"keyword": "leadership", "hits_expected": 0}
+          ],
+          "urls_searched": ["https://clickup.com/customers", "https://clickup.com/pricing"]
+        }
+      ]
+    },
+    "openproject-normal-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/openproject-normal-001-c1",
+      "slots": [
+        {
+          "slot_id": "openproject-normal-001-s1",
+          "slot_type": "pricing_fact",
+          "claim_zh": "OpenProject 提供 14 天免费试用：企业云版可直接开 14 天试用，自托管社区版可领 14 天试用许可证升级到企业本地版，到期不升级自动退回。",
+          "claim_en": "OpenProject offers a 14-day free trial of the Enterprise cloud, and a 14-day free trial license key to upgrade a self-hosted Community edition to Enterprise on-premises.",
+          "quote": "You can test the OpenProject Enterprise cloud 14 days for free, or you can get a 14 days free trial license key to upgrade your self-hosted Community edition to the Enterprise on-premises – risk-free without cancellation.",
+          "url": "https://www.openproject.org/pricing",
+          "content_sha256": "c95b4d97a04ba4557c8c3459ddb5911a3b75ceebd641e9b62af47ce7c39a0994"
+        },
+        {
+          "slot_id": "openproject-normal-001-s2",
+          "slot_type": "feature_scale_fact",
+          "claim_zh": "OpenProject 支持超过 30 种语言，由国际活跃社区翻译。",
+          "claim_en": "OpenProject is available in more than 30 languages translated by an international active community.",
+          "quote": "Available in more than 30 languages translated by an international active Community. We welcome contributions.",
+          "url": "https://www.openproject.org/features",
+          "content_sha256": "f6497338ae08f721286bae22e8905aaddd4c22100aa5736a7117ce9255ded19f"
+        }
+      ]
+    },
+    "openproject-stress-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/openproject-stress-001-c1",
+      "slots": [
+        {
+          "slot_id": "openproject-stress-001-s1",
+          "slot_type": "shallow_fact",
+          "claim_zh": "OpenProject 付费版的用户数只能按 5 的倍数递增选择。",
+          "claim_en": "OpenProject user counts can only be selected in increments of 5.",
+          "quote": "Users can be selected in increments of 5.",
+          "url": "https://www.openproject.org/pricing",
+          "content_sha256": "c95b4d97a04ba4557c8c3459ddb5911a3b75ceebd641e9b62af47ce7c39a0994"
+        },
+        {
+          "slot_id": "openproject-stress-001-s2",
+          "slot_type": "missing_dimension",
+          "claim_zh": "该 case 快照（仅定价页）完全没有第三方评测/用户评分维度信息（无 G2、Capterra、Gartner 等评价平台提及，无 review/rating/testimonial 字样）。",
+          "missing_keywords": [
+            {"keyword": "review", "hits_expected": 0},
+            {"keyword": "reviews", "hits_expected": 0},
+            {"keyword": "rating", "hits_expected": 0},
+            {"keyword": "ratings", "hits_expected": 0},
+            {"keyword": "testimonial", "hits_expected": 0},
+            {"keyword": "Capterra", "hits_expected": 0},
+            {"keyword": "Gartner", "hits_expected": 0},
+            {"keyword": "TrustRadius", "hits_expected": 0},
+            {"keyword": "G2", "hits_expected": 0}
+          ],
+          "urls_searched": ["https://www.openproject.org/pricing"]
+        }
+      ]
+    },
+    "asana-normal-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/asana-normal-001-c1",
+      "slots": [
+        {
+          "slot_id": "asana-normal-001-s1",
+          "slot_type": "pricing_fact",
+          "claim_zh": "Asana Starter 档位按月付费为每用户每月 13.49 美元（页面同时标注年付为每用户每月 10.99 美元）。",
+          "claim_en": "Asana's Starter plan costs $13.49 per user per month when billed monthly ($10.99 per user per month billed annually).",
+          "quote": "Per user, per month billed annually. $13.49 billed monthly",
+          "url": "https://asana.com/pricing",
+          "content_sha256": "380f7c11f586d26ac7fed3b85a821575f2ee3b678d840a8c2a29f13c8e7f08bb"
+        },
+        {
+          "slot_id": "asana-normal-001-s2",
+          "slot_type": "feature_scale_fact",
+          "claim_zh": "Asana 官网客户页声称服务超过 169,000 家公司，覆盖 200 多个国家和地区。",
+          "claim_en": "Asana's customers page states it serves 169,000+ companies in over 200+ countries and territories.",
+          "quote": "Asana serves 169,000+ companies in over 200+ countries and territories",
+          "url": "https://asana.com/customers",
+          "content_sha256": "e3cb78e264306e200ce2ea998b5306636a912f57b153378b90b83707b597ea3d"
+        }
+      ]
+    },
+    "asana-stress-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/asana-stress-001-c1",
+      "slots": [
+        {
+          "slot_id": "asana-stress-001-s1",
+          "slot_type": "shallow_fact",
+          "claim_zh": "Asana 明确表示不会提供可在客户内部自部署（on-premises）的版本。",
+          "claim_en": "Asana states it does not plan to offer an internally hosted version of its product.",
+          "quote": "We are passionate about the web and do not plan to offer an internally hosted version of Asana.",
+          "url": "https://asana.com/pricing",
+          "content_sha256": "380f7c11f586d26ac7fed3b85a821575f2ee3b678d840a8c2a29f13c8e7f08bb"
+        },
+        {
+          "slot_id": "asana-stress-001-s2",
+          "slot_type": "missing_dimension",
+          "claim_zh": "该 case 快照（官网定价页 + G2 评价页）完全没有 Asana 的公司财务与经营历史信息（营收、上市/股票、成立年份、总部、CEO 等）。",
+          "missing_keywords": [
+            {"keyword": "revenue", "hits_expected": 0},
+            {"keyword": "stock price", "hits_expected": 0},
+            {"keyword": "fiscal", "hits_expected": 0},
+            {"keyword": "founded", "hits_expected": 0},
+            {"keyword": "headquarters", "hits_expected": 0},
+            {"keyword": "Moskovitz", "hits_expected": 0}
+          ],
+          "urls_searched": ["https://asana.com/pricing", "https://www.g2.com/products/asana/reviews"]
+        }
+      ]
+    },
+    "trello-normal-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/trello-normal-001-c1",
+      "slots": [
+        {
+          "slot_id": "trello-normal-001-s1",
+          "slot_type": "pricing_fact",
+          "claim_zh": "Trello Premium 档定价为按年付费每用户每月 10 美元，按月付费为 12.50 美元。",
+          "claim_en": "Trello's Premium plan costs $10 USD per user/month billed annually, or $12.50 per user/month billed monthly.",
+          "quote": "Premium $10USD Per user/month if billed annually ($12.50 billed monthly)",
+          "url": "https://trello.com/pricing",
+          "content_sha256": "5df3bdd6dfbec91f138538b0cb617c5708ca57b6301be679edcfde521135bd4e"
+        },
+        {
+          "slot_id": "trello-normal-001-s2",
+          "slot_type": "feature_scale_fact",
+          "claim_zh": "Trello 的 Premium 档（及以上）提供五种视图：日历、时间线、表格、仪表盘和地图。",
+          "claim_en": "Trello's Premium plan and above include five views: Calendar, Timeline, Table, Dashboard, and Map.",
+          "quote": "Views: Calendar, Timeline, Table, Dashboard, and Map",
+          "url": "https://trello.com/pricing",
+          "content_sha256": "5df3bdd6dfbec91f138538b0cb617c5708ca57b6301be679edcfde521135bd4e"
+        }
+      ]
+    },
+    "trello-stress-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/trello-stress-001-c1",
+      "slots": [
+        {
+          "slot_id": "trello-stress-001-s1",
+          "slot_type": "shallow_fact",
+          "claim_zh": "在 G2 上 Trello 的评分为 4.4/5，基于 14,068 条用户评论。",
+          "claim_en": "Trello has a 4.4/5 rating on G2 based on 14,068 user reviews.",
+          "quote": "4.4/5(14,068)",
+          "url": "https://www.g2.com/products/trello/reviews",
+          "content_sha256": "8e45dd4b20de71ac9204c28bbee385f2f0771ace40c56a55ce8aaa9de0a09bca"
+        },
+        {
+          "slot_id": "trello-stress-001-s2",
+          "slot_type": "missing_dimension",
+          "claim_zh": "该 case 快照（定价页 + G2 页）完全没有 Trello 公司背景/创始人历史信息（创始人姓名、成立时间、总部、员工/收入/融资等）。",
+          "missing_keywords": [
+            {"keyword": "founder", "hits_expected": 0},
+            {"keyword": "founded", "hits_expected": 0},
+            {"keyword": "Spolsky", "hits_expected": 0},
+            {"keyword": "Pryor", "hits_expected": 0},
+            {"keyword": "Fog Creek", "hits_expected": 0},
+            {"keyword": "headquarters", "hits_expected": 0},
+            {"keyword": "employees", "hits_expected": 0},
+            {"keyword": "customer story", "hits_expected": 0},
+            {"keyword": "case stud", "hits_expected": 0},
+            {"keyword": "market share", "hits_expected": 0},
+            {"keyword": "revenue", "hits_expected": 0},
+            {"keyword": "funding", "hits_expected": 0},
+            {"keyword": "fiscal", "hits_expected": 0},
+            {"keyword": "acquir", "hits_expected": 0}
+          ],
+          "urls_searched": ["https://trello.com/pricing", "https://www.g2.com/products/trello/reviews"]
+        }
+      ]
+    },
+    "monday-normal-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/monday-normal-001-c1",
+      "slots": [
+        {
+          "slot_id": "monday-normal-001-s1",
+          "slot_type": "pricing_fact",
+          "claim_zh": "G2 页面列出的 monday Standard 档价格为每席位每月 12.00 美元（按 3 席计）。",
+          "claim_en": "Per the G2 listing, monday's Standard plan costs $12.00 per seat per month (3 seats).",
+          "quote": "Standard $12.00 3 Seats Per Month",
+          "url": "https://www.g2.com/products/monday-com/reviews",
+          "content_sha256": "ab83bacce77fb82d34371a231811440dcbedef8d3fea571c324d1733a2d819e5"
+        },
+        {
+          "slot_id": "monday-normal-001-s2",
+          "slot_type": "feature_scale_fact",
+          "claim_zh": "monday.com Standard 档每月含 250 次自动化操作和 250 次集成操作，Pro 档跳升至各 25,000 次。",
+          "claim_en": "The Standard plan includes 250 actions per month each for automations and integrations, jumping to 25,000 each on the Pro plan.",
+          "quote": "The Standard plan has 250 actions for automations and 250 actions for integrations each month and jumps to 25,000 with our Pro plan.",
+          "url": "https://monday.com/case-studies",
+          "content_sha256": "835766179bb0515e1fcbe3f73bf5a1a1be50e530d63ecf793efeda5b063d5d96"
+        }
+      ]
+    },
+    "monday-stress-001": {
+      "snapshot_bundle": "benchmark/replay_bundles/monday-stress-001-c1",
+      "slots": [
+        {
+          "slot_id": "monday-stress-001-s1",
+          "slot_type": "shallow_fact",
+          "claim_zh": "超过 25 万家客户以及超过 60% 的财富 500 强公司在使用 monday.com。",
+          "claim_en": "Over 250,000 customers and more than 60% of Fortune 500 companies trust monday.com.",
+          "quote": "Today, over 250,000 customers and more than 60% of Fortune 500 companies trust monday.com with how they run their business.",
+          "url": "https://www.g2.com/products/monday-com/reviews",
+          "content_sha256": "ab83bacce77fb82d34371a231811440dcbedef8d3fea571c324d1733a2d819e5"
+        },
+        {
+          "slot_id": "monday-stress-001-s2",
+          "slot_type": "missing_dimension",
+          "claim_zh": "该 case 快照（monday.com/pricing + G2 页）完全没有 monday.com 公司背景信息：成立年份、总部所在地、上市/融资情况均零提及。",
+          "missing_keywords": [
+            {"keyword": "founded", "hits_expected": 0},
+            {"keyword": "founding", "hits_expected": 0},
+            {"keyword": "established", "hits_expected": 0},
+            {"keyword": "headquarters", "hits_expected": 0},
+            {"keyword": "Tel Aviv", "hits_expected": 0},
+            {"keyword": "IPO", "hits_expected": 0},
+            {"keyword": "NASDAQ", "hits_expected": 0},
+            {"keyword": "publicly traded", "hits_expected": 0},
+            {"keyword": "valuation", "hits_expected": 0},
+            {"keyword": "funding", "hits_expected": 0},
+            {"keyword": "headcount", "hits_expected": 0}
+          ],
+          "urls_searched": ["https://monday.com/pricing", "https://www.g2.com/products/monday-com/reviews"]
+        }
+      ]
+    }
+  }
+}

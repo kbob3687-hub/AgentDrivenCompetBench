@@ -88,11 +88,42 @@ async def test_run_case_completes_and_records_usage(tmp_path, monkeypatch) -> No
     assert record.state["pages_urls"] == ["https://a.example.com"]
     llm_events = [e for e in record.execution_metadata if e["kind"] == "llm"]
     assert llm_events and llm_events[0]["input_tokens"] == 1000
+    assert llm_events[0]["output_tokens"] == 500
+    assert llm_events[0]["attempts"] == 1
 
     metrics = evaluate(record, case)
     assert metrics["workflow_success"].value is True
     assert metrics["qa_passed"].value is None
     assert metrics["schema_valid"].value is True
+
+
+async def test_run_case_retries_once_after_json_parse_failure(tmp_path, monkeypatch) -> None:
+    case = BenchmarkCase(id="case", competitors=["Alpha"], required_dimensions=["pricing"])
+    reply = json.dumps({"profile": PROFILE, "report_markdown": "# Report"})
+    calls = {"n": 0}
+
+    async def flaky_call_llm(self, messages, tools=None, response_format=None):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return LLMResponse(
+                text='{"profile": {"company_name": "Alp',  # truncated JSON
+                input_tokens=10,
+                output_tokens=5,
+                usage_known=True,
+                model="fixture",
+            )
+        return LLMResponse(
+            text=reply, input_tokens=1000, output_tokens=500, usage_known=True, model="fixture"
+        )
+
+    monkeypatch.setattr(SingleLLMBaselineAgent, "call_llm", flaky_call_llm)
+    record = await run_case(case, "Alpha", _bundle(tmp_path))
+
+    assert calls["n"] == 2
+    assert record.outcome == "completed"
+    llm_events = [e for e in record.execution_metadata if e["kind"] == "llm"]
+    assert llm_events[0]["input_tokens"] == 1010
+    assert llm_events[0]["attempts"] == 2
 
 
 async def test_run_case_records_error_on_bad_reply(tmp_path, monkeypatch) -> None:

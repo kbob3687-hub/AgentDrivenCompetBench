@@ -66,6 +66,21 @@ class SnapshotBundle:
             entry["_text"] = path.read_text("utf-8")
         return cls(directory, index["entries"])
 
+    def fingerprint(self) -> dict[str, Any]:
+        """Identity of this frozen bundle: index.json bytes plus every page hash.
+
+        Replays never write source_snapshots, so this is what pins a run to the
+        exact page texts it consumed.
+        """
+        return {
+            "bundle_id": self.directory.name,
+            "index_sha256": sha256((self.directory / "index.json").read_bytes()),
+            "pages": [
+                f"{entry.get('content_sha256') or 'capture_failed'}  {entry['url']}"
+                for entry in sorted(self.entries, key=lambda item: item["url"])
+            ],
+        }
+
     def fetch(self, url: str) -> FetchResult:
         entry = self._by_url.get(url)
         if entry is None:
