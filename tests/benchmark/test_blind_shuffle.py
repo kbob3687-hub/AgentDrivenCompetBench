@@ -153,3 +153,27 @@ def test_unblind_rejects_bad_verdict_and_duplicate(tmp_path, gold):
     filled["judgments"].append(dict(filled["judgments"][0]))
     with pytest.raises(ValueError, match="Duplicate judgment"):
         blind_shuffle.unblind(filled, mapping, gold)
+
+
+def test_blind_include_failed_allows_failed_task_without_leaking_arm(tmp_path, gold):
+    runs = _three_runs(tmp_path)
+    failed_raw = runs[2] / "raw" / "case-a-r1-c1.json"
+    data = json.loads(failed_raw.read_text("utf-8"))
+    data["state"] = {"error": "parse error", "final_status": "failed"}
+    failed_raw.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="missing arms"):
+        blind_shuffle.blind(runs, gold, tmp_path / "out_strict", seed=1)
+
+    res = blind_shuffle.blind(runs, gold, tmp_path / "out_ok", seed=1, include_failed=True)
+    queue_text = res["queue"].read_text("utf-8")
+    assert "[TASK_FAILED_NO_REPORT]" in queue_text
+    for secret in ("multi_agent", "single_llm", "run-qa", "run-noqa", "run-base"):
+        assert secret not in queue_text
+    mapping = json.loads(res["mapping"].read_text("utf-8"))
+    missing_flags = {e["arm"]: e["report_missing"] for e in mapping["samples"]}
+    assert missing_flags == {
+        "single_llm": True,
+        "multi_agent_no_qa": False,
+        "multi_agent_qa_fixed": False,
+    }

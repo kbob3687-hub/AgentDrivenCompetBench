@@ -32,7 +32,7 @@ def arm_of(manifest: dict) -> str:
     raise ValueError(f"Cannot determine arm from manifest provenance: {provenance!r}")
 
 
-def load_reports(run_dir: Path) -> dict[tuple[str, int], dict]:
+def load_reports(run_dir: Path, include_failed: bool = False) -> dict[tuple[str, int], dict]:
     run_id = run_dir.name
     manifest = read_json(run_dir / "manifest.json")
     arm = arm_of(manifest)
@@ -40,9 +40,12 @@ def load_reports(run_dir: Path) -> dict[tuple[str, int], dict]:
     for raw in sorted((run_dir / "raw").glob("*.json")):
         data = read_json(raw)
         report = (data.get("state") or {}).get("report_markdown")
-        if not isinstance(report, str) or not report.strip():
-            print(f"warning: no report in {run_id}/raw/{raw.name}, skipped")
-            continue
+        report_missing = not isinstance(report, str) or not report.strip()
+        if report_missing:
+            if not include_failed:
+                print(f"warning: no report in {run_id}/raw/{raw.name}, skipped")
+                continue
+            report = "[TASK_FAILED_NO_REPORT]"
         key = (data["case_id"], int(data["repeat"]))
         if key in found:
             raise ValueError(f"{run_id} has two reports for {key}")
@@ -52,6 +55,7 @@ def load_reports(run_dir: Path) -> dict[tuple[str, int], dict]:
             "task_id": data.get("task_id", raw.stem),
             "final_status": (data.get("state") or {}).get("final_status", ""),
             "report_markdown": report,
+            "report_missing": report_missing,
         }
     return found
 
@@ -71,9 +75,11 @@ def _group_outputs(reports: dict[Path, dict[tuple[str, int], dict]]) -> dict[tup
     return groups
 
 
-def blind(runs: list[Path], gold: dict, out_dir: Path, seed: int) -> dict:
+def blind(
+    runs: list[Path], gold: dict, out_dir: Path, seed: int, include_failed: bool = False
+) -> dict:
     slots_by_case = {case: data["slots"] for case, data in gold["cases"].items()}
-    groups = _group_outputs({run: load_reports(run) for run in runs})
+    groups = _group_outputs({run: load_reports(run, include_failed=include_failed) for run in runs})
     unknown = {key[0] for key in groups} - set(slots_by_case)
     if unknown:
         raise ValueError(f"Outputs reference cases absent from gold set: {sorted(unknown)}")
@@ -101,6 +107,7 @@ def blind(runs: list[Path], gold: dict, out_dir: Path, seed: int) -> dict:
                     "run_id": entry["run_id"],
                     "task_id": entry["task_id"],
                     "final_status": entry["final_status"],
+                    "report_missing": bool(entry.get("report_missing", False)),
                     "case": case,
                     "repeat": repeat,
                 }
@@ -189,6 +196,11 @@ def main() -> None:
     p_blind.add_argument("--gold", type=Path, required=True, help="Frozen gold set from signoff")
     p_blind.add_argument("--out-dir", type=Path, required=True)
     p_blind.add_argument("--seed", type=int, default=0)
+    p_blind.add_argument(
+        "--include-failed",
+        action="store_true",
+        help="Keep recorded failed tasks with a report placeholder instead of aborting",
+    )
 
     p_unblind = sub.add_parser("unblind", help="Convert filled blind judgments for content_metrics")
     p_unblind.add_argument("--filled", type=Path, required=True)
@@ -198,7 +210,13 @@ def main() -> None:
 
     args = parser.parse_args()
     if args.command == "blind":
-        result = blind(args.runs, read_json(args.gold), args.out_dir, args.seed)
+        result = blind(
+            args.runs,
+            read_json(args.gold),
+            args.out_dir,
+            args.seed,
+            include_failed=args.include_failed,
+        )
         print(f"{result['queue']}\n{result['mapping']}\nsamples: {result['samples']}")
         return
     filled = read_json(args.filled)

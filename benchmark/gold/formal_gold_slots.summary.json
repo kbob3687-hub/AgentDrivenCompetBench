@@ -1,0 +1,8 @@
+{
+  "status": "human_reviewed",
+  "reviewed_by": "硝酸铜",
+  "reviewed_at": "2026-11-10T15:34:52+08:00",
+  "slots_kept": 24,
+  "slots_rejected": 0,
+  "note": "Frozen gold set only; output judgments are separate and never reused across runs."
+}
