@@ -131,48 +131,34 @@ class AnalystAgent(BaseAgent):
         if extension_prompt:
             user_prompt = user_prompt + "\n\n" + extension_prompt
 
-        # 调用Claude进行分析
+        # 调用 LLM 进行分析
+        # Fix: request JSON-object output format to eliminate truncated/malformed JSON at source.
+        # DeepSeek / OpenAI-compat supports response_format={"type": "json_object"}.
+        # call_llm already passes this through to kwargs (base.py L330-331).
         response = await self.call_llm(
             messages=[{"role": "user", "content": user_prompt}],
+            response_format={"type": "json_object"},
         )
 
         # 解析LLM输出
         llm_output = self._parse_llm_output(response.text)
         if not llm_output:
-            print(f"  [Analyst] LLM output parse FAILED. Raw text head: {response.text[:500]!r}")
-            return self.build_message(
-                to_agent="orchestrator",
-                function_name="analyze_result",
-                arguments={
-                    "error": "failed to parse LLM analysis output",
-                    "raw_output": response.text[:2000],
-                    "competitor_name": competitor_name,
-                },
-                trace_id=message.trace_id,
-                message_type=MessageType.TASK_RESULT,
-                parent_message_id=message.message_id,
-                context=message.context,
+            # Fix: raise so execute()'s retry loop actually fires (3 attempts).
+            # Previously returning a message caused execute() to treat failure as success.
+            raise ValueError(
+                f"Analyst parse failed (len={len(response.text)}); "
+                f"head={response.text[:300]!r}"
             )
 
         # 构建CompetitorProfile
         try:
             profile = build_competitor_profile(competitor_name, llm_output, claims)
         except Exception as e:
-            print(f"  [Analyst] build_competitor_profile FAILED: {type(e).__name__}: {e}")
-            print(f"  [Analyst] LLM output keys: {list(llm_output.keys())}")
-            return self.build_message(
-                to_agent="orchestrator",
-                function_name="analyze_result",
-                arguments={
-                    "error": f"build profile failed: {type(e).__name__}: {e}",
-                    "llm_output_keys": list(llm_output.keys()),
-                    "competitor_name": competitor_name,
-                },
-                trace_id=message.trace_id,
-                message_type=MessageType.TASK_RESULT,
-                parent_message_id=message.message_id,
-                context=message.context,
-            )
+            # Fix: same – raise so retries trigger, not silent return.
+            raise ValueError(
+                f"build_competitor_profile failed: {type(e).__name__}: {e}; "
+                f"llm_output_keys={list(llm_output.keys())}"
+            ) from e
 
         return self.build_message(
             to_agent="orchestrator",
@@ -222,31 +208,60 @@ class AnalystAgent(BaseAgent):
                 except (json.JSONDecodeError, ValueError):
                     continue
 
-        # 4. 提取第一个完整的 JSON 对象
+        # 4. 提取第一个完整的 JSON 对象（修复：正确跳过字符串内的花括号）
         first_brace = text.find("{")
         if first_brace != -1:
-            # 找到匹配的右括号
             depth = 0
+            in_string = False
+            escape_next = False
+            best_candidate: str | None = None
             for i in range(first_brace, len(text)):
-                if text[i] == "{":
+                ch = text[i]
+                if escape_next:
+                    escape_next = False
+                    continue
+                if ch == "\\" and in_string:
+                    escape_next = True
+                    continue
+                if ch == '"':
+                    in_string = not in_string
+                    continue
+                if in_string:
+                    continue
+                if ch == "{":
                     depth += 1
-                elif text[i] == "}":
+                elif ch == "}":
                     depth -= 1
                     if depth == 0:
+                        candidate = text[first_brace : i + 1]
                         try:
-                            return json.loads(text[first_brace : i + 1])
+                            return json.loads(candidate)
                         except json.JSONDecodeError:
-                            break
+                            # Fix: don't break on first failure – record and keep scanning
+                            best_candidate = candidate
+                            # reset depth to look for the next top-level object
+                            depth = 0
+                            first_brace = text.find("{", i + 1)
+                            if first_brace == -1:
+                                break
+                            i = first_brace - 1  # will be incremented by loop
 
-        # 5. 尝试修复常见格式问题
-        # 移除尾部逗号
+        # 5. 尝试修复常见格式问题（截断修复：找最后一个完整 key-value 对后补 }）
         cleaned = text.strip()
+        # 5a. 尾部多余逗号
         if cleaned.endswith(","):
-            cleaned = cleaned[:-1] + "}"
             try:
-                return json.loads(cleaned)
+                return json.loads(cleaned[:-1] + "}")
             except json.JSONDecodeError:
                 pass
+        # 5b. 截断修复：从末尾找最后一个完整逗号分隔点，逐层补齐右括号
+        for trim_idx in range(len(cleaned) - 1, max(0, len(cleaned) - 200), -1):
+            if cleaned[trim_idx] in (",", "{", "["):
+                attempt = cleaned[: trim_idx] + "}" * 5  # over-close, then strip invalid
+                try:
+                    return json.loads(attempt)
+                except json.JSONDecodeError:
+                    continue
 
         print(
             f"  [Analyst] Failed to parse LLM output. Length: {len(text)}, Preview: {text[:300]!r}"
