@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/badge/Vue-3.5-4FC08D?logo=vue.js&logoColor=white" />
   <img src="https://img.shields.io/badge/LangGraph-0.2+-orange" />
   <img src="https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white" />
-  <img src="https://img.shields.io/badge/测试-277_通过-brightgreen?logo=pytest&logoColor=white" />
+  <img src="https://img.shields.io/badge/测试-285_通过-brightgreen?logo=pytest&logoColor=white" />
   <img src="https://img.shields.io/badge/自建Benchmark-冻结回放+三实验臂-8A2BE2" />
   <img src="https://img.shields.io/badge/Langfuse-全链路追踪-purple" />
   <img src="https://img.shields.io/badge/采集合规-robots.txt+PII脱敏-green" />
@@ -135,18 +135,25 @@ QA 路由决策不是简单的"通过/打回"，而是**按问题分类精准路
 
 系统不只有 Demo，还内置一套自建的评测框架（`benchmark/`），用可复现的实验回答"多 Agent 流水线是否优于单次 LLM、QA 闭环贡献了多少质量与成本"：
 
-- **冻结快照回放**：6 个项目管理 SaaS 产品（Notion / ClickUp / Asana / Trello / Monday.com / OpenProject）× 常规/压力场景 = 12 个正式 case、37 个网页正文，以 SHA-256 冻结为回放包。所有实验臂在**逐字节相同的输入**上运行，彻底排除采集波动这一混淆因素；回放时任何快照缺失都会大声报错，绝不静默回退联网
-- **三实验臂对照**：`single_llm`（一次 LLM 调用直接产出画像 + 报告）/ `multi_agent_no_qa` / `multi_agent_qa_fixed`（完整闭环），同模型、同快照、同输出 Schema、同 Token 口径公平比较
-- **五类评测器**：Schema 合法性、证据引用可回溯（citation）、维度覆盖（coverage）、内容深度（depth）、工作流轨迹（workflow），指标全部支持离线重算
-- **人工黄金标签流水线**：`benchmark/gold/` 把"快照原文 → 大白话主张 → 是/否裁决"做成最小人工核验循环，支撑忠实度类指标
-- **A/B 对照工具**：自动校验两次运行的配置可比性（case / 模型 / 代码版本 / 快照一致），再生成对照报告，防止"拿不同输入硬比"
+- **冻结快照回放**：6 个项目管理 SaaS 产品（Notion / ClickUp / OpenProject / Asana / Trello / Monday.com）× 常规/压力场景 = 12 个正式 case、32 个网页正文，以 SHA-256 冻结为回放包（`benchmark/replay_bundles/<case>-c1/`）。所有实验臂在**逐字节相同的输入**上运行，彻底排除采集波动这一混淆因素；回放时任何包外 URL 或哈希不符都会硬报错，绝不静默回退联网
+- **三实验臂对照**：`--arm single_llm`（一次 LLM 调用直接产出画像 + 报告）/ `--arm multi_agent_no_qa` / `--arm multi_agent_qa_fixed`（完整闭环），同模型、同快照、同输出 Schema、同 Token 口径比较；`--task-concurrency` 控制任务级并发，A/B 校验会要求两侧一致
+- **五类评测器**：Schema 合法性、证据引用可回溯（citation）、维度覆盖（coverage）、内容深度（depth）、工作流轨迹（workflow）。评测器只读已落盘结果、不联网不调模型，可用 `--rescore` 离线重算
+- **人工黄金标签流水线**：`benchmark/gold/` 把"快照原文 → 大白话主张 → 是/否裁决"做成最小人工核验循环；正式集 24 个槽位（12 事实 + 12 缺失）已冻结签核，`blind_shuffle.py` 负责三臂双盲洗牌，`content_metrics.py` 在签核后计算内容指标，`formal_signoff.py` 校验署名、时间与快照哈希
+- **A/B 对照工具**：`benchmark.compare` 先校验两侧 case、模型、Git commit、回放包指纹以及 repeat / timeout / 并发等配置一致，再按 case/competitor/repeat 配对输出均值、配对差值，以及失败任务记 0 的全任务口径
+- **开跑前成本预估**：`benchmark/estimate_cost.py` 依据冻结包输入规模与目标输出预算，估算三臂的 token 和费用
 
 ```bash
-# 回放运行（不联网，输入来自冻结快照包）
-python -m benchmark.runner --cases benchmark/cases/final_cases.json --replay-root benchmark/replay_bundles
+# 回放运行单个实验臂（不联网，输入来自冻结快照包）
+python -m benchmark.runner \
+  --cases benchmark/cases/final_cases.json \
+  --replay-root benchmark/replay_bundles \
+  --arm multi_agent_qa_fixed
 
 # 两次运行的 A/B 对照报告
 python -m benchmark.compare <runA目录> <runB目录>
+
+# 不重新调用 Agent，离线重算已有结果的指标
+python -m benchmark.runner --rescore benchmark/results/<run_id>
 ```
 
 ---
@@ -236,7 +243,7 @@ Trace (task_id)
 | 可观测性 | **Langfuse v4** | trace → span → generation 三层追踪，Token 成本聚合 |
 | 数据校验 | **Pydantic v2** | 结构化输出运行时强校验，Schema 演化可控 |
 | 合规 | **robots.txt + PII 脱敏** | 遵守爬取协议，手机/身份证/邮箱自动脱敏 |
-| 测试 | **pytest + pytest-asyncio** | 277 个用例，覆盖 Agent 链路与 Benchmark 评测 |
+| 测试 | **pytest + pytest-asyncio** | 285 个用例，覆盖 Agent 链路与 Benchmark 评测 |
 
 ---
 
@@ -332,13 +339,14 @@ src/
 
 benchmark/
 ├── cases/                      # 正式 case 集（6 产品 × 常规/压力 = 12 case，已冻结）
-├── replay_bundles/             # SHA-256 冻结快照回放包（37 页）
+├── replay_bundles/             # SHA-256 冻结快照回放包（32 页）
 ├── replay.py                   # 快照回放模块（缺失即报错，不回退联网）
 ├── baselines/single_llm.py     # 单次 LLM 基线实验臂
 ├── evaluators/                 # schema / citation / coverage / depth / workflow 评测器
-├── gold/                       # 人工黄金标签流水线（原文对照 + 是/否裁决）
-├── runner.py                   # 实验运行器（串行 / 回放 / 快照捕获）
-└── compare.py                  # A/B 对照报告（配置可比性校验）
+├── gold/                       # 黄金标签（24 槽冻结 / 双盲洗牌 / 签核 / 内容指标）
+├── estimate_cost.py            # 开跑前 token 与费用预估
+├── runner.py                   # 实验运行器（三臂 / 回放 / 并发 / 快照捕获 / 离线重评）
+└── compare.py                  # A/B 对照（配置、commit 与快照指纹可比性校验）
 
 frontend/src/
 ├── components/
@@ -358,7 +366,7 @@ frontend/src/
 ## 测试覆盖
 
 ```bash
-pytest tests/ -v    # 277 个用例
+pytest tests/ -v    # 285 个用例
 ```
 
 | 测试模块 | 覆盖范围 |
@@ -417,8 +425,8 @@ pytest tests/ -v    # 277 个用例
 - [x] 用户调研工具（问卷 + 访谈提纲生成）
 - [x] 采集合规（robots.txt + PII 脱敏）
 - [x] 自建评测体系（冻结快照回放 + 三实验臂对照 + 人工黄金标签流水线）
-- [x] 277 个测试用例
-- [ ] 主实验全量运行（12 case × 3 实验臂）
+- [x] 285 个测试用例
+- [ ] 主实验全量运行（b1 已完成 6 case × 3 实验臂；12 case 全量待跑）
 - [ ] 向量检索增强（Qdrant RAG）
 - [ ] 导出 PDF / PPT
 
