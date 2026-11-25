@@ -39,13 +39,23 @@ def load_run(directory: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     return manifest, metrics
 
 
-def require_source_snapshots(directory: Path) -> None:
+def require_reviewable(manifest: dict[str, Any], directory: Path) -> None:
+    """Refuse runs whose consumed page texts cannot be recovered.
+
+    Live runs keep the run-time pages under source_snapshots/<task>/index.json;
+    replay runs instead pin the frozen bundle fingerprints in the manifest.
+    Neither means the content is correct - it means a human can still check it.
+    """
     snapshots = directory / "source_snapshots"
-    if not snapshots.is_dir() or not list(snapshots.glob("*/index.json")):
-        raise ValueError(
-            f"{directory} 缺少 source_snapshots/<task>/index.json；"
-            "没有运行当时的网页原文，无法人工复核，不能用于正式质量对比"
-        )
+    if snapshots.is_dir() and list(snapshots.glob("*/index.json")):
+        return
+    provenance = str(manifest.get("provenance", ""))
+    if provenance.startswith("replayed") and manifest.get("replay_bundles"):
+        return
+    raise ValueError(
+        f"{directory} 没有 source_snapshots/<task>/index.json，也没有回放冻结包指纹；"
+        "没有运行当时的网页原文，无法人工复核，不能用于正式质量对比"
+    )
 
 
 def assert_comparable(manifest_a: dict[str, Any], manifest_b: dict[str, Any]) -> None:
@@ -55,6 +65,12 @@ def assert_comparable(manifest_a: dict[str, Any], manifest_b: dict[str, Any]) ->
         raise ValueError("两个 run 的模型配置不一致，不能配对比较")
     if manifest_a["git"]["commit"] != manifest_b["git"]["commit"]:
         raise ValueError("两个 run 的 Git commit 不一致，不能配对比较")
+    bundles_a = manifest_a.get("replay_bundles")
+    bundles_b = manifest_b.get("replay_bundles")
+    if bool(bundles_a) != bool(bundles_b):
+        raise ValueError("一个 run 用了冻结快照回放、另一个没有，读取的来源不同，不能配对比较")
+    if bundles_a and bundles_a != bundles_b:
+        raise ValueError("两个 run 的冻结快照指纹不一致，不能配对比较")
     for field in COMPARABLE_CONFIG_FIELDS:
         if manifest_a["config"].get(field) != manifest_b["config"].get(field):
             raise ValueError(f"两个 run 的配置 {field} 不一致，不能配对比较")
@@ -113,6 +129,13 @@ def compare(
     }
 
 
+def _arm(manifest: dict[str, Any]) -> str:
+    baseline = manifest.get("baseline")
+    if baseline:
+        return str(baseline)
+    return f"{manifest['provenance']}·enable_qa={manifest['config']['enable_qa']}"
+
+
 def render(manifest_a: dict[str, Any], manifest_b: dict[str, Any], result: dict[str, Any]) -> str:
     def show(value: Any) -> str:
         if value is None:
@@ -121,11 +144,12 @@ def render(manifest_a: dict[str, Any], manifest_b: dict[str, Any], result: dict[
             return str(value).lower()
         return f"{value:.4f}" if isinstance(value, float) else str(value)
 
+    label_a, label_b = _arm(manifest_a), _arm(manifest_b)
     lines = [
         "# Benchmark A/B 对比",
         "",
-        f"Run A: `{manifest_a['run_id']}` · enable_qa={manifest_a['config']['enable_qa']}",
-        f"Run B: `{manifest_b['run_id']}` · enable_qa={manifest_b['config']['enable_qa']}",
+        f"Run A（{label_a}）: `{manifest_a['run_id']}`",
+        f"Run B（{label_b}）: `{manifest_b['run_id']}`",
         "",
         f"配对任务数: {result['paired_tasks']}",
         f"仅 A 有: {', '.join(result['a_only_tasks']) or '无'}",
@@ -133,7 +157,7 @@ def render(manifest_a: dict[str, Any], manifest_b: dict[str, Any], result: dict[
         "",
         "## 指标对比（配对任务）",
         "",
-        "| 指标 | A 均值 | B 均值 | B-A 配对差值 | 可用配对 | 缺失 |",
+        f"| 指标 | A={label_a} 均值 | B={label_b} 均值 | B-A 配对差值 | 可用配对 | 缺失 |",
         "|---|---:|---:|---:|---:|---:|",
     ]
     for name, stat in result["metrics"].items():
@@ -149,7 +173,10 @@ def render(manifest_a: dict[str, Any], manifest_b: dict[str, Any], result: dict[
         "| 组 | 计划 | 完成 | 失败 | 超时 |",
         "|---|---:|---:|---:|---:|",
     ]
-    for label, counts in (("A", result["task_counts"]["a"]), ("B", result["task_counts"]["b"])):
+    for label, counts in (
+        (f"A={label_a}", result["task_counts"]["a"]),
+        (f"B={label_b}", result["task_counts"]["b"]),
+    ):
         lines.append(
             f"| {label} | {counts.get('planned', 0)} | {counts.get('completed', 0)} "
             f"| {counts.get('error', 0)} | {counts.get('timeout', 0)} |"
@@ -158,7 +185,7 @@ def render(manifest_a: dict[str, Any], manifest_b: dict[str, Any], result: dict[
         "",
         "## 全任务质量口径（失败/缺失记 0）",
         "",
-        "| 指标 | A 全任务 | B 全任务 |",
+        f"| 指标 | A={label_a} 全任务 | B={label_b} 全任务 |",
         "|---|---:|---:|",
     ]
     names = sorted(set(result["all_tasks_summary"]["a"]) | set(result["all_tasks_summary"]["b"]))
@@ -183,14 +210,14 @@ def main() -> None:
     parser.add_argument(
         "--allow-missing-sources",
         action="store_true",
-        help="Exploratory only: compare runs without saved source snapshots",
+        help="Exploratory only: compare runs whose consumed page texts are not recoverable",
     )
     args = parser.parse_args()
-    for directory in (args.run_a, args.run_b):
-        if not args.allow_missing_sources:
-            require_source_snapshots(directory.resolve())
     manifest_a, metrics_a = load_run(args.run_a.resolve())
     manifest_b, metrics_b = load_run(args.run_b.resolve())
+    if not args.allow_missing_sources:
+        require_reviewable(manifest_a, args.run_a.resolve())
+        require_reviewable(manifest_b, args.run_b.resolve())
     assert_comparable(manifest_a, manifest_b)
     result = compare(manifest_a, metrics_a, manifest_b, metrics_b)
     markdown = render(manifest_a, manifest_b, result)

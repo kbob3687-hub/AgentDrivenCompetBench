@@ -167,6 +167,9 @@ async def run_benchmark(
     manifest = manifest_for(cases, config, run_id)
     if config.replay_root:
         manifest["provenance"] = "replayed_workflow"
+        manifest["replay_bundles"] = {
+            key: bundle.fingerprint() for key, bundle in sorted(bundles.items())
+        }
     write_json(directory / "manifest.json", manifest)
 
     plan = [
@@ -319,6 +322,12 @@ def main() -> None:
         help="Directory of frozen bundles <case_id>-c<index>/; no live fetches",
     )
     parser.add_argument("--model", help="Set DEEPSEEK_MODEL for this process before agent creation")
+    parser.add_argument(
+        "--arm",
+        choices=("multi_agent_qa_fixed", "multi_agent_no_qa", "single_llm"),
+        default=None,
+        help="Pick one core experiment arm; overrides --enable-qa",
+    )
     parser.add_argument("--rescore", type=Path)
     args = parser.parse_args()
     load_dotenv(ROOT / ".env", override=False)
@@ -334,6 +343,10 @@ def main() -> None:
         if unknown:
             parser.error(f"Unknown case IDs: {sorted(unknown)}")
         cases = [case for case in cases if case.id in args.case_ids]
+    if args.arm == "multi_agent_no_qa":
+        args.enable_qa = False
+    if args.arm == "single_llm":
+        args.enable_qa = False
     config = RunConfig(
         enable_qa=args.enable_qa,
         max_iterations=args.max_iterations,
@@ -343,6 +356,13 @@ def main() -> None:
         task_concurrency=args.task_concurrency,
         replay_root=str(args.replay_root) if args.replay_root else None,
     )
+    if args.arm == "single_llm":
+        if not config.replay_root:
+            parser.error("--arm single_llm requires --replay-root")
+        from benchmark.baselines import single_llm
+
+        print(asyncio.run(single_llm.run_benchmark(cases, config, ROOT / "benchmark/results")))
+        return
     print(asyncio.run(run_benchmark(cases, config)))
 
 

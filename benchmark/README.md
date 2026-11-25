@@ -137,9 +137,12 @@ python -m benchmark.runner --rescore "benchmark/results/<run_id>"
 python -m benchmark.compare benchmark/results/<run_a> benchmark/results/<run_b> --out benchmark/results/<run_a>_vs_<run_b>
 ```
 
-默认要求两个 run 都保存了 `source_snapshots/<task>/index.json`；缺少运行当时网页原文的
-运行无法人工复核，不能用于正式质量对比，`--allow-missing-sources` 仅用于探索性比较。
-比较前会校验 cases、模型配置、Git commit、repeat、timeout 等配置一致。输出按
+默认要求两个 run 的“运行当时原文”可恢复：实时 run 必须有
+`source_snapshots/<task>/index.json`；回放 run 不联网、不写这个目录，改由 manifest 里的
+`replay_bundles` 冻结包指纹（index.json 字节哈希 + 每页内容哈希）承担同一职责。
+两者都没有的运行无法人工复核，不能用于正式质量对比，`--allow-missing-sources` 仅用于探索性比较。
+比较前会校验 cases、模型配置、Git commit、repeat、timeout 以及冻结包指纹一致；
+一个用回放、一个用实时抓取的 run 会被直接拒绝。输出按
 case/competitor/repeat 配对，给出 A/B 均值、B-A 配对差值、缺失配对，以及失败/缺失记 0
 的全任务质量口径。
 

@@ -1,5 +1,7 @@
 import asyncio
 import json
+import sys
+from pathlib import Path
 
 from benchmark import report, runner, workflow
 from benchmark.models import BenchmarkCase, RunConfig
@@ -14,6 +16,53 @@ def test_all_tasks_summary_counts_unfinished_tasks_as_zero():
         "missing": 1,
         "tasks": 2,
     }
+
+
+def _run_main(monkeypatch, argv, captured):
+    async def fake_workflow_run(cases, config):
+        captured["workflow"] = config
+        return "workflow-run-dir"
+
+    async def fake_baseline_run(cases, config, out_root):
+        captured["baseline"] = config
+        return "baseline-run-dir"
+
+    monkeypatch.setattr(runner, "run_benchmark", fake_workflow_run)
+    monkeypatch.setattr("benchmark.baselines.single_llm.run_benchmark", fake_baseline_run)
+    monkeypatch.setattr(
+        runner,
+        "load_cases",
+        lambda _path: [
+            BenchmarkCase(id="fixture", competitors=["A"], required_dimensions=["features"])
+        ],
+    )
+    monkeypatch.setattr(sys, "argv", ["runner", *argv])
+    runner.main()
+    return captured
+
+
+def test_main_arm_single_llm_dispatches_to_baseline(monkeypatch):
+    captured = _run_main(
+        monkeypatch,
+        ["--arm", "single_llm", "--replay-root", "benchmark/replay_bundles", "--enable-qa"],
+        {},
+    )
+    assert "baseline" in captured
+    assert "workflow" not in captured
+    assert captured["baseline"].enable_qa is False
+    assert captured["baseline"].replay_root == str(Path("benchmark/replay_bundles"))
+
+
+def test_main_arm_no_qa_disables_qa_and_rejects_baseline_without_replay(monkeypatch):
+    captured = _run_main(monkeypatch, ["--arm", "multi_agent_no_qa"], {})
+    assert captured["workflow"].enable_qa is False
+
+    try:
+        _run_main(monkeypatch, ["--arm", "single_llm"], {})
+    except SystemExit:
+        pass
+    else:
+        raise AssertionError("single_llm without --replay-root must be rejected")
 
 
 async def test_runner_splits_competitors_and_saves_failures(tmp_path, monkeypatch, profile):

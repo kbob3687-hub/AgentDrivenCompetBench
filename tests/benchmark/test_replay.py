@@ -59,6 +59,20 @@ def test_fetch_unknown_url_raises_instead_of_live_fallback(frozen_bundle: Snapsh
         frozen_bundle.fetch("https://missing.example.com")
 
 
+def test_fingerprint_pins_index_bytes_and_every_page(frozen_bundle: SnapshotBundle) -> None:
+    first = frozen_bundle.fingerprint()
+    assert first["bundle_id"] == "case-c1"
+    assert len(first["pages"]) == 2
+    assert all(url in page for page, url in zip(first["pages"], sorted(frozen_bundle.urls)))
+
+    index = json.loads((frozen_bundle.directory / "index.json").read_text("utf-8"))
+    index["warning"] = "edited after the run"
+    (frozen_bundle.directory / "index.json").write_text(json.dumps(index), encoding="utf-8")
+    reloaded = SnapshotBundle.load(frozen_bundle.directory).fingerprint()
+    assert reloaded["pages"] == first["pages"]
+    assert reloaded["index_sha256"] != first["index_sha256"]
+
+
 def test_load_rejects_tampered_content(tmp_path: Path, frozen_bundle: SnapshotBundle) -> None:
     entry = frozen_bundle.entries[0]
     (frozen_bundle.directory / entry["content_path"]).write_text("tampered", encoding="utf-8")
@@ -104,3 +118,25 @@ def test_load_replay_bundles_missing_bundle_raises(tmp_path: Path) -> None:
     config = RunConfig(replay_root=str(tmp_path))
     with pytest.raises(FileNotFoundError, match="case-c1"):
         load_replay_bundles([case], config)
+
+
+async def test_replay_run_pins_bundle_fingerprints_in_manifest(
+    tmp_path, frozen_bundle, monkeypatch, profile
+) -> None:
+    """Replay writes no source_snapshots, so the manifest must carry the page identity."""
+    from benchmark import runner, workflow
+
+    async def fake_run(case, competitor, config, execution_metadata):
+        return {"profile": profile, "report_markdown": "Fixture only"}
+
+    monkeypatch.setattr(workflow, "run", fake_run)
+    case = BenchmarkCase(id="case", competitors=["Alpha"], required_dimensions=["pricing"])
+    directory = await runner.run_benchmark(
+        [case],
+        RunConfig(replay_root=str(frozen_bundle.directory.parent), capture_sources=False),
+        tmp_path / "out",
+    )
+    manifest = json.loads((directory / "manifest.json").read_text("utf-8"))
+    assert manifest["provenance"] == "replayed_workflow"
+    assert manifest["replay_bundles"]["case-c1"] == frozen_bundle.fingerprint()
+    assert not (directory / "source_snapshots").exists()

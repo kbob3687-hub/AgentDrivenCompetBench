@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/badge/Vue-3.5-4FC08D?logo=vue.js&logoColor=white" />
   <img src="https://img.shields.io/badge/LangGraph-0.2+-orange" />
   <img src="https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white" />
-  <img src="https://img.shields.io/badge/测试-237_通过-brightgreen?logo=pytest&logoColor=white" />
+  <img src="https://img.shields.io/badge/测试-277_通过-brightgreen?logo=pytest&logoColor=white" />
   <img src="https://img.shields.io/badge/自建Benchmark-冻结回放+三实验臂-8A2BE2" />
   <img src="https://img.shields.io/badge/Langfuse-全链路追踪-purple" />
   <img src="https://img.shields.io/badge/采集合规-robots.txt+PII脱敏-green" />
@@ -236,7 +236,7 @@ Trace (task_id)
 | 可观测性 | **Langfuse v4** | trace → span → generation 三层追踪，Token 成本聚合 |
 | 数据校验 | **Pydantic v2** | 结构化输出运行时强校验，Schema 演化可控 |
 | 合规 | **robots.txt + PII 脱敏** | 遵守爬取协议，手机/身份证/邮箱自动脱敏 |
-| 测试 | **pytest + pytest-asyncio** | 237 个用例，覆盖 Agent 链路与 Benchmark 评测 |
+| 测试 | **pytest + pytest-asyncio** | 277 个用例，覆盖 Agent 链路与 Benchmark 评测 |
 
 ---
 
@@ -358,7 +358,7 @@ frontend/src/
 ## 测试覆盖
 
 ```bash
-pytest tests/ -v    # 237 个用例
+pytest tests/ -v    # 277 个用例
 ```
 
 | 测试模块 | 覆盖范围 |
@@ -417,7 +417,7 @@ pytest tests/ -v    # 237 个用例
 - [x] 用户调研工具（问卷 + 访谈提纲生成）
 - [x] 采集合规（robots.txt + PII 脱敏）
 - [x] 自建评测体系（冻结快照回放 + 三实验臂对照 + 人工黄金标签流水线）
-- [x] 237 个测试用例
+- [x] 277 个测试用例
 - [ ] 主实验全量运行（12 case × 3 实验臂）
 - [ ] 向量检索增强（Qdrant RAG）
 - [ ] 导出 PDF / PPT
